@@ -1,8 +1,13 @@
+import { Button } from "antd";
+
 function App() {
   return (
-    <h1>
-        Hello Kuzco CRM
-    </h1>
+      <div className={"flex"}>
+          <h1 className="text-3xl font-bold underline bg-red-300">
+              Hello world!
+          </h1>
+          <Button type="primary">Primary Button</Button>
+      </div>
   )
 }
 
