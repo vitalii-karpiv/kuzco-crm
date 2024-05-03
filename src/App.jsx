@@ -1,4 +1,8 @@
 import { Button } from "antd";
+import Dashboard from "./pages/dashboard.jsx";
+import Laptops from "./pages/laptops.jsx";
+import Orders from "./pages/orders.jsx";
+import Suppliers from "./pages/suppliers.jsx";
 
 function App() {
   return (
@@ -7,6 +11,10 @@ function App() {
               Hello world!
           </h1>
           <Button type="primary">Primary Button</Button>
+          <Dashboard />
+          <Laptops />
+          <Orders />
+          <Suppliers />
       </div>
   )
 }
