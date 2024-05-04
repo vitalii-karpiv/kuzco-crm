@@ -37,7 +37,7 @@ export default function MainMenu() {
     return <Menu
         onClick={onClick}
         items={items}
-        className={"w-1/4 h-80 rounded"}
+        className={"w-1/4 h-80 rounded drop-shadow-md"}
         mode="inline"
         defaultOpenKeys={['dashboard']}
     />
