@@ -6,6 +6,7 @@ import Orders from "./pages/orders.jsx";
 import MainMenu from "./components/main-menu.jsx";
 import Login from "./pages/login.jsx";
 import PrivateRoutes from "./utils/private-routes.jsx";
+import OrderDetail from "./pages/order-detail.jsx";
 
 const Router = () => {
     return (
@@ -19,6 +20,7 @@ const Router = () => {
                         <Route element={<Laptops/>} path={"/laptops"} exact/>
                         <Route element={<Orders/>} path={"/orders"} exact/>
                         <Route element={<Suppliers/>} path={"/suppliers"} exact/>
+                        <Route element={<OrderDetail />} path={"orders/orderDetail/:id"} />
                     </Route>
                 </Routes>
             </div>
