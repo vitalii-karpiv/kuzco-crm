@@ -1,7 +1,8 @@
 import {useEffect, useState} from "react";
 import OrderService from "../api/services/order-service.js";
-import {Table} from "antd";
-import { useNavigate } from "react-router-dom";
+import {Table, Tag} from "antd";
+import {Link, useNavigate} from "react-router-dom";
+import OrderManager from "../helpers/order-manager.js";
 
 export default function Orders() {
     const [isLoading, setIsLoading] = useState(true);
@@ -23,8 +24,10 @@ export default function Orders() {
 
     return (
         <Table
+            className={"ml-3 w-full"}
             dataSource={orders}
             columns={getColumns()}
+            size={"middle"}
             onRow={(record) => {
                 return {
                     onClick: () => {navigate(`orderDetail/${record._id}`)},
@@ -45,11 +48,28 @@ function getColumns() {
             title: 'DateOfPurchase',
             dataIndex: 'dateOfPurchase',
             key: 'dateOfPurchase',
+            defaultSortOrder: 'descend',
+            sorter: (a, b) => new Date(a.dateOfPurchase) > new Date(b.dateOfPurchase),
+            sortDirections: ['descend'],
         },
         {
-            title: 'ItemsInLog',
-            dataIndex: 'itemsInLog',
-            key: 'itemsInLog',
+            title: 'ItemsInLot',
+            dataIndex: 'itemsInLot',
+            key: 'itemsInLot',
+        },
+        {
+            title: "State",
+            dataIndex: "state",
+            key: "state",
+            render: (state) => <Tag color={OrderManager.getOrderStateColor(state)}>{OrderManager.getOrderStateLabel(state)}</Tag>,
+            filters: OrderManager.getFilterList(),
+            onFilter: (value, record) => record.state === value
+        },
+        {
+            title: "Ebay URL",
+            dataIndex: "ebayUrl",
+            key: "ebayUrl",
+            render: (text) => <Link to={text}>{text}</Link>,
         }
     ]
 }
