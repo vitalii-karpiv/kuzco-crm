@@ -12,7 +12,7 @@ const ORDER_STATES_COLORS = {
 
 const ORDER_STATES_COLORS_LABELS = {
     "inUsa": "In USA",
-    "waitingForPayment": "Waiting for paymen",
+    "waitingForPayment": "Waiting for payment",
     "delivering": "Delivering",
     "requireDocument": "Require document",
     "taxPayed": "Tax Payed",
@@ -21,6 +21,10 @@ const ORDER_STATES_COLORS_LABELS = {
 }
 
 class OrderManager {
+
+    getOrderStateList() {
+        return ORDER_STATE_LIST
+    }
 
     getOrderStateColor(orderState) {
         return ORDER_STATES_COLORS[orderState];
