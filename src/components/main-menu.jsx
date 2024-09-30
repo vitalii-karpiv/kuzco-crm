@@ -1,7 +1,7 @@
 import { Menu } from "antd";
 import { useNavigate } from "react-router-dom";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faBox, faCompass, faLaptop, faTruckField} from '@fortawesome/free-solid-svg-icons'
+import {faBox, faCompass, faLaptop} from '@fortawesome/free-solid-svg-icons'
 
 export default function MainMenu() {
     const navigate = useNavigate();
@@ -20,12 +20,7 @@ export default function MainMenu() {
             key: 'laptops',
             label: 'Laptops',
             icon: <FontAwesomeIcon icon={faLaptop} />
-        },
-        {
-            key: 'suppliers',
-            label: 'Suppliers',
-            icon: <FontAwesomeIcon icon={faTruckField} />
-        },
+        }
     ];
 
     const onClick = (e) => {
