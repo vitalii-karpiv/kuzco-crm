@@ -1,24 +1,24 @@
 import $api from "../http";
 
-export default class ProductService {
+export default class LaptopService {
     static async list(dto) {
-        const result = await $api.get("/product", dto);
+        const result = await $api.post("/laptop/list", dto);
         return result.data;
     }
     static async get(id) {
-        const result = await $api.get(`/product/${id}`);
+        const result = await $api.get(`/laptop/${id}`);
         return result.data;
     }
     static async update(dto) {
-        const result = await $api.patch("/product", dto);
+        const result = await $api.patch("/laptop", dto);
         return result.data;
     }
     static async create(dto) {
-        const result = await $api.post("/product", dto);
+        const result = await $api.post("/laptop", dto);
         return result.data;
     }
     static async delete(id) {
-        const result = await $api.get(`/product/${id}`);
+        const result = await $api.get(`/laptop/${id}`);
         return result.data;
     }
 }

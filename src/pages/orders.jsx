@@ -1,11 +1,13 @@
 import {useEffect, useRef, useState} from "react";
 import OrderService from "../api/services/order-service.js";
-import {Table, Tag} from "antd";
-import {Link, useNavigate} from "react-router-dom";
+import {Table, Tag, Button} from "antd";
+import {useNavigate} from "react-router-dom";
 import OrderManager from "../helpers/order-manager.js";
 import TableHelper from "../utils/table-helper.jsx";
 import OrdersTableHeader from "../components/orders-table-header.jsx";
 import CreateOrderModal from "../components/create-order-modal.jsx";
+import {SearchOutlined, DeleteOutlined} from "@ant-design/icons";
+import Loading from "../components/loading.jsx";
 
 export default function Orders() {
     const [isLoading, setIsLoading] = useState(true);
@@ -43,7 +45,7 @@ export default function Orders() {
     }
 
     if (isLoading) {
-        return <h1>Loading...</h1>
+        return <Loading />
     }
 
     const closeCreateModal = () => {
@@ -86,8 +88,20 @@ export default function Orders() {
                 title: "Ebay URL",
                 dataIndex: "ebayUrl",
                 key: "ebayUrl",
-                render: (text) => <Link to={text}>{text}</Link>,
-            }
+                render: (text) => <div>{text}</div>,
+            },
+            {
+                title: 'Action',
+                key: 'operation',
+                fixed: 'right',
+                width: 100,
+                render: (record) => {
+                    return <div className={"w-full flex justify-evenly"}>
+                        <Button onClick={() => navigate(`orderDetail/${record._id}`)} shape="circle" icon={<SearchOutlined />} />
+                        <Button onClick={() => console.log(`delete ${record._id}`)} shape="circle" icon={<DeleteOutlined />} />
+                    </div>
+                },
+            },
         ]
     }
 
@@ -100,13 +114,6 @@ export default function Orders() {
                 size={"middle"}
                 showHeader={true}
                 title={() => <OrdersTableHeader onClick={() => setCreateModalOpen(true)}/>}
-                onRow={(record) => {
-                    return {
-                        onClick: () => {
-                            navigate(`orderDetail/${record._id}`)
-                        },
-                    };
-                }}
             />
             {createModalOpen && <CreateOrderModal createModalOpen={createModalOpen} closeCreateModal={closeCreateModal}/>}
         </>
