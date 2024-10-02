@@ -50,7 +50,6 @@ export default function Orders() {
 
     const closeCreateModal = () => {
         setCreateModalOpen(false);
-        handleReload();
     }
 
     const getColumns = () => {
@@ -115,7 +114,7 @@ export default function Orders() {
                 showHeader={true}
                 title={() => <OrdersTableHeader onClick={() => setCreateModalOpen(true)}/>}
             />
-            {createModalOpen && <CreateOrderModal createModalOpen={createModalOpen} closeCreateModal={closeCreateModal}/>}
+            {createModalOpen && <CreateOrderModal createModalOpen={createModalOpen} closeCreateModal={closeCreateModal} handleReload={handleReload}/>}
         </>
     )
 }

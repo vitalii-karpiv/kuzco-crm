@@ -4,10 +4,14 @@ import LaptopService from "../api/services/laptop-service.js";
 import Loading from "../components/loading.jsx";
 import {DeleteOutlined, SearchOutlined} from "@ant-design/icons";
 import {useNavigate} from "react-router-dom";
+import LaptopsTableHeader from "../components/laptops-table-header.jsx";
+import CreateLaptopModal from "../components/create-laptop-modal.jsx";
 
 export default function Laptops() {
     const [laptops, setLaptops] = useState();
     const navigate = useNavigate();
+
+    const [createModalOpen, setCreateModalOpen] = useState(false);
 
     useEffect(() => {
         async function loadLaptops() {
@@ -17,6 +21,10 @@ export default function Laptops() {
 
         loadLaptops();
     }, []);
+
+    const closeCreateModal = () => {
+        setCreateModalOpen(false);
+    }
 
     const getColumns = () => {
         return [
@@ -60,11 +68,14 @@ export default function Laptops() {
         return <Loading/>;
     }
     return (
-        <Table
-            className={"ml-3 w-full"}
-            dataSource={laptops}
-            columns={getColumns()}
-            title={() => <header>Laptops</header>}
-        />
+        <>
+            <Table
+                className={"ml-3 w-full"}
+                dataSource={laptops}
+                columns={getColumns()}
+                title={() => <LaptopsTableHeader onClick={() => setCreateModalOpen(true)}/>}
+            />
+            {createModalOpen && <CreateLaptopModal createModalOpen={createModalOpen} onClose={closeCreateModal}/>}
+        </>
     )
 }
