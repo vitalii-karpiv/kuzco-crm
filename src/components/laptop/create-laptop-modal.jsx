@@ -1,6 +1,7 @@
 import {Modal, Form, Input, Alert} from 'antd';
 import {useState} from "react";
 import LaptopService from "../../api/services/laptop-service.js";
+import PropTypes from 'prop-types';
 
 export default function CreateLaptopModal({createModalOpen, onClose}) {
 
@@ -59,4 +60,10 @@ export default function CreateLaptopModal({createModalOpen, onClose}) {
     )
 
 
+}
+
+
+CreateLaptopModal.propTypes = {
+    createModalOpen: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
 }

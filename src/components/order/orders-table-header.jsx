@@ -1,4 +1,5 @@
 import {Button} from "antd";
+import PropTypes from 'prop-types';
 
 export default function OrdersTableHeader({onClick}) {
     return (
@@ -7,4 +8,8 @@ export default function OrdersTableHeader({onClick}) {
             <Button type={"primary"} onClick={onClick}>+ Add order</Button>
         </div>
     )
+}
+
+OrdersTableHeader.propTypes = {
+    onClick: PropTypes.func.isRequired
 }

@@ -2,6 +2,7 @@ import {Modal, Form, Input, DatePicker, Select, Alert} from 'antd';
 import OrderManager from "../../helpers/order-manager.js";
 import OrderService from "../../api/services/order-service.js";
 import {useState} from "react";
+import PropTypes from 'prop-types';
 
 export default function CreateOrderModal({createModalOpen, closeCreateModal, handleReload}) {
 
@@ -106,4 +107,10 @@ export default function CreateOrderModal({createModalOpen, closeCreateModal, han
     )
 
 
+}
+
+CreateOrderModal.propTypes = {
+    createModalOpen: PropTypes.bool.isRequired,
+    closeCreateModal: PropTypes.func.isRequired,
+    handleReload: PropTypes.func.isRequired
 }

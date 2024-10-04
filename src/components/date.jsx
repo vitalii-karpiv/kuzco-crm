@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 export default function DateView({dateStr}) {
     if (!dateStr) {
         return <div>-</div>
@@ -9,4 +11,8 @@ export default function DateView({dateStr}) {
     }
 
     return <span>{date.getFullYear()}-{addZero(date.getMonth())}-{addZero(date.getDate())}</span>
+}
+
+DateView.propTypes = {
+    dateStr: PropTypes.string, // string representation of a date
 }

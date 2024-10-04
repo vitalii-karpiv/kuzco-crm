@@ -1,4 +1,5 @@
 import {Button} from "antd";
+import PropTypes from 'prop-types';
 
 export default function LaptopsTableHeader({onClick}) {
     return (
@@ -7,4 +8,8 @@ export default function LaptopsTableHeader({onClick}) {
             <Button type={"primary"} onClick={onClick}>+ Add laptop</Button>
         </div>
     )
+}
+
+LaptopsTableHeader.propTypes = {
+    onClick: PropTypes.func.isRequired
 }
