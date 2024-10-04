@@ -1,6 +1,6 @@
 import {Modal, Form, Input, DatePicker, Select, Alert} from 'antd';
-import OrderManager from "../helpers/order-manager.js";
-import OrderService from "../api/services/order-service.js";
+import OrderManager from "../../helpers/order-manager.js";
+import OrderService from "../../api/services/order-service.js";
 import {useState} from "react";
 
 export default function CreateOrderModal({createModalOpen, closeCreateModal, handleReload}) {

@@ -4,8 +4,8 @@ import LaptopService from "../api/services/laptop-service.js";
 import Loading from "../components/loading.jsx";
 import {DeleteOutlined, SearchOutlined} from "@ant-design/icons";
 import {useNavigate} from "react-router-dom";
-import LaptopsTableHeader from "../components/laptops-table-header.jsx";
-import CreateLaptopModal from "../components/create-laptop-modal.jsx";
+import LaptopsTableHeader from "../components/laptop/laptops-table-header.jsx";
+import CreateLaptopModal from "../components/laptop/create-laptop-modal.jsx";
 
 export default function Laptops() {
     const [laptops, setLaptops] = useState();

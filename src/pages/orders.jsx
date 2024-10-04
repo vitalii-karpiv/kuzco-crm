@@ -4,10 +4,11 @@ import {Table, Tag, Button} from "antd";
 import {useNavigate} from "react-router-dom";
 import OrderManager from "../helpers/order-manager.js";
 import TableHelper from "../utils/table-helper.jsx";
-import OrdersTableHeader from "../components/orders-table-header.jsx";
-import CreateOrderModal from "../components/create-order-modal.jsx";
+import OrdersTableHeader from "../components/order/orders-table-header.jsx";
+import CreateOrderModal from "../components/order/create-order-modal.jsx";
 import {SearchOutlined, DeleteOutlined} from "@ant-design/icons";
 import Loading from "../components/loading.jsx";
+import DateView from "../components/date.jsx";
 
 export default function Orders() {
     const [isLoading, setIsLoading] = useState(true);
@@ -67,7 +68,7 @@ export default function Orders() {
                 defaultSortOrder: 'descend',
                 sorter: (a, b) => new Date(a.dateOfPurchase) > new Date(b.dateOfPurchase),
                 sortDirections: ['descend'],
-                render: (date) => <span>{new Date(date).getFullYear()}-{new Date(date).getMonth()+1}-{new Date(date).getDate()}</span>,
+                render: (date) => <DateView dateStr={date}/>,
             },
             {
                 title: 'ItemsInLot',

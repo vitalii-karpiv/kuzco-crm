@@ -5,6 +5,7 @@ import Loading from "../components/loading.jsx";
 import { Image, Table } from "antd"
 import LaptopService from "../api/services/laptop-service.js";
 import ExpenseService from "../api/services/expense-service.js";
+import DateView from "../components/date.jsx";
 
 export default function OrderDetail() {
     let {id} = useParams();
@@ -95,7 +96,7 @@ export default function OrderDetail() {
                 <div className={"block ml-3"}>
                     <p>Items in lot: {order.itemsInLot}</p>
                     <p>State: {order.state}</p>
-                    <p>DateOfPurchase: {order.dateOfPurchase}</p>
+                    <p>DateOfPurchase: <DateView dateStr={order.dateOfPurchase} /></p>
                     <p>Ebay URL: <a href={order.ebayUrl}>{order.ebayUrl}</a></p>
                 </div>
             </div>

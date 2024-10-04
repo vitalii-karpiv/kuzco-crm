@@ -1,6 +1,6 @@
 import {Modal, Form, Input, Alert} from 'antd';
 import {useState} from "react";
-import LaptopService from "../api/services/laptop-service.js";
+import LaptopService from "../../api/services/laptop-service.js";
 
 export default function CreateLaptopModal({createModalOpen, onClose}) {
 
