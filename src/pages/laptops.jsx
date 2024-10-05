@@ -14,11 +14,6 @@ export default function Laptops() {
     const [createModalOpen, setCreateModalOpen] = useState(false);
 
     useEffect(() => {
-        async function loadLaptops() {
-            const ordersDto = await LaptopService.list({});
-            setLaptops(ordersDto.itemList);
-        }
-
         loadLaptops();
     }, []);
 
@@ -26,8 +21,18 @@ export default function Laptops() {
         setCreateModalOpen(false);
     }
 
+    async function loadLaptops() {
+        const ordersDto = await LaptopService.list({});
+        setLaptops(ordersDto.itemList);
+    }
+
     const getColumns = () => {
         return [
+            {
+                title: 'Title',
+                dataIndex: 'name',
+                key: 'name',
+            },
             {
                 title: 'Brand',
                 dataIndex: 'brand',
@@ -75,7 +80,7 @@ export default function Laptops() {
                 columns={getColumns()}
                 title={() => <LaptopsTableHeader onClick={() => setCreateModalOpen(true)}/>}
             />
-            {createModalOpen && <CreateLaptopModal createModalOpen={createModalOpen} onClose={closeCreateModal}/>}
+            {createModalOpen && <CreateLaptopModal createModalOpen={createModalOpen} onClose={closeCreateModal} onReload={loadLaptops}/>}
         </>
     )
 }
