@@ -46,7 +46,7 @@ export default function CreateOrderModal({createModalOpen, closeCreateModal, han
                        {dom}
                    </Form>
                )}>
-            {showErrorAlert && <> <Alert message="Failed to create order!" type="error" showIcon closable/> <br/> </>}
+            {showErrorAlert && <> <Alert message="Failed to create order!" type="error" showIcon closable onClose={() => setShowErrorAlert(false)}/> <br/> </>}
             <Form.Item
                 name="name"
                 label="Title"
