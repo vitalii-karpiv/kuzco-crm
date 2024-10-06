@@ -1,7 +1,7 @@
 import { Menu } from "antd";
 import { useNavigate } from "react-router-dom";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faBox, faCompass, faLaptop} from '@fortawesome/free-solid-svg-icons'
+import {faBox, faCompass, faLaptop, faShoppingCart, faMoneyBill} from '@fortawesome/free-solid-svg-icons'
 
 export default function MainMenu() {
     const navigate = useNavigate();
@@ -20,6 +20,16 @@ export default function MainMenu() {
             key: 'laptops',
             label: 'Laptops',
             icon: <FontAwesomeIcon icon={faLaptop} />
+        },
+        {
+            key: 'sales',
+            label: 'Sales',
+            icon: <FontAwesomeIcon icon={faShoppingCart} />
+        },
+        {
+            key: 'finances',
+            label: 'Finances',
+            icon: <FontAwesomeIcon icon={faMoneyBill} />
         }
     ];
 
@@ -32,8 +42,13 @@ export default function MainMenu() {
     return <Menu
         onClick={onClick}
         items={items}
-        className={"w-1/4 h-80 rounded drop-shadow-md"}
-        mode="inline"
+        style={{
+            boxShadow: "none",
+            backgroundColor: "#fff",
+            // borderRadius: "10px",
+            overflow: "hidden"
+        }}
+        className={"h-full rounded"}
         defaultOpenKeys={['dashboard']}
     />
 }
