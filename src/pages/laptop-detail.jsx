@@ -2,21 +2,26 @@ import {useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import Loading from "../components/loading.jsx";
 import LaptopService from "../api/services/laptop-service.js";
-import {Card, Collapse, Image, Typography} from "antd";
+import {Button, Card, Collapse, Image, Typography} from "antd";
+import {EditOutlined} from "@ant-design/icons";
+import UpdateCharacteristicsModal from "../components/laptop-detail/update-characteristics-modal.jsx";
+import BuyStockModal from "../components/laptop-detail/buy-stock-modal.jsx";
 
 export default function LaptopDetail() {
     let {id} = useParams();
 
     const [laptop, setLaptop] = useState();
+    const [showUpdateCharacteristics, setShowUpdateCharacteristics] = useState(false);
+    const [stockOpt, setStockOpt] = useState({show: false, index: null});
 
     useEffect(() => {
-        async function loadLaptop() {
-            const laptop = await LaptopService.get(id);
-            setLaptop(laptop);
-        }
-
         loadLaptop();
     }, [id]);
+
+    const loadLaptop = async () => {
+        const laptop = await LaptopService.get(id);
+        setLaptop(laptop);
+    }
 
     if (!laptop) {
         return <Loading/>
@@ -62,22 +67,27 @@ export default function LaptopDetail() {
         </header>
         <div className={"flex mb-3"}>
             <Card bordered={false} hoverable={true} className={"w-2/3 mr-3"}>
-                <Typography.Title level={4}>Characteristics</Typography.Title>
+                <div className={"flex justify-between"}>
+                    <Typography.Title level={4}>Characteristics</Typography.Title>
+                    <Button icon={<EditOutlined />} onClick={() => setShowUpdateCharacteristics(true)}>Edit</Button>
+                </div>
                 <div className={"block ml-3"}>
-                    <p>Processor: {laptop.processor}</p>
-                    <p>Videocard: {laptop.videocard}</p>
-                    <p>SSD: {laptop.ssd}</p>
-                    <p>RAM: {laptop.ram}</p>
-                    <p>Screen: {laptop.screen}</p>
-                    <p>Ports: {laptop.ports?.join(", ")}</p>
+                    <p>Processor: {laptop.characteristics?.processor}</p>
+                    <p>Videocard: {laptop.characteristics?.videocard}</p>
+                    <p>SSD: {laptop.characteristics?.ssd}</p>
+                    <p>RAM: {laptop.characteristics?.ram}</p>
+                    <p>Screen: {laptop.characteristics?.screen}</p>
+                    <p>Ports: {laptop.characteristics?.ports?.join(", ")}</p>
                     <p>Note: {laptop.note}</p>
                 </div>
             </Card>
             <Card bordered={false} hoverable={true} className={"w-1/3"}>
                 <Typography.Title level={4}>To buy</Typography.Title>
-                - list
-                - to
-                - do
+                {laptop.toBuy.map((item, index) => {
+                    return (
+                        <div className={"flex align-middle justify-between mb-1"} key={item}><Typography.Text>- {item}</Typography.Text> <Button size={"small"} onClick={() => setStockOpt({show: true, index: index})}>+</Button></div>
+                    )
+                })}
             </Card>
         </div>
         <div className={"flex mb-3"}>
@@ -136,5 +146,15 @@ export default function LaptopDetail() {
         <Card bordered={false} hoverable={true}>
             <Typography.Title level={4}>Change log</Typography.Title>
         </Card>
+        {/*  MODALS  */}
+        {showUpdateCharacteristics && <UpdateCharacteristicsModal open={showUpdateCharacteristics} onClose={() => setShowUpdateCharacteristics(false)} onReload={loadLaptop} id={id}/>}
+        {stockOpt.show &&
+            <BuyStockModal
+                open={stockOpt.show}
+                onClose={() => setStockOpt({show: false, index: null})}
+                onReload={loadLaptop}
+                id={id}
+                index={stockOpt.index}
+                toBuyArray={laptop.toBuy}/>}
     </div>
 }
