@@ -21,4 +21,8 @@ export default class LaptopService {
         const result = await $api.get(`/laptop/${id}`);
         return result.data;
     }
+    static async getDescription(id) {
+        const result = await $api.get(`/laptop/description/${id}`);
+        return result.data;
+    }
 }
