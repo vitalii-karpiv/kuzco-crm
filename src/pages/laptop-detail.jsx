@@ -1,4 +1,4 @@
-import {useParams} from "react-router-dom";
+import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import Loading from "../components/loading.jsx";
 import LaptopService from "../api/services/laptop-service.js";
@@ -11,10 +11,12 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import StockService from "../api/services/stock-service.js";
 import ComplectationItem from "../components/laptop-detail/complectation-item.jsx";
 import stockManager from "../helpers/stock-manager.js";
+import LaptopManager from "../helpers/laptop-manager.js";
+import SaleService from "../api/services/sale-service.js";
 
 export default function LaptopDetail() {
     let {id} = useParams();
-
+    const navigate = useNavigate();
     const [laptop, setLaptop] = useState();
     const [stockList, setStockList] = useState();
     const [description, setDescription] = useState();
@@ -50,6 +52,7 @@ export default function LaptopDetail() {
     }
 
     const saveNewToBuy = async () => {
+        if (!laptop) return;
         const newToBuy = [...laptop.toBuy, newToBuyItem];
         const dtoIn = {
             id,
@@ -64,6 +67,23 @@ export default function LaptopDetail() {
         setLaptop({...laptop, toBuy: newToBuy});
         setNewToBuyItem("");
         setAddToBuyItemActive(false);
+    }
+
+    const handleLaptopSold = async () => {
+        // update laptop state
+        try {
+            await LaptopService.update({id, state: LaptopManager.getLaptopStateMap().WAITING_FOR_DELIVERY});
+        } catch (e) {
+            console.log("TODO: handle error", e)
+        }
+        // create new sale
+        let sale;
+        try {
+            sale = await SaleService.create({laptopId: id});
+        } catch (e) {
+            console.log("TODO: handle error", e)
+        }
+        navigate(`/sales/saleDetail/${sale._id}`)
     }
 
     if (!laptop) {
@@ -104,15 +124,19 @@ export default function LaptopDetail() {
     ];
 
     return <div className={"block w-full mx-5"}>
-        <header className={"flex justify-between"}>
+        <header className={"flex justify-between align-middle"}>
             <Typography.Title level={3}>{laptop.code} article {laptop.name}</Typography.Title>
-            <div>{laptop.state}</div>
+            <div className={"m-1"}>
+                <div>{laptop.state}</div>
+                <Button onClick={handleLaptopSold}
+                        disabled={LaptopManager.getFinalStates().includes(laptop.state)}>Sell</Button>
+            </div>
         </header>
         <div className={"flex mb-3"}>
             <Card bordered={false} hoverable={true} className={"w-2/3 mr-3"}>
                 <div className={"flex justify-between"}>
                     <Typography.Title level={4}>Characteristics</Typography.Title>
-                    <Button icon={<EditOutlined />} onClick={() => setShowUpdateCharacteristics(true)}>Edit</Button>
+                    <Button icon={<EditOutlined/>} onClick={() => setShowUpdateCharacteristics(true)}>Edit</Button>
                 </div>
                 <div className={"block ml-3"}>
                     <p>Processor: {laptop.characteristics?.processor}</p>
@@ -127,11 +151,17 @@ export default function LaptopDetail() {
             <Card bordered={false} hoverable={true} className={"w-1/3"}>
                 <div className={"flex justify-between align-middle"}>
                     <Typography.Title level={4}>To buy</Typography.Title>
-                    <Button size={"small"} onClick={() => setAddToBuyItemActive(true)}><FontAwesomeIcon icon={faPlus} /></Button>
+                    <Button size={"small"} onClick={() => setAddToBuyItemActive(true)}><FontAwesomeIcon icon={faPlus}/></Button>
                 </div>
                 {laptop.toBuy.map((item, index) => {
                     return (
-                        <div className={"flex align-middle justify-between mb-2"} key={item}><Typography.Text>- {item}</Typography.Text> <Button size={"small"} onClick={() => setStockOpt({show: true, index: index})}><FontAwesomeIcon icon={faCheck} /></Button></div>
+                        <div className={"flex align-middle justify-between mb-2"} key={item}>
+                            <Typography.Text>- {item}</Typography.Text> <Button size={"small"}
+                                                                                onClick={() => setStockOpt({
+                                                                                    show: true,
+                                                                                    index: index
+                                                                                })}><FontAwesomeIcon
+                            icon={faCheck}/></Button></div>
                     )
                 })}
                 {addToBuyItemActive && <div className={"flex justify-between align-middle"}>
@@ -145,7 +175,7 @@ export default function LaptopDetail() {
                 <Typography.Title level={4}>Complectation</Typography.Title>
                 {stockList && stockManager.getStockTypeList().map((type) => {
                     return <ComplectationItem key={type} stockType={type} stockList={stockList}/>
-                    })}
+                })}
             </Card>
             <Card bordered={false} hoverable={true} className={"w-2/4"}>
                 <Typography.Title level={4}>Market description</Typography.Title>
@@ -196,7 +226,9 @@ export default function LaptopDetail() {
             <Typography.Title level={4}>Change log</Typography.Title>
         </Card>
         {/*  MODALS  */}
-        {showUpdateCharacteristics && <UpdateCharacteristicsModal open={showUpdateCharacteristics} onClose={() => setShowUpdateCharacteristics(false)} onReload={loadLaptop} id={id}/>}
+        {showUpdateCharacteristics && <UpdateCharacteristicsModal open={showUpdateCharacteristics}
+                                                                  onClose={() => setShowUpdateCharacteristics(false)}
+                                                                  onReload={loadLaptop} id={id}/>}
         {stockOpt.show &&
             <BuyStockModal
                 open={stockOpt.show}
