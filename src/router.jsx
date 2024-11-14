@@ -10,6 +10,7 @@ import LaptopDetail from "./pages/laptop-detail.jsx";
 import {Layout, theme, Typography} from "antd";
 import Sales from "./pages/sales.jsx";
 import SaleDetail from "./pages/sale-detail.jsx";
+import Finances from "./pages/finances.jsx";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -53,6 +54,7 @@ const Router = () => {
                                 <Route element={<OrderDetail />} path={"orders/orderDetail/:id"} />
                                 <Route element={<Sales/>} path={"/sales"} exact/>
                                 <Route element={<SaleDetail />} path={"sales/saleDetail/:id"} />
+                                <Route element={<Finances/>} path={"/finances"} exact/>
                             </Route>
                         </Routes>
                         {/* --- Actual content --- */}

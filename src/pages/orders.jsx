@@ -8,7 +8,7 @@ import OrdersTableHeader from "../components/order/orders-table-header.jsx";
 import CreateOrderModal from "../components/order/create-order-modal.jsx";
 import {SearchOutlined, DeleteOutlined} from "@ant-design/icons";
 import Loading from "../components/loading.jsx";
-import DateView from "../components/date.jsx";
+import DateView from "../components/date-view.jsx";
 
 export default function Orders() {
     const [isLoading, setIsLoading] = useState(true);

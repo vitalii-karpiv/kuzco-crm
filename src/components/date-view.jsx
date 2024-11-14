@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 
-export default function DateView({dateStr}) {
+export default function DateView({dateStr, showTime = false}) {
     if (!dateStr) {
         return <div>-</div>
     }
@@ -10,9 +10,10 @@ export default function DateView({dateStr}) {
         return num < 10 ? `0${num}` : num;
     }
 
-    return <span>{date.getFullYear()}-{addZero(date.getMonth())}-{addZero(date.getDate())}</span>
+    return <span>{date.getFullYear()}-{addZero(date.getMonth())}-{addZero(date.getDate())} {showTime && `${date.getHours()}:${addZero(date.getMinutes())}`}</span>
 }
 
 DateView.propTypes = {
     dateStr: PropTypes.string, // string representation of a date
+    showTime: PropTypes.bool
 }
