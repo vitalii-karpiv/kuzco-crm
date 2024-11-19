@@ -5,7 +5,7 @@ import Loading from "../components/loading.jsx";
 import { Image, Table } from "antd"
 import LaptopService from "../api/services/laptop-service.js";
 import ExpenseService from "../api/services/expense-service.js";
-import DateView from "../components/date.jsx";
+import DateView from "../components/date-view.jsx";
 
 export default function OrderDetail() {
     let {id} = useParams();

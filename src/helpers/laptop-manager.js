@@ -12,6 +12,8 @@ const LAPTOP_STATE_MAP = {
     DONE : "done",
 }
 
+const ACTIVE_STATES = ["new", "toService", "toTest", "toPhotoSession", "toPublish", "selling"];
+
 class LaptopManager {
 
     getLaptopStateList() {
@@ -24,6 +26,10 @@ class LaptopManager {
 
     getFinalStates() {
         return ["waitingForDelivery", "delivering", "done"];
+    }
+
+    getActiveStates() {
+        return ACTIVE_STATES;
     }
 }
 
