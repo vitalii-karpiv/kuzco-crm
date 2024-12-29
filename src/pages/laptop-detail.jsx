@@ -79,7 +79,7 @@ export default function LaptopDetail() {
         // create new sale
         let sale;
         try {
-            sale = await SaleService.create({laptopId: id});
+            sale = await SaleService.create({laptopId: id, price: laptop?.sellPrice});
         } catch (e) {
             console.log("TODO: handle error", e)
         }
