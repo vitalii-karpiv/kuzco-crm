@@ -17,6 +17,10 @@ export default class SaleService {
         const result = await $api.post("/sale", dto);
         return result.data;
     }
+    static async setState(dto) {
+        const result = await $api.post("/sale/setState", dto);
+        return result.data;
+    }
     static async delete(id) {
         const result = await $api.get(`/sale/${id}`);
         return result.data;

@@ -69,9 +69,13 @@ export default function CreateSaleModal({createModalOpen, onClose, handleReload}
                 ]}
             >
                 <Select>
-                    {laptops.map((laptop) =>
-                        <Select.Option key={laptop._id}
-                                       value={laptop._id}>{laptop.name}</Select.Option>
+                    {laptops.map((laptop) => {
+                            console.log(laptop)
+                            return (
+                                <Select.Option key={laptop._id}
+                                               value={laptop._id}>{laptop.name}</Select.Option>
+                            )
+                    }
                     )}
                 </Select>
             </Form.Item>

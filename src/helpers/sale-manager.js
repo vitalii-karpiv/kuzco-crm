@@ -1,4 +1,4 @@
-const SALE_STATE_LIST = ["inUsa", "waitingForPayment", "delivering", "requireDocument", "taxPayed", "delivered", "sold"];
+const SALE_STATE_LIST = ["new", "delivering", "done", "rejected"];
 const DELIVERY_LIST = ["novapost", "ukrpost", "meest", "pickUp"];
 const SOURCE_LIST = ["olx", "inst", "telegram", "tiktok", "prom", "website"];
 
@@ -18,38 +18,10 @@ const SOURCE_LABELS = {
     "website": "Website",
 }
 
-const SALE_STATES_COLORS = {
-    "inUsa": "magenta",
-    "waitingForPayment": "red",
-    "delivering": "volcano",
-    "requireDocument": "purple",
-    "taxPayed": "cyan",
-    "delivered": "green",
-    "sold": "blue",
-}
-
-const SALE_STATES_COLORS_LABELS = {
-    "inUsa": "In USA",
-    "waitingForPayment": "Waiting for payment",
-    "delivering": "Delivering",
-    "requireDocument": "Require document",
-    "taxPayed": "Tax Payed",
-    "delivered": "Delivered",
-    "sold": "Sold",
-}
-
 class SaleManager {
 
     getSaleStateList() {
         return SALE_STATE_LIST
-    }
-
-    getSaleStateColor(SALEState) {
-        return SALE_STATES_COLORS[SALEState];
-    }
-
-    getSaleStateLabel(SALEState) {
-        return SALE_STATES_COLORS_LABELS[SALEState];
     }
 
     getDeliveryList() {
