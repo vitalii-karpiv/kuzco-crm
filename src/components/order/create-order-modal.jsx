@@ -59,12 +59,7 @@ export default function CreateOrderModal({createModalOpen, closeCreateModal, han
             >
                 <Input/>
             </Form.Item>
-            <Form.Item name="ebayUrl" label="Ebay URL" rules={[
-                {
-                    required: true,
-                    message: 'Please input the URL of ebay order!',
-                },
-            ]}>
+            <Form.Item name="ebayUrl" label="Ebay URL">
                 <Input type="textarea"/>
             </Form.Item>
             <Form.Item name="itemsInLot" label="Items in lot" rules={[
@@ -93,6 +88,9 @@ export default function CreateOrderModal({createModalOpen, closeCreateModal, han
                 </Select>
             </Form.Item>
             <Form.Item name="note" label="Note">
+                <Input type="textarea"/>
+            </Form.Item>
+            <Form.Item name="laptopTitle" label="Laptop title">
                 <Input type="textarea"/>
             </Form.Item>
             <Form.Item name="dateOfPurchase" label="DatePicker" required={true} rules={[
