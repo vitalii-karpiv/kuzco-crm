@@ -23,6 +23,7 @@ export default function ExpenseTable() {
         return reversed.map(expense => {
             const dateString = String(expense.time) + "000";
             return {
+                key: Math.random(),
                 amount: expense.amount,
                 time: new Date(parseInt(dateString)).toISOString(),
                 type: expense.type,
@@ -72,5 +73,4 @@ export default function ExpenseTable() {
 }
 
 ExpenseTable.propTypes = {
-    dateStr: PropTypes.string, // string representation of a date
 }
