@@ -2,7 +2,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import Loading from "../components/loading.jsx";
 import LaptopService from "../api/services/laptop-service.js";
-import {Button, Card, Collapse, Image, Input, Space, Typography} from "antd";
+import {Button, Card, Collapse, Image, Input, Typography, Upload} from "antd";
 import {EditOutlined} from "@ant-design/icons";
 import UpdateCharacteristicsModal from "../components/laptop-detail/update-characteristics-modal.jsx";
 import BuyStockModal from "../components/laptop-detail/buy-stock-modal.jsx";
@@ -14,28 +14,13 @@ import stockManager from "../helpers/stock-manager.js";
 import LaptopManager from "../helpers/laptop-manager.js";
 import SaleService from "../api/services/sale-service.js";
 import ImageService from "../api/services/image-service.js";
-import {Upload, message} from 'antd';
+import {UploadOutlined} from '@ant-design/icons';
 import {API_URL} from "../api/http/index.js";
-
-const {Dragger} = Upload;
-
-const beforeUpload = (file) => {
-    const isJpgOrPng = file.type === 'image/jpeg' || file.type === 'image/png';
-    if (!isJpgOrPng) {
-        message.error('You can only upload JPG/PNG file!');
-    }
-    const isLt2M = file.size / 1024 / 1024 < 2;
-    if (!isLt2M) {
-        message.error('Image must smaller than 2MB!');
-    }
-    return isJpgOrPng && isLt2M;
-};
 
 export default function LaptopDetail() {
     let {id} = useParams();
     const navigate = useNavigate();
     const [laptop, setLaptop] = useState();
-    const [loading, setLoading] = useState(false);
     const [imageList, setImageList] = useState();
     const [stockList, setStockList] = useState();
     const [description, setDescription] = useState();
@@ -51,7 +36,7 @@ export default function LaptopDetail() {
     }, [id]);
 
     useEffect(() => {
-        loadImage();
+        loadImages();
     }, [laptop])
 
     const loadLaptop = async () => {
@@ -59,9 +44,10 @@ export default function LaptopDetail() {
         setLaptop(laptop);
     }
 
-    const loadImage = async () => {
+    const loadImages = async () => {
+        const idList = await ImageService.list(id);
         const loadedImages = [];
-        for (let imgId of laptop.photos) {
+        for (let imgId of idList) {
             const img = await ImageService.get(imgId);
             const objectURL = URL.createObjectURL(img);
             loadedImages.push(objectURL)
@@ -70,13 +56,8 @@ export default function LaptopDetail() {
     }
 
     const handleChange = (info) => {
-        if (info.file.status === 'uploading') {
-            setLoading(true);
-            return;
-        }
-        if (info.file.status === 'done') {
-            // Get this url from response in real world.
-            console.log("done")
+        if (info.fileList.every(file => file.status === "done")) {
+            loadImages()
         }
     };
 
@@ -231,22 +212,27 @@ export default function LaptopDetail() {
             <Card bordered={false} hoverable={true} className={"w-2/4 mr-3"}>
                 <Typography.Title level={4}>Photos</Typography.Title>
                 <div>
-                    {imageList && <Image.PreviewGroup>
-                        {imageList.map((item) => (
-                            <Image key={item} src={item} width={70} height={70} className={"p-1"}/>
-                        ))}
-                    </Image.PreviewGroup>
-                    }
+                    <div className={"mb-2"}>
+                        {imageList && <Image.PreviewGroup>
+                            {imageList.map((item) => (
+                                <div className={"m-1 p-1 inline"} key={item}>
+                                    <Image key={item} src={item} width={80} height={80} className={"block rounded-xl"}/>
+                                </div>
+                            ))}
+                        </Image.PreviewGroup>
+                        }
+                    </div>
 
                     <Upload
                         name="image"
-                        listType="picture-card"
+                        // listType="picture-card"
                         action={`${API_URL}/image/upload`}
                         data={{laptopId: id}}
                         multiple={true}
                         onChange={handleChange}
+                        showUploadList={false}
                     >
-                        Upload
+                        <Button icon={<UploadOutlined/>}>Click to Upload</Button>
                     </Upload>
                 </div>
             </Card>
