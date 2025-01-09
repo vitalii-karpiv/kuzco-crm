@@ -16,6 +16,7 @@ import SaleService from "../api/services/sale-service.js";
 import ImageService from "../api/services/image-service.js";
 import {UploadOutlined} from '@ant-design/icons';
 import {API_URL} from "../api/http/index.js";
+import CharacteristicsBlock from "../components/laptop-detail/characteristics-block.jsx";
 
 export default function LaptopDetail() {
     let {id} = useParams();
@@ -158,21 +159,7 @@ export default function LaptopDetail() {
             </div>
         </header>
         <div className={"flex mb-3"}>
-            <Card bordered={false} hoverable={true} className={"w-2/3 mr-3"}>
-                <div className={"flex justify-between"}>
-                    <Typography.Title level={4}>Characteristics</Typography.Title>
-                    <Button icon={<EditOutlined/>} onClick={() => setShowUpdateCharacteristics(true)}>Edit</Button>
-                </div>
-                <div className={"block ml-3"}>
-                    <p>Processor: {laptop.characteristics?.processor}</p>
-                    <p>Videocard: {laptop.characteristics?.videocard}</p>
-                    <p>SSD: {laptop.characteristics?.ssd}</p>
-                    <p>RAM: {laptop.characteristics?.ram}</p>
-                    <p>Screen: {laptop.characteristics?.screen}</p>
-                    <p>Ports: {laptop.characteristics?.ports?.join(", ")}</p>
-                    <p>Note: {laptop.note}</p>
-                </div>
-            </Card>
+            <CharacteristicsBlock laptop={laptop} />
             <Card bordered={false} hoverable={true} className={"w-1/3"}>
                 <div className={"flex justify-between align-middle"}>
                     <Typography.Title level={4}>To buy</Typography.Title>
