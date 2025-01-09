@@ -2,21 +2,19 @@ import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import Loading from "../components/loading.jsx";
 import LaptopService from "../api/services/laptop-service.js";
-import {Button, Card, Collapse, Image, Input, Typography, Upload} from "antd";
-import {EditOutlined} from "@ant-design/icons";
+import {Button, Card, Collapse, Image, Typography, Upload} from "antd";
+import {UploadOutlined} from "@ant-design/icons";
 import UpdateCharacteristicsModal from "../components/laptop-detail/update-characteristics-modal.jsx";
 import BuyStockModal from "../components/laptop-detail/buy-stock-modal.jsx";
-import {faCheck, faPlus} from "@fortawesome/free-solid-svg-icons";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import StockService from "../api/services/stock-service.js";
 import ComplectationItem from "../components/laptop-detail/complectation-item.jsx";
 import stockManager from "../helpers/stock-manager.js";
 import LaptopManager from "../helpers/laptop-manager.js";
 import SaleService from "../api/services/sale-service.js";
 import ImageService from "../api/services/image-service.js";
-import {UploadOutlined} from '@ant-design/icons';
 import {API_URL} from "../api/http/index.js";
 import CharacteristicsBlock from "../components/laptop-detail/characteristics-block.jsx";
+import ToBuyBlock from "../components/laptop-detail/to-buy-block.jsx";
 
 export default function LaptopDetail() {
     let {id} = useParams();
@@ -26,8 +24,6 @@ export default function LaptopDetail() {
     const [stockList, setStockList] = useState();
     const [description, setDescription] = useState();
     const [showUpdateCharacteristics, setShowUpdateCharacteristics] = useState(false);
-    const [addToBuyItemActive, setAddToBuyItemActive] = useState(false);
-    const [newToBuyItem, setNewToBuyItem] = useState("");
     const [stockOpt, setStockOpt] = useState({show: false, index: null});
 
     useEffect(() => {
@@ -38,7 +34,7 @@ export default function LaptopDetail() {
 
     useEffect(() => {
         loadImages();
-    }, [laptop])
+    }, [laptop?._id])
 
     const loadLaptop = async () => {
         const laptop = await LaptopService.get(id);
@@ -75,24 +71,6 @@ export default function LaptopDetail() {
     const onBuyStockReload = async () => {
         await loadStock();
         await loadLaptop();
-    }
-
-    const saveNewToBuy = async () => {
-        if (!laptop) return;
-        const newToBuy = [...laptop.toBuy, newToBuyItem];
-        const dtoIn = {
-            id,
-            toBuy: newToBuy
-        }
-        try {
-            await LaptopService.update(dtoIn);
-            await loadStock();
-        } catch (e) {
-            console.log("TODO: handle error", e)
-        }
-        setLaptop({...laptop, toBuy: newToBuy});
-        setNewToBuyItem("");
-        setAddToBuyItemActive(false);
     }
 
     const handleLaptopSold = async () => {
@@ -160,27 +138,7 @@ export default function LaptopDetail() {
         </header>
         <div className={"flex mb-3"}>
             <CharacteristicsBlock laptop={laptop} />
-            <Card bordered={false} hoverable={true} className={"w-1/3"}>
-                <div className={"flex justify-between align-middle"}>
-                    <Typography.Title level={4}>To buy</Typography.Title>
-                    <Button size={"small"} onClick={() => setAddToBuyItemActive(true)}><FontAwesomeIcon icon={faPlus}/></Button>
-                </div>
-                {laptop.toBuy.map((item, index) => {
-                    return (
-                        <div className={"flex align-middle justify-between mb-2"} key={item}>
-                            <Typography.Text>- {item}</Typography.Text> <Button size={"small"}
-                                                                                onClick={() => setStockOpt({
-                                                                                    show: true,
-                                                                                    index: index
-                                                                                })}><FontAwesomeIcon
-                            icon={faCheck}/></Button></div>
-                    )
-                })}
-                {addToBuyItemActive && <div className={"flex justify-between align-middle"}>
-                    <Input className={"mr-2"} value={newToBuyItem} onChange={(e) => setNewToBuyItem(e.target.value)}/>
-                    <Button type={"primary"} onClick={saveNewToBuy}>Done</Button>
-                </div>}
-            </Card>
+            <ToBuyBlock laptop={laptop} setStockOpt={setStockOpt} setLaptop={setLaptop}/>
         </div>
         <div className={"flex mb-3"}>
             <Card bordered={false} hoverable={true} className={"w-2/4 mr-3"}>
@@ -212,7 +170,6 @@ export default function LaptopDetail() {
 
                     <Upload
                         name="image"
-                        // listType="picture-card"
                         action={`${API_URL}/image/upload`}
                         data={{laptopId: id}}
                         multiple={true}
