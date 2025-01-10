@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import {Table, Typography} from "antd";
 import {useEffect, useState} from "react";
 import ExpenseService from "../../api/services/expense-service.js";

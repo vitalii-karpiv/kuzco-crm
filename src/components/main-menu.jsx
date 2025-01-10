@@ -1,7 +1,7 @@
 import { Menu } from "antd";
 import { useNavigate } from "react-router-dom";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faBox, faCompass, faLaptop, faShoppingCart, faMoneyBill} from '@fortawesome/free-solid-svg-icons'
+import {faBox, faCompass, faLaptop, faShoppingCart, faMoneyBill, faWarehouse} from '@fortawesome/free-solid-svg-icons'
 
 export default function MainMenu() {
     const navigate = useNavigate();
@@ -30,12 +30,16 @@ export default function MainMenu() {
             key: 'finances',
             label: 'Finances',
             icon: <FontAwesomeIcon icon={faMoneyBill} />
+        },
+        {
+            key: 'inventory',
+            label: 'Inventory',
+            icon: <FontAwesomeIcon icon={faWarehouse} />
         }
     ];
 
     const onClick = (e) => {
         navigate(`/${e.key}`)
-        console.log('click ', e);
     };
 
 
@@ -45,7 +49,6 @@ export default function MainMenu() {
         style={{
             boxShadow: "none",
             backgroundColor: "#fff",
-            // borderRadius: "10px",
             overflow: "hidden"
         }}
         className={"h-full rounded"}
