@@ -13,6 +13,24 @@ const STOCK_TYPE_MAP = {
     CHARGER : "charger",
 }
 
+const STOCK_TYPE_LABEL_MAP = {
+    ram :"RAM",
+    hdd : "HDD",
+    ssd : "SSD",
+    battery: "Battery",
+    screen : "Screen",
+    "flex-cable" : "Flex-cable",
+    keyboard : "Keyboard",
+    motherboard : "Motherboard",
+    matrix : "Matrix",
+    charger : "Charger",
+}
+
+const STOCK_STATE_MAP = {
+    FREE : "free",
+    BOOKED : "booked",
+}
+
 class StockManager {
 
     getStockTypeList() {
@@ -21,6 +39,14 @@ class StockManager {
 
     getStockTypeMap() {
         return STOCK_TYPE_MAP;
+    }
+
+    getStockTypeLabel(stockType) {
+        return STOCK_TYPE_LABEL_MAP[stockType]
+    }
+
+    getStockStateMap() {
+        return STOCK_STATE_MAP;
     }
 }
 

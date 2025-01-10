@@ -7,14 +7,13 @@ import {UploadOutlined} from "@ant-design/icons";
 import UpdateCharacteristicsModal from "../components/laptop-detail/update-characteristics-modal.jsx";
 import BuyStockModal from "../components/laptop-detail/buy-stock-modal.jsx";
 import StockService from "../api/services/stock-service.js";
-import ComplectationItem from "../components/laptop-detail/complectation-item.jsx";
-import stockManager from "../helpers/stock-manager.js";
 import LaptopManager from "../helpers/laptop-manager.js";
 import SaleService from "../api/services/sale-service.js";
 import ImageService from "../api/services/image-service.js";
 import {API_URL} from "../api/http/index.js";
 import CharacteristicsBlock from "../components/laptop-detail/characteristics-block.jsx";
 import ToBuyBlock from "../components/laptop-detail/to-buy-block.jsx";
+import ComplectationBlock from "../components/laptop-detail/complectation-block.jsx";
 
 export default function LaptopDetail() {
     let {id} = useParams();
@@ -141,12 +140,7 @@ export default function LaptopDetail() {
             <ToBuyBlock laptop={laptop} setStockOpt={setStockOpt} setLaptop={setLaptop}/>
         </div>
         <div className={"flex mb-3"}>
-            <Card bordered={false} hoverable={true} className={"w-2/4 mr-3"}>
-                <Typography.Title level={4}>Complectation</Typography.Title>
-                {stockList && stockManager.getStockTypeList().map((type) => {
-                    return <ComplectationItem key={type} stockType={type} stockList={stockList}/>
-                })}
-            </Card>
+            <ComplectationBlock stockList={stockList} setStockList={setStockList} />
             <Card bordered={false} hoverable={true} className={"w-2/4"}>
                 <Typography.Title level={4}>Market description</Typography.Title>
                 <Collapse items={marketDescriptionList} onChange={() => {
