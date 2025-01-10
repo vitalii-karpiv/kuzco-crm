@@ -5,14 +5,14 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faMinus, faPlus} from "@fortawesome/free-solid-svg-icons";
 import StockService from "../../api/services/stock-service.js";
 import {useState} from "react";
+import AddStockModal from "./add-stock-modal.jsx";
 
 const {Text} = Typography;
 
-export default function ComplectationItem({stockType, stockList, setStockList}) {
+export default function ComplectationItem({stockType, stockList, setStockList, laptopId}) {
     const [showAddStockModal, setShowAddStockModal] = useState(false);
 
     function handleShowAddStockModal() {
-        console.log("stockType", stockType)
         setShowAddStockModal(true);
     }
 
@@ -28,7 +28,7 @@ export default function ComplectationItem({stockType, stockList, setStockList}) 
                     margin: 0,
                     padding: 0
                 }}>- {StockManager.getStockTypeLabel(stockType)}:</Typography.Title>
-                <Button className={""} size={"small"} onClick={() => handleShowAddStockModal(stockType)}>
+                <Button className={""} size={"small"} onClick={handleShowAddStockModal}>
                     <FontAwesomeIcon icon={faPlus}/>
                 </Button>
             </div>
@@ -48,6 +48,16 @@ export default function ComplectationItem({stockType, stockList, setStockList}) 
                     </div>
                 )
             })}
+
+            {showAddStockModal &&
+                <AddStockModal
+                    open={showAddStockModal}
+                    type={stockType}
+                    onClose={() => setShowAddStockModal(false)}
+                    laptopId={laptopId}
+                    stockList={stockList}
+                    setStockList={setStockList}
+                />}
         </div>
     )
 }
@@ -56,4 +66,5 @@ ComplectationItem.propTypes = {
     stockType: PropTypes.string.isRequired,
     stockList: PropTypes.array.isRequired,
     setStockList: PropTypes.func.isRequired,
+    laptopId: PropTypes.string.isRequired,
 }

@@ -140,7 +140,7 @@ export default function LaptopDetail() {
             <ToBuyBlock laptop={laptop} setStockOpt={setStockOpt} setLaptop={setLaptop}/>
         </div>
         <div className={"flex mb-3"}>
-            <ComplectationBlock stockList={stockList} setStockList={setStockList} />
+            <ComplectationBlock stockList={stockList} setStockList={setStockList} laptopId={laptop?._id} />
             <Card bordered={false} hoverable={true} className={"w-2/4"}>
                 <Typography.Title level={4}>Market description</Typography.Title>
                 <Collapse items={marketDescriptionList} onChange={() => {

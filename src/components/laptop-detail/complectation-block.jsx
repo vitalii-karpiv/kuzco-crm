@@ -3,13 +3,13 @@ import stockManager from "../../helpers/stock-manager.js";
 import ComplectationItem from "./complectation-item.jsx";
 import PropTypes from "prop-types";
 
-export default function ComplectationBlock({stockList, setStockList}) {
+export default function ComplectationBlock({stockList, setStockList, laptopId}) {
 
     return (
         <Card bordered={false} hoverable={true} className={"w-2/4 mr-3"}>
             <Typography.Title level={4}>Complectation</Typography.Title>
             {stockList && stockManager.getStockTypeList().map((type) => {
-                return <ComplectationItem key={type} stockType={type} stockList={stockList} setStockList={setStockList}/>
+                return <ComplectationItem key={type} stockType={type} stockList={stockList} setStockList={setStockList} laptopId={laptopId}/>
             })}
         </Card>
     )
@@ -18,4 +18,5 @@ export default function ComplectationBlock({stockList, setStockList}) {
 ComplectationBlock.propTypes = {
     stockList: PropTypes.array.isRequired,
     setStockList: PropTypes.func.isRequired,
+    laptopId: PropTypes.string.isRequired,
 }
