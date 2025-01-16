@@ -1,8 +1,12 @@
 import $api from "../http";
 
-export default class LaptopService {
+export default class StockService {
     static async list(dto) {
         const result = await $api.post("/stock/list", dto);
+        return result.data;
+    }
+    static async get(id) {
+        const result = await $api.get(`/stock/${id}`);
         return result.data;
     }
     static async update(dto) {

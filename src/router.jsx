@@ -12,6 +12,7 @@ import Sales from "./pages/sales.jsx";
 import SaleDetail from "./pages/sale-detail.jsx";
 import Finances from "./pages/finances.jsx";
 import Inventory from "./pages/inventory.jsx";
+import StockDetail from "./pages/stock-detail.jsx";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -57,6 +58,7 @@ const Router = () => {
                                 <Route element={<SaleDetail />} path={"sales/saleDetail/:id"} />
                                 <Route element={<Finances/>} path={"/finances"} exact/>
                                 <Route element={<Inventory/>} path={"/inventory"} exact/>
+                                <Route element={<StockDetail/>} path={"/inventory/stock/:id"} exact/>
                             </Route>
                         </Routes>
                         {/* --- Actual content --- */}

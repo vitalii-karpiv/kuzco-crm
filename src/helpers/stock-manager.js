@@ -31,6 +31,11 @@ const STOCK_STATE_MAP = {
     BOOKED : "booked",
 }
 
+const STOCK_STATE_LABEL_MAP = {
+    free : "Free",
+    booked : "Booked",
+}
+
 class StockManager {
 
     getStockTypeList() {
@@ -47,6 +52,10 @@ class StockManager {
 
     getStockStateMap() {
         return STOCK_STATE_MAP;
+    }
+
+    getStockStateLabelMap(state) {
+        return STOCK_STATE_LABEL_MAP[state];
     }
 }
 
