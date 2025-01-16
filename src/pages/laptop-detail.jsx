@@ -14,6 +14,7 @@ import {API_URL} from "../api/http/index.js";
 import CharacteristicsBlock from "../components/laptop-detail/characteristics-block.jsx";
 import ToBuyBlock from "../components/laptop-detail/to-buy-block.jsx";
 import ComplectationBlock from "../components/laptop-detail/complectation-block.jsx";
+import FinanceBlock from "../components/laptop-detail/finance-block.jsx";
 
 export default function LaptopDetail() {
     let {id} = useParams();
@@ -136,16 +137,20 @@ export default function LaptopDetail() {
             </div>
         </header>
         <div className={"flex mb-3"}>
-            <CharacteristicsBlock laptop={laptop} />
+            <CharacteristicsBlock laptop={laptop}/>
             <ToBuyBlock laptop={laptop} setStockOpt={setStockOpt} setLaptop={setLaptop}/>
         </div>
         <div className={"flex mb-3"}>
-            <ComplectationBlock stockList={stockList} setStockList={setStockList} laptopId={laptop?._id} />
+            <ComplectationBlock stockList={stockList} setStockList={setStockList} laptopId={laptop?._id}/>
             <Card bordered={false} hoverable={true} className={"w-2/4"}>
                 <Typography.Title level={4}>Market description</Typography.Title>
                 <Collapse items={marketDescriptionList} onChange={() => {
                 }} bordered={false}/>
             </Card>
+        </div>
+        <div className={"flex mb-3"}>
+            <FinanceBlock laptop={laptop} setLaptop={setLaptop} />
+            <FinanceBlock laptop={laptop} setLaptop={setLaptop} />
         </div>
         <div className={"flex mb-3"}>
             <Card bordered={false} hoverable={true} className={"w-2/4 mr-3"}>
