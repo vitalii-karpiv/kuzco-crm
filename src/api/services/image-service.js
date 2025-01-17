@@ -15,8 +15,8 @@ export default class OrderService {
         return result.data;
     }
 
-    static async list(laptopId) {
-        const result = await $api.post(`/image/list`, {laptopId});
+    static async list(dto) {
+        const result = await $api.post(`/image/list`, dto);
         return result.data;
     }
 }
