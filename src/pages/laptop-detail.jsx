@@ -2,7 +2,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import Loading from "../components/loading.jsx";
 import LaptopService from "../api/services/laptop-service.js";
-import {Button, Card, Collapse, Image, Typography, Upload} from "antd";
+import {Button, Card, Image, Typography, Upload} from "antd";
 import {UploadOutlined} from "@ant-design/icons";
 import UpdateCharacteristicsModal from "../components/laptop-detail/update-characteristics-modal.jsx";
 import BuyStockModal from "../components/laptop-detail/buy-stock-modal.jsx";
@@ -15,6 +15,7 @@ import CharacteristicsBlock from "../components/laptop-detail/characteristics-bl
 import ToBuyBlock from "../components/laptop-detail/to-buy-block.jsx";
 import ComplectationBlock from "../components/laptop-detail/complectation-block.jsx";
 import FinanceBlock from "../components/laptop-detail/finance-block.jsx";
+import MarketplaceBlock from "../components/laptop-detail/marketplace-block.jsx";
 
 export default function LaptopDetail() {
     let {id} = useParams();
@@ -22,14 +23,12 @@ export default function LaptopDetail() {
     const [laptop, setLaptop] = useState();
     const [imageList, setImageList] = useState();
     const [stockList, setStockList] = useState();
-    const [description, setDescription] = useState();
     const [showUpdateCharacteristics, setShowUpdateCharacteristics] = useState(false);
     const [stockOpt, setStockOpt] = useState({show: false, index: null});
 
     useEffect(() => {
         loadLaptop();
         loadStock();
-        loadDescription()
     }, [id]);
 
     useEffect(() => {
@@ -63,11 +62,6 @@ export default function LaptopDetail() {
         setStockList(stockListDto.itemList);
     }
 
-    const loadDescription = async () => {
-        const loadDescriptionDto = await LaptopService.getDescription(id);
-        setDescription(loadDescriptionDto);
-    }
-
     const onBuyStockReload = async () => {
         await loadStock();
         await loadLaptop();
@@ -94,39 +88,6 @@ export default function LaptopDetail() {
         return <Loading/>
     }
 
-    const marketDescriptionList = [
-        {
-            key: '1',
-            label: 'OLX',
-            children: <Card>{description?.olx}</Card>,
-            style: {
-                background: "#7393B3",
-                marginBottom: 15,
-                borderRadius: 10
-            }
-        },
-        {
-            key: '2',
-            label: 'INSTAGRAM',
-            children: <Card>{description?.inst}</Card>,
-            style: {
-                background: "#7393B3",
-                marginBottom: 15,
-                borderRadius: 10
-            }
-        },
-        {
-            key: '3',
-            label: 'TELEGRAM',
-            children: <Card>{description?.telegram}</Card>,
-            style: {
-                background: "#7393B3",
-                marginBottom: 15,
-                borderRadius: 10
-            }
-        },
-    ];
-
     return <div className={"block w-full mx-5"}>
         <header className={"flex justify-between align-middle"}>
             <Typography.Title level={3}>{laptop.code} article {laptop.name}</Typography.Title>
@@ -142,11 +103,7 @@ export default function LaptopDetail() {
         </div>
         <div className={"flex mb-3"}>
             <ComplectationBlock stockList={stockList} setStockList={setStockList} laptopId={laptop?._id}/>
-            <Card bordered={false} hoverable={true} className={"w-2/4"}>
-                <Typography.Title level={4}>Market description</Typography.Title>
-                <Collapse items={marketDescriptionList} onChange={() => {
-                }} bordered={false}/>
-            </Card>
+            <MarketplaceBlock laptop={laptop} setLaptop={setLaptop}/>
         </div>
         <div className={"flex mb-3"}>
             <FinanceBlock laptop={laptop} setLaptop={setLaptop} />
