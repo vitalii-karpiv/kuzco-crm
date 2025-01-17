@@ -52,7 +52,7 @@ export default function ToBuyBlock({laptop = {}, setStockOpt, setLaptop}) {
     }
 
     return (
-        <Card bordered={false} hoverable={true} className={"w-1/3"}>
+        <Card bordered={false} hoverable={true} className={"w-2/4"}>
             <div className={"flex justify-between align-middle"}>
                 <Typography.Title level={4}>To buy</Typography.Title>
                 <Button size={"small"} onClick={() => setAddToBuyItemActive(true)}><FontAwesomeIcon
@@ -79,7 +79,7 @@ export default function ToBuyBlock({laptop = {}, setStockOpt, setLaptop}) {
                 )
             })}
             {addToBuyItemActive && <div className={"flex justify-between align-middle"}>
-                <Input className={"mr-2"} value={newToBuyItem} onChange={(e) => setNewToBuyItem(e.target.value)}/>
+                <Input className={"mr-2"} value={newToBuyItem} onChange={(e) => setNewToBuyItem(e.target.value)} onPressEnter={handleNewToBuy}/>
                 <Button size={"small"} className={"bg-rose-400 text-white mr-1"} onClick={cancelAddNewItem}><FontAwesomeIcon icon={faXmark}/> </Button>
                 <Button size={"small"} className={"bg-emerald-500 text-white"} onClick={handleNewToBuy} ><FontAwesomeIcon icon={faPlus}/> </Button>
             </div>}

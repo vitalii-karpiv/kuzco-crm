@@ -14,6 +14,20 @@ const LAPTOP_STATE_MAP = {
 
 const ACTIVE_STATES = ["new", "toService", "toTest", "toPhotoSession", "toPublish", "selling"];
 
+const TECH_CHECK_LABELS = {
+    keyboard: "Keyboard",
+    camera: "Camera",
+    micro: "Micro",
+    sound: "Sound",
+    display: "Display",
+    batteryTakeCharge: "Battery take charge",
+    batteryHoldCharge: "Battery hold charge",
+    ports: "Port",
+    cooler: "Cooler",
+    aidaStressTest: "Aida stress test",
+    memTest: "Memtest",
+}
+
 class LaptopManager {
 
     getLaptopStateList() {
@@ -30,6 +44,10 @@ class LaptopManager {
 
     getActiveStates() {
         return ACTIVE_STATES;
+    }
+
+    getTechCheckLabels(techCheck) {
+        return TECH_CHECK_LABELS[techCheck];
     }
 }
 

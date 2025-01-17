@@ -27,7 +27,7 @@ export default function CharacteristicsBlock({laptop = {}}) {
     }
 
     return (
-        <Card bordered={false} hoverable={true} className={"w-2/3 mr-3"}>
+        <Card bordered={false} hoverable={true} className={"w-2/4 mr-3"}>
             <div className={"flex justify-between"}>
                 <Typography.Title level={4}>Characteristics</Typography.Title>
             </div>

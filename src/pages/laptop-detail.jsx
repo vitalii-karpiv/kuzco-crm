@@ -17,6 +17,7 @@ import ComplectationBlock from "../components/laptop-detail/complectation-block.
 import FinanceBlock from "../components/laptop-detail/finance-block.jsx";
 import MarketplaceBlock from "../components/laptop-detail/marketplace-block.jsx";
 import DefectsBlock from "../components/laptop-detail/defects-block.jsx";
+import TechCheckBlock from "../components/laptop-detail/tech-check-block.jsx";
 
 export default function LaptopDetail() {
     let {id} = useParams();
@@ -127,7 +128,7 @@ export default function LaptopDetail() {
         </div>
         <div className={"flex mb-3"}>
             <FinanceBlock laptop={laptop} setLaptop={setLaptop} />
-            <FinanceBlock laptop={laptop} setLaptop={setLaptop} />
+            <TechCheckBlock laptop={laptop} setLaptop={setLaptop} />
         </div>
         <div className={"flex mb-3"}>
             <Card bordered={false} hoverable={true} className={"w-2/4 mr-3"}>
@@ -158,12 +159,6 @@ export default function LaptopDetail() {
             </Card>
             <DefectsBlock laptop={laptop} setLaptop={setLaptop} handleDefectChange={handleDefectChange} defectImageList={defectList} />
         </div>
-        <Card bordered={false} hoverable={true} className={"mb-3"}>
-            <Typography.Title level={4}>Tech check</Typography.Title>
-        </Card>
-        <Card bordered={false} hoverable={true}>
-            <Typography.Title level={4}>Change log</Typography.Title>
-        </Card>
         {/*  MODALS  */}
         {showUpdateCharacteristics && <UpdateCharacteristicsModal open={showUpdateCharacteristics}
                                                                   onClose={() => setShowUpdateCharacteristics(false)}
