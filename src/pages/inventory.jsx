@@ -73,7 +73,7 @@ export default function Inventory() {
         ]
     }
 
-    if (stocks.length === 0) {
+    if (!stocks) {
         return <Loading/>;
     }
     return (
