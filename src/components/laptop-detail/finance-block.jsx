@@ -3,6 +3,7 @@ import PropTypes from "prop-types";
 import {useEffect, useState} from "react";
 import LaptopService from "../../api/services/laptop-service.js";
 import FinanceService from "../../api/services/finance-service.js";
+import PriceView from "../price-view.jsx";
 
 
 export default function FinanceBlock({laptop, setLaptop}) {
@@ -16,7 +17,7 @@ export default function FinanceBlock({laptop, setLaptop}) {
 
     async function addCostPrice() {
         const price = await FinanceService.getCostPricePerLaptop(laptop.orderId);
-        setCostPrice(parseFloat(price) / 100 * -1);
+        setCostPrice(price);
     }
 
     return (
@@ -27,7 +28,7 @@ export default function FinanceBlock({laptop, setLaptop}) {
 
             <Typography.Text className={"block p-2 rounded bg-slate-300"}>
                 <span>Собівартість: </span>
-                <Typography.Text code strong>{costPrice} грн</Typography.Text>
+                <PriceView amount={costPrice}/>
             </Typography.Text>
 
             <PriceInput label={"Limit price"} editMode={editLimitPrice} setEditMode={setEditLimitPrice} laptop={laptop} setLaptop={setLaptop} property={"limitPrice"} type={"warning"} />
