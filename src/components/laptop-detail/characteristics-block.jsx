@@ -26,12 +26,24 @@ export default function CharacteristicsBlock({laptop = {}}) {
         await LaptopService.update({id: laptop._id, note: value });
     }
 
+    async function handleSaveServiceTag(value) {
+        await LaptopService.update({id: laptop._id, serviceTag: value });
+    }
+
     return (
         <Card bordered={false} hoverable={true} className={"w-2/4 mr-3"}>
             <div className={"flex justify-between"}>
                 <Typography.Title level={4}>Characteristics</Typography.Title>
             </div>
             <div className={"block ml-3"}>
+                <div className={"flex mb-2"}>
+                    <p className={"w-1/4"}>Service Tag: </p>
+                    <Input
+                        className={"w-2/3 ml-2"}
+                        onBlur={(e) => handleSaveServiceTag(e.target.value)}
+                        defaultValue={laptop.serviceTag}
+                        size={"small"}/>
+                </div>
                 <div className={"flex mb-2"}>
                     <p className={"w-1/4"}>Processor: </p>
                     <Input

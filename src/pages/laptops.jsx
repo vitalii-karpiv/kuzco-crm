@@ -6,6 +6,7 @@ import {DeleteOutlined, SearchOutlined} from "@ant-design/icons";
 import {useNavigate} from "react-router-dom";
 import LaptopsTableHeader from "../components/laptop/laptops-table-header.jsx";
 import CreateLaptopModal from "../components/laptop/create-laptop-modal.jsx";
+import LaptopStateTag from "../components/common/laptop-state-tag.jsx";
 
 export default function Laptops() {
     const [laptops, setLaptops] = useState();
@@ -34,14 +35,10 @@ export default function Laptops() {
                 key: 'name',
             },
             {
-                title: 'Brand',
-                dataIndex: 'brand',
-                key: 'brand',
-            },
-            {
                 title: 'State',
                 dataIndex: 'state',
                 key: 'state',
+                render: state =>  <LaptopStateTag state={state} />
             },
             {
                 title: 'Limit Price',
@@ -77,6 +74,7 @@ export default function Laptops() {
             <Table
                 className={"ml-3 w-full"}
                 dataSource={laptops}
+                size={"middle"}
                 columns={getColumns()}
                 title={() => <LaptopsTableHeader onClick={() => setCreateModalOpen(true)}/>}
             />

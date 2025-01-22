@@ -21,8 +21,8 @@ export default function MarketplaceBlock({laptop = {}, setLaptop}) {
 
     const marketDescriptionList = laptop.marketplaces.map((marketplace, index) => {
         let classNames = "rounded mb-2 text-white"
-        if (marketplace.published) classNames += " bg-teal-500"
-        else classNames += " bg-rose-500"
+        if (marketplace.published) classNames += " bg-teal-400"
+        else classNames += " bg-rose-400"
         return {
             key: index + 1,
             label: <div>

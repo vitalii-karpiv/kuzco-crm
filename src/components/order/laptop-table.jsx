@@ -2,6 +2,7 @@ import PropTypes from "prop-types";
 import {Card, Table, Typography} from "antd";
 import {useEffect, useState} from "react";
 import LaptopService from "../../api/services/laptop-service.js";
+import LaptopStateTag from "../common/laptop-state-tag.jsx";
 
 export default function LaptopTable({order = {}}) {
 
@@ -29,6 +30,7 @@ export default function LaptopTable({order = {}}) {
                 title: 'State',
                 dataIndex: 'state',
                 key: 'state',
+                render: state =>  <LaptopStateTag state={state} />
             },
             {
                 title: 'Limit Price',

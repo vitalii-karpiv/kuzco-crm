@@ -7,6 +7,7 @@ import OrderService from "../../api/services/order-service.js";
 import {useEffect, useState} from "react";
 import FinanceService from "../../api/services/finance-service.js";
 import PriceView from "../price-view.jsx";
+import OrderStateTag from "../common/order-state-tag.jsx";
 
 export default function BasicInfoBlock({order = {}, setOrder}) {
 
@@ -83,9 +84,18 @@ export default function BasicInfoBlock({order = {}, setOrder}) {
                 </div>
                 <div className={"flex mb-3"}>
                     <p className={"w-1/4"}>State: </p>
-                    <Select className={"w-2/3 ml-2"} size={"small"} defaultValue={order.state} onChange={(state) => handleSetState(state)}>
-                        {OrderManager.getOrderStateList().map(orderState => <Select.Option key={orderState} value={orderState}>{OrderManager.getOrderStateLabel(orderState)}</Select.Option>)}
+                    <Select
+                        defaultValue={order.state}
+                        variant={"borderless"}
+                        placement={"bottomRight"}
+                        suffixIcon={null}
+                        popupClassName={"min-w-44"}
+                        className={"w-2/3"}
+                        onChange={(state) => handleSetState(state)}
+                    >
+                        {OrderManager.getOrderStateList().map(state => <Select.Option key={state} value={state}><OrderStateTag state={state} /></Select.Option>)}
                     </Select>
+
                 </div>
                 <div className={"flex mb-3"}>
                     <p className={"w-1/4"}>Note: </p>

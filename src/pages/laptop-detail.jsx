@@ -2,7 +2,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import Loading from "../components/loading.jsx";
 import LaptopService from "../api/services/laptop-service.js";
-import {Button, Card, Image, Typography, Upload} from "antd";
+import {Button, Card, Image, Select, Typography, Upload} from "antd";
 import {UploadOutlined} from "@ant-design/icons";
 import UpdateCharacteristicsModal from "../components/laptop-detail/update-characteristics-modal.jsx";
 import BuyStockModal from "../components/laptop-detail/buy-stock-modal.jsx";
@@ -18,6 +18,7 @@ import FinanceBlock from "../components/laptop-detail/finance-block.jsx";
 import MarketplaceBlock from "../components/laptop-detail/marketplace-block.jsx";
 import DefectsBlock from "../components/laptop-detail/defects-block.jsx";
 import TechCheckBlock from "../components/laptop-detail/tech-check-block.jsx";
+import LaptopStateTag from "../components/common/laptop-state-tag.jsx";
 
 export default function LaptopDetail() {
     let {id} = useParams();
@@ -66,6 +67,11 @@ export default function LaptopDetail() {
         setDefectList(loadedImages);
     }
 
+    const handleSetState = async (state) => {
+        const updated = await LaptopService.setState({id, state});
+        setLaptop(updated);
+    }
+
     const handleImageChange = (info) => {
         if (info.fileList.every(file => file.status === "done")) {
             loadImages()
@@ -110,12 +116,23 @@ export default function LaptopDetail() {
     }
 
     return <div className={"block w-full mx-5"}>
-        <header className={"flex justify-between align-middle"}>
-            <Typography.Title level={3}>{laptop.code} article {laptop.name}</Typography.Title>
-            <div className={"m-1"}>
-                <div>{laptop.state}</div>
+        <header className={"flex justify-between items-center"}>
+            <Typography.Title level={3}>{laptop.name}</Typography.Title>
+            <div className={"flex justify-between items-center"}>
+                <Select
+                    defaultValue={laptop.state}
+                    variant={"borderless"}
+                    placement={"bottomRight"}
+                    suffixIcon={null}
+                    popupClassName={"min-w-44"}
+                    onChange={(state) => handleSetState(state)}
+                >
+                    {LaptopManager.getLaptopStateList().map(state => <Select.Option key={state} value={state}><LaptopStateTag state={state} /></Select.Option>)}
+                </Select>
                 <Button onClick={handleLaptopSold}
-                        disabled={LaptopManager.getFinalStates().includes(laptop.state)}>Sell</Button>
+                        className={"bg-green-100"}
+                        size={"small"}
+                        disabled={LaptopManager.getFinalStates().includes(laptop.state)}>Продано!</Button>
             </div>
         </header>
         <div className={"flex mb-3"}>

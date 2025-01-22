@@ -1,5 +1,29 @@
 const LAPTOP_STATE_LIST = ["new", "toService", "toTest", "toPhotoSession", "toPublish", "selling", "waitingForDelivery", "delivering", "done"];
 
+const LAPTOP_STATE_LABEL_MAP = {
+    "new" : "New",
+    "toService": "To service",
+    "toTest": "To test",
+    "toPhotoSession": "To photo session",
+    "toPublish": "To publish",
+    "selling": "Selling",
+    "waitingForDelivery": "Waiting for delivery",
+    "delivering": "Delivering",
+    "done": "Done",
+}
+
+const LAPTOP_STATE_COLOR_MAP = {
+    "new" : "magenta",
+    "toService": "red",
+    "toTest": "volcano",
+    "toPhotoSession": "orange",
+    "toPublish": "gold",
+    "selling": "lime",
+    "waitingForDelivery": "cyan",
+    "delivering": "blue",
+    "done": "green",
+}
+
 const LAPTOP_STATE_MAP = {
     NEW :"new",
     TO_SERVICE : "toService",
@@ -29,6 +53,14 @@ const TECH_CHECK_LABELS = {
 }
 
 class LaptopManager {
+
+    getLaptopStateLabel(state) {
+        return LAPTOP_STATE_LABEL_MAP[state];
+    }
+
+    getLaptopStateColor(state) {
+        return LAPTOP_STATE_COLOR_MAP[state];
+    }
 
     getLaptopStateList() {
         return LAPTOP_STATE_LIST

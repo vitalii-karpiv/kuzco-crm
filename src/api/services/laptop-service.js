@@ -13,6 +13,10 @@ export default class LaptopService {
         const result = await $api.patch("/laptop", dto);
         return result.data;
     }
+    static async setState(dto) {
+        const result = await $api.post("/laptop/setState", dto);
+        return result.data;
+    }
     static async create(dto) {
         const result = await $api.post("/laptop", dto);
         return result.data;

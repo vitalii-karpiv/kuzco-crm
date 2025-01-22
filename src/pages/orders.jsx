@@ -1,6 +1,6 @@
 import {useEffect, useRef, useState} from "react";
 import OrderService from "../api/services/order-service.js";
-import {Table, Tag, Button} from "antd";
+import {Table, Button} from "antd";
 import {useNavigate} from "react-router-dom";
 import OrderManager from "../helpers/order-manager.js";
 import TableHelper from "../utils/table-helper.jsx";
@@ -9,6 +9,7 @@ import CreateOrderModal from "../components/order/create-order-modal.jsx";
 import {SearchOutlined, DeleteOutlined} from "@ant-design/icons";
 import Loading from "../components/loading.jsx";
 import DateView from "../components/date-view.jsx";
+import OrderStateTag from "../components/common/order-state-tag.jsx";
 
 export default function Orders() {
     const [isLoading, setIsLoading] = useState(true);
@@ -79,8 +80,7 @@ export default function Orders() {
                 title: "State",
                 dataIndex: "state",
                 key: "state",
-                render: (state) => <Tag
-                    color={OrderManager.getOrderStateColor(state)}>{OrderManager.getOrderStateLabel(state)}</Tag>,
+                render: (state) => <OrderStateTag state={state}/>,
                 filters: OrderManager.getFilterList(),
                 onFilter: (value, record) => record.state === value
             },
