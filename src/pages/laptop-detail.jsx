@@ -19,6 +19,7 @@ import MarketplaceBlock from "../components/laptop-detail/marketplace-block.jsx"
 import DefectsBlock from "../components/laptop-detail/defects-block.jsx";
 import TechCheckBlock from "../components/laptop-detail/tech-check-block.jsx";
 import LaptopStateTag from "../components/common/laptop-state-tag.jsx";
+import SaleCreateModal from "../components/laptop-detail/sale-create-modal.jsx";
 
 export default function LaptopDetail() {
     let {id} = useParams();
@@ -29,6 +30,8 @@ export default function LaptopDetail() {
     const [stockList, setStockList] = useState();
     const [showUpdateCharacteristics, setShowUpdateCharacteristics] = useState(false);
     const [stockOpt, setStockOpt] = useState({show: false, index: null});
+
+    const [saleCreateOpen, setSaleCreateOpen] = useState(false);
 
     useEffect(() => {
         loadLaptop();
@@ -94,23 +97,6 @@ export default function LaptopDetail() {
         await loadLaptop();
     }
 
-    const handleLaptopSold = async () => {
-        // update laptop state
-        try {
-            await LaptopService.update({id, state: LaptopManager.getLaptopStateMap().WAITING_FOR_DELIVERY});
-        } catch (e) {
-            console.log("TODO: handle error", e)
-        }
-        // create new sale
-        let sale;
-        try {
-            sale = await SaleService.create({laptopId: id, price: laptop?.sellPrice});
-        } catch (e) {
-            console.log("TODO: handle error", e)
-        }
-        navigate(`/sales/saleDetail/${sale._id}`)
-    }
-
     if (!laptop) {
         return <Loading/>
     }
@@ -127,9 +113,11 @@ export default function LaptopDetail() {
                     popupClassName={"min-w-44"}
                     onChange={(state) => handleSetState(state)}
                 >
-                    {LaptopManager.getLaptopStateList().map(state => <Select.Option key={state} value={state}><LaptopStateTag state={state} /></Select.Option>)}
+                    {LaptopManager.getLaptopStateList().map(state => <Select.Option key={state}
+                                                                                    value={state}><LaptopStateTag
+                        state={state}/></Select.Option>)}
                 </Select>
-                <Button onClick={handleLaptopSold}
+                <Button onClick={() => setSaleCreateOpen(true)}
                         className={"bg-green-100"}
                         size={"small"}
                         disabled={LaptopManager.getFinalStates().includes(laptop.state)}>Продано!</Button>
@@ -144,8 +132,8 @@ export default function LaptopDetail() {
             <MarketplaceBlock laptop={laptop} setLaptop={setLaptop}/>
         </div>
         <div className={"flex mb-3"}>
-            <FinanceBlock laptop={laptop} setLaptop={setLaptop} />
-            <TechCheckBlock laptop={laptop} setLaptop={setLaptop} />
+            <FinanceBlock laptop={laptop} setLaptop={setLaptop}/>
+            <TechCheckBlock laptop={laptop} setLaptop={setLaptop}/>
         </div>
         <div className={"flex mb-3"}>
             <Card bordered={false} hoverable={true} className={"w-2/4 mr-3"}>
@@ -174,7 +162,8 @@ export default function LaptopDetail() {
                     </Upload>
                 </div>
             </Card>
-            <DefectsBlock laptop={laptop} setLaptop={setLaptop} handleDefectChange={handleDefectChange} defectImageList={defectList} />
+            <DefectsBlock laptop={laptop} setLaptop={setLaptop} handleDefectChange={handleDefectChange}
+                          defectImageList={defectList}/>
         </div>
         {/*  MODALS  */}
         {showUpdateCharacteristics && <UpdateCharacteristicsModal open={showUpdateCharacteristics}
@@ -188,5 +177,8 @@ export default function LaptopDetail() {
                 id={id}
                 index={stockOpt.index}
                 toBuyArray={laptop.toBuy}/>}
+
+        {saleCreateOpen &&
+            <SaleCreateModal laptop={laptop} modalOpen={saleCreateOpen} closeModal={() => setSaleCreateOpen(false)}/>}
     </div>
 }

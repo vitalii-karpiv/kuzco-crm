@@ -8,6 +8,7 @@ import DateView from "../components/date-view.jsx";
 import LaptopService from "../api/services/laptop-service.js";
 import {DeleteOutlined, SearchOutlined} from "@ant-design/icons";
 import {useNavigate} from "react-router-dom";
+import SaleStateTag from "../components/common/sale-state-tag.jsx";
 
 export default function Sales() {
     const [sales, setSales] = useState();
@@ -56,6 +57,11 @@ export default function Sales() {
     const getColumns = () => {
         return [
             {
+                title: 'Code',
+                dataIndex: 'code',
+                key: 'code',
+            },
+            {
                 title: 'Laptop name',
                 dataIndex: 'laptopName',
                 key: 'laptopName',
@@ -83,6 +89,7 @@ export default function Sales() {
                 title: 'State',
                 dataIndex: 'state',
                 key: 'state',
+                render: (state) => <SaleStateTag state={state} />
             },
             {
                 title: 'Action',
@@ -108,6 +115,7 @@ export default function Sales() {
             <Table
                 className={"ml-3 w-full"}
                 dataSource={sales}
+                size={"small"}
                 columns={getColumns()}
                 title={() => <SalesTableHeader onClick={() => setCreateModalOpen(true)}/>}
             />

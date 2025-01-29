@@ -3,9 +3,11 @@ import {Card, Table, Typography} from "antd";
 import {useEffect, useState} from "react";
 import LaptopService from "../../api/services/laptop-service.js";
 import LaptopStateTag from "../common/laptop-state-tag.jsx";
+import {useNavigate} from "react-router-dom";
 
 export default function LaptopTable({order = {}}) {
 
+    const navigate = useNavigate();
     const [laptopList, setLaptopList] = useState();
 
     useEffect(() => {
@@ -52,6 +54,11 @@ export default function LaptopTable({order = {}}) {
             </div>
             {laptopList &&
                 <Table
+                    onRow={(record) => {
+                        return {
+                            onClick: () => navigate(`/laptops/laptopDetail/${record._id}`)
+                        }
+                    }}
                     pagination={false}
                     className={"w-full"}
                     dataSource={laptopList}

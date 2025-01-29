@@ -56,7 +56,7 @@ export default function InvestmentTable() {
     }
 
     return <Table
-        className={"m-3"}
+        className={"mt-2 ml-2 w-full"}
         dataSource={investments}
         columns={columns}
         size={"small"}

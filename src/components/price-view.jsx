@@ -10,7 +10,7 @@ export default function PriceView({amount}) {
         return price.toFixed(2);
     }
 
-    return <Typography.Text keyboard strong>{showPrice(amount)} грн</Typography.Text>
+    return <Typography.Text code strong>{showPrice(amount)} грн</Typography.Text>
 }
 
 PriceView.propTypes = {

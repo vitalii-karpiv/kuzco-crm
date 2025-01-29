@@ -30,6 +30,12 @@ export default function Laptops() {
     const getColumns = () => {
         return [
             {
+                title: 'Code',
+                dataIndex: 'code',
+                key: 'code',
+                // render: code => <Typography.Text code>{code}</Typography.Text>
+            },
+            {
                 title: 'Title',
                 dataIndex: 'name',
                 key: 'name',
@@ -73,9 +79,20 @@ export default function Laptops() {
         <>
             <Table
                 className={"ml-3 w-full"}
-                dataSource={laptops}
-                size={"middle"}
+                dataSource={laptops.map((laptop, index) => ({...laptop, key: index}))}
+                size={"small"}
                 columns={getColumns()}
+                key={"_id"}
+                expandable={{
+                    expandedRowRender: (laptop) => (
+                        <div
+                            className={"bg-amber-50 m-0"}
+                        >
+                            {`TODO: characteristics, ${laptop.name}`}
+                        </div>
+                    ),
+                    rowExpandable: (laptop) => laptop.characteristics,
+                }}
                 title={() => <LaptopsTableHeader onClick={() => setCreateModalOpen(true)}/>}
             />
             {createModalOpen && <CreateLaptopModal createModalOpen={createModalOpen} onClose={closeCreateModal} onReload={loadLaptops}/>}

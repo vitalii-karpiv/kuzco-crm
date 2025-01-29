@@ -85,12 +85,6 @@ export default function Orders() {
                 onFilter: (value, record) => record.state === value
             },
             {
-                title: "Ebay URL",
-                dataIndex: "ebayUrl",
-                key: "ebayUrl",
-                render: (text) => <div>{text}</div>,
-            },
-            {
                 title: 'Action',
                 key: 'operation',
                 fixed: 'right',
@@ -111,7 +105,7 @@ export default function Orders() {
                 className={"ml-3 w-full"}
                 dataSource={orders}
                 columns={getColumns()}
-                size={"middle"}
+                size={"small"}
                 showHeader={true}
                 title={() => <OrdersTableHeader onClick={() => setCreateModalOpen(true)}/>}
             />

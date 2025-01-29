@@ -1,9 +1,14 @@
-import {Select, Table, Typography} from "antd";
+import {Button, Select, Table, Typography} from "antd";
 import {useEffect, useState} from "react";
 import ExpenseService from "../../api/services/expense-service.js";
 import NumberRenderer from "./money-renderer.jsx";
 import DateView from "../date-view.jsx";
 import OrderService from "../../api/services/order-service.js";
+import FinanceService from "../../api/services/finance-service.js";
+import PropTypes from "prop-types";
+import PriceView from "../price-view.jsx";
+
+const ONE_DAY = 86400000
 
 export default function ExpenseTable() {
     const [expenses, setExpenses] = useState([]);
@@ -34,18 +39,13 @@ export default function ExpenseTable() {
             title: 'Amount',
             dataIndex: 'amount',
             key: 'amount',
-            render: (amount) => <NumberRenderer amount={amount} />
+            render: (amount) => <PriceView amount={amount} />
         },
         {
             title: 'Time',
             dataIndex: 'time',
             key: 'time',
-            render: (date) => <DateView dateStr={new Date(parseInt(date)).toISOString()} showTime />
-        },
-        {
-            title: 'Type',
-            dataIndex: 'type',
-            key: 'type',
+            render: (date) => <DateView dateStr={new Date(parseInt(date) * 1000).toISOString()} showTime />
         },
         {
             title: 'Order',
@@ -66,7 +66,7 @@ export default function ExpenseTable() {
     }
 
     return <Table
-        className={"m-3"}
+        className={"mt-2 w-full"}
         dataSource={expenses}
         columns={columns}
         size={"small"}
@@ -76,9 +76,30 @@ export default function ExpenseTable() {
             if (!record.orderId) commonClasses += " bg-red-100"
             return commonClasses;
         }}
-        title={() => <Typography.Title level={4}>Expenses</Typography.Title>}
+        title={() => <ExpenseTableHeader loadExpenses={loadExpenses} />}
     />
 }
 
-ExpenseTable.propTypes = {
+export function ExpenseTableHeader({loadExpenses}) {
+
+    async function handleSyncExpenses() {
+        const now = new Date();
+        const dto = {
+            from: Number((now.getTime() - ONE_DAY).toString().slice(0, -3)),
+            to: Number(now.getTime().toString().slice(0, -3))
+        }
+        await FinanceService.syncExpenses(dto)
+        await loadExpenses();
+    }
+
+    return (
+        <div className={"flex justify-between align-middle"}>
+            <Typography.Title level={4}>Expenses</Typography.Title>
+            <Button onClick={handleSyncExpenses}>Sync expenses</Button>
+        </div>
+    )
+}
+
+ExpenseTableHeader.propTypes = {
+    loadExpenses: PropTypes.func.isRequired
 }

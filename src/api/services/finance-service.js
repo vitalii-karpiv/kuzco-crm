@@ -9,4 +9,8 @@ export default class FinanceService {
         const result = await $api.get(`/finance/costPrice/order/${orderId}`);
         return result.data;
     }
+    static async syncExpenses(dto) {
+        const result = await $api.post(`/finance/expense/sync`, dto);
+        return result.data;
+    }
 }
