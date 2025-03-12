@@ -1,4 +1,22 @@
 const LAPTOP_STATE_LIST = ["new", "toService", "toTest", "toPhotoSession", "toPublish", "selling", "waitingForDelivery", "delivering", "done"];
+const RESOLUTION_LIST = ["hd", "fhd", "qhd", "uhd"];
+const PANEL_TYPE_LIST = ["tn", "ips", "oled"];
+const REFRESH_RATE_LIST = ["60", "120", "144", "240"];
+const PORT_LIST = ["TYPE-C", "HDMI", "USB-A", "Jack", "MicroSD", "Ethernet"];
+
+const REFRESH_RATE_LABEL_MAP = {
+    "60" : "60Hz",
+    "120": "120Hz",
+    "144": "144Hz",
+    "240": "240Hz",
+}
+
+const RESOLUTION_LABEL_MAP = {
+    "hd" : "HD",
+    "fhd": "FHD",
+    "qhd": "QHD 2k",
+    "uhd": "UHD 4K",
+}
 
 const LAPTOP_STATE_LABEL_MAP = {
     "new" : "New",
@@ -80,6 +98,34 @@ class LaptopManager {
 
     getTechCheckLabels(techCheck) {
         return TECH_CHECK_LABELS[techCheck];
+    }
+
+    getResolutionListOptions() {
+        return RESOLUTION_LIST.map(resolution => { return {
+            label: RESOLUTION_LABEL_MAP[resolution],
+            value: resolution,
+        }})
+    }
+
+    getRefreshRateListOptions() {
+        return REFRESH_RATE_LIST.map(refreshRate => { return {
+            label: REFRESH_RATE_LABEL_MAP[refreshRate],
+            value: refreshRate,
+        }})
+    }
+
+    getPanelTypeListOptions() {
+        return PANEL_TYPE_LIST.map(panelType => { return {
+            label: panelType.toUpperCase(),
+            value: panelType,
+        }})
+    }
+
+    getPortsListOptions() {
+        return PORT_LIST.map(port => { return {
+            label: port,
+            value: port,
+        }})
     }
 }
 

@@ -7,23 +7,26 @@ import {useNavigate} from "react-router-dom";
 import LaptopsTableHeader from "../components/laptop/laptops-table-header.jsx";
 import CreateLaptopModal from "../components/laptop/create-laptop-modal.jsx";
 import LaptopStateTag from "../components/common/laptop-state-tag.jsx";
+import SorterBar from "../components/laptop-detail/sorter-bar.jsx";
+import FilterBar from "../components/laptop-detail/filter-bar.jsx";
 
 export default function Laptops() {
     const [laptops, setLaptops] = useState();
     const navigate = useNavigate();
-
+    const [filters, setFilters] = useState({});
+    const [sorters, setSorters] = useState({});
     const [createModalOpen, setCreateModalOpen] = useState(false);
 
     useEffect(() => {
         loadLaptops();
-    }, []);
+    }, [filters, sorters]);
 
     const closeCreateModal = () => {
         setCreateModalOpen(false);
     }
 
     async function loadLaptops() {
-        const ordersDto = await LaptopService.list({});
+        const ordersDto = await LaptopService.list({...filters, sorters});
         setLaptops(ordersDto.itemList);
     }
 
@@ -76,7 +79,9 @@ export default function Laptops() {
         return <Loading/>;
     }
     return (
-        <>
+        <div className={"w-full"}>
+            <SorterBar sorters={sorters} setSorters={setSorters} />
+            <FilterBar filters={filters} setFilters={setFilters}/>
             <Table
                 className={"ml-3 w-full"}
                 dataSource={laptops.map((laptop, index) => ({...laptop, key: index}))}
@@ -96,6 +101,6 @@ export default function Laptops() {
                 title={() => <LaptopsTableHeader onClick={() => setCreateModalOpen(true)}/>}
             />
             {createModalOpen && <CreateLaptopModal createModalOpen={createModalOpen} onClose={closeCreateModal} onReload={loadLaptops}/>}
-        </>
+        </div>
     )
 }
