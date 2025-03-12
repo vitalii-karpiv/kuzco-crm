@@ -9,17 +9,20 @@ import LaptopService from "../api/services/laptop-service.js";
 import {DeleteOutlined, SearchOutlined} from "@ant-design/icons";
 import {useNavigate} from "react-router-dom";
 import SaleStateTag from "../components/common/sale-state-tag.jsx";
+import FilterAndSorterBar from "../components/sale/filter-and-sorter-bar.jsx";
 
 export default function Sales() {
     const [sales, setSales] = useState();
     const [laptops, setLaptops] = useState();
+    const [filters, setFilters] = useState({});
+    const [sorters, setSorters] = useState({date: "desc"});
     const [shouldLoadLaptops, setShouldLoadLaptops] = useState(true);
     const navigate = useNavigate();
     const [createModalOpen, setCreateModalOpen] = useState(false);
 
     useEffect(() => {
         loadSales();
-    }, []);
+    }, [sorters, filters]);
 
     useEffect(() => {
         if (sales?.length && shouldLoadLaptops) {
@@ -34,8 +37,9 @@ export default function Sales() {
     }, [laptops]);
 
     async function loadSales() {
-        const salesDtoOut = await SaleService.list({});
+        const salesDtoOut = await SaleService.list({...filters, sorters});
         setSales(salesDtoOut.itemList);
+        setShouldLoadLaptops(true);
     }
 
     async function loadLaptops() {
@@ -75,9 +79,6 @@ export default function Sales() {
                 title: 'Date',
                 dataIndex: 'date',
                 key: 'date',
-                defaultSortOrder: 'descend',
-                sorter: (a, b) => new Date(a.date) > new Date(b.date),
-                sortDirections: ['descend'],
                 render: (date) => <DateView dateStr={date}/>,
             },
             {
@@ -111,7 +112,8 @@ export default function Sales() {
         return <Loading/>;
     }
     return (
-        <>
+        <div className={"flex-col w-full"}>
+            <FilterAndSorterBar filters={filters} setFilters={setFilters} sorters={sorters} setSorters={setSorters} />
             <Table
                 className={"ml-3 w-full"}
                 dataSource={sales}
@@ -122,6 +124,6 @@ export default function Sales() {
             {createModalOpen &&
                 <CreateSaleModal createModalOpen={createModalOpen} onClose={() => setCreateModalOpen(false)}
                                  onReload={loadSales}/>}
-        </>
+        </div>
     )
 }
