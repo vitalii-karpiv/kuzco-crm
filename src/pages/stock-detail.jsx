@@ -89,7 +89,7 @@ export default function StockDetail() {
                 >
                     {Object.values(StockManager.getStockStateMap()).map((state) =>
                         <Select.Option key={state}
-                                       value={state}>{StockManager.getStockStateLabelMap(state)}</Select.Option>
+                                       value={state}>{StockManager.getStockStateLabel(state)}</Select.Option>
                     )}
                 </Select>
             </div>

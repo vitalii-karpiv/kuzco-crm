@@ -35,6 +35,10 @@ const STOCK_STATE_LABEL_MAP = {
     free : "Free",
     booked : "Booked",
 }
+const STOCK_STATE_COLOR_MAP = {
+    free : "green",
+    booked : "red",
+}
 
 class StockManager {
 
@@ -54,8 +58,12 @@ class StockManager {
         return STOCK_STATE_MAP;
     }
 
-    getStockStateLabelMap(state) {
+    getStockStateLabel(state) {
         return STOCK_STATE_LABEL_MAP[state];
+    }
+
+    getStockStateColor(state) {
+        return STOCK_STATE_COLOR_MAP[state];
     }
 }
 
