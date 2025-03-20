@@ -57,10 +57,23 @@ export default function Orders() {
     const getColumns = () => {
         return [
             {
+                title: 'Code',
+                dataIndex: 'code',
+                key: 'code',
+            },
+            {
                 title: 'Name',
                 dataIndex: 'name',
                 key: 'name',
                 ...TableHelper.getColumnSearchProps('name', searchInput, searchedColumn, searchText, handleSearch, handleReset, setSearchText, setSearchedColumn),
+            },
+            {
+                title: "State",
+                dataIndex: "state",
+                key: "state",
+                render: (state) => <OrderStateTag state={state}/>,
+                filters: OrderManager.getFilterList(),
+                onFilter: (value, record) => record.state === value
             },
             {
                 title: 'DateOfPurchase',
@@ -75,14 +88,6 @@ export default function Orders() {
                 title: 'ItemsInLot',
                 dataIndex: 'itemsInLot',
                 key: 'itemsInLot',
-            },
-            {
-                title: "State",
-                dataIndex: "state",
-                key: "state",
-                render: (state) => <OrderStateTag state={state}/>,
-                filters: OrderManager.getFilterList(),
-                onFilter: (value, record) => record.state === value
             },
             {
                 title: 'Action',
