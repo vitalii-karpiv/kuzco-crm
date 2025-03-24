@@ -8,6 +8,7 @@ import CustomerDetailCard from "../components/sale-detail/customer-detail-card.j
 import SaleDetailCard from "../components/sale-detail/sale-detail-card.jsx";
 import SaleFinanceCard from "../components/sale-detail/sale-finance-card.jsx";
 import SalesTableByCustomer from "../components/sale-detail/sales-table-by-customer.jsx";
+import LaptopDetail from "../components/sale-detail/laptop-detail.jsx";
 
 export default function SaleDetail() {
     let {id} = useParams();
@@ -70,6 +71,7 @@ export default function SaleDetail() {
                     <CustomerDetailCard sale={sale} />
                 </div>
             </div>
+            <LaptopDetail sale={sale} />
             <SalesTableByCustomer sale={sale} />
 
             {showErrorAlert && <> <Alert message="Failed to update sale!" type="error" showIcon closable

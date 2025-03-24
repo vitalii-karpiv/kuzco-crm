@@ -19,6 +19,7 @@ import DefectsBlock from "../components/laptop-detail/defects-block.jsx";
 import TechCheckBlock from "../components/laptop-detail/tech-check-block.jsx";
 import LaptopStateTag from "../components/common/laptop-state-tag.jsx";
 import SaleCreateModal from "../components/laptop-detail/sale-create-modal.jsx";
+import UserService from "../api/services/user-service.js";
 
 export default function LaptopDetail() {
     let {id} = useParams();
@@ -26,6 +27,7 @@ export default function LaptopDetail() {
     const [imageList, setImageList] = useState();
     const [defectList, setDefectList] = useState();
     const [stockList, setStockList] = useState();
+    const [userList, setUserList] = useState();
     const [showUpdateCharacteristics, setShowUpdateCharacteristics] = useState(false);
     const [stockOpt, setStockOpt] = useState({show: false, index: null});
 
@@ -34,6 +36,7 @@ export default function LaptopDetail() {
     useEffect(() => {
         loadLaptop();
         loadStock();
+        loadUser();
     }, [id]);
 
     useEffect(() => {
@@ -44,6 +47,11 @@ export default function LaptopDetail() {
     const loadLaptop = async () => {
         const laptop = await LaptopService.get(id);
         setLaptop(laptop);
+    }
+
+    const loadUser = async () => {
+        const users = await UserService.list();
+        setUserList(users);
     }
 
     const loadImages = async () => {
@@ -70,6 +78,11 @@ export default function LaptopDetail() {
 
     const handleSetState = async (state) => {
         const updated = await LaptopService.setState({id, state});
+        setLaptop(updated);
+    }
+
+    const handleSetAssignee = async (userId) => {
+        const updated = await LaptopService.update({id, assignee: userId});
         setLaptop(updated);
     }
 
@@ -103,6 +116,18 @@ export default function LaptopDetail() {
         <header className={"flex justify-between items-center"}>
             <Typography.Title level={3}><Typography.Title level={4} className={"inline"}>#{laptop.code}</Typography.Title> {laptop.name}</Typography.Title>
             <div className={"flex justify-between items-center"}>
+                {userList && <Select
+                    defaultValue={laptop.assignee}
+                    placement={"bottomRight"}
+                    suffixIcon={null}
+                    popupClassName={"min-w-44"}
+                    onChange={(userId) => handleSetAssignee(userId)}
+                >
+                    {userList.map(user => <Select.Option key={user._id}
+                                                         value={user._id}>
+                        {user.name} {user.surname}
+                    </Select.Option>)}
+                </Select>}
                 <Select
                     defaultValue={laptop.state}
                     variant={"borderless"}
