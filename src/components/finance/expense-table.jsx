@@ -7,19 +7,30 @@ import FinanceService from "../../api/services/finance-service.js";
 import PropTypes from "prop-types";
 import PriceView from "../price-view.jsx";
 import UserService from "../../api/services/user-service.js";
+import ExpenseManager from "../../helpers/expense-manager.js";
+import {faPlus} from "@fortawesome/free-solid-svg-icons";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import ExpenseCreateModal from "./expense-create-modal.jsx";
 
 const ONE_DAY = 86400000
 
 export default function ExpenseTable() {
     const [expenses, setExpenses] = useState([]);
-    const [orders, setOrders] = useState();
+    const [orders, setOrders] = useState([]);
     const [users, setUsers] = useState();
+    const [isLoading, setIsLoading] = useState(true);
+    const [openCreateModal, setOpenCreateModal] = useState(false);
 
     useEffect(() => {
-        loadExpenses();
-        loadOrders();
-        loadUsers();
+        loadData()
     }, []);
+
+    async function loadData() {
+        await loadExpenses();
+        await loadOrders();
+        await loadUsers();
+        setIsLoading(false);
+    }
 
     async function loadExpenses() {
         const expensesDtoOut = await ExpenseService.list({});
@@ -41,12 +52,28 @@ export default function ExpenseTable() {
         await loadExpenses();
     }
 
+    async function handleTypeUpdate(expenseId, type) {
+        await ExpenseService.update({id: expenseId, type});
+        await loadExpenses();
+    }
+
     const columns = [
         {
             title: 'Amount',
             dataIndex: 'amount',
             key: 'amount',
             render: (amount) => <PriceView amount={amount} />
+        },
+        {
+            title: 'Type',
+            dataIndex: 'type',
+            key: 'type',
+            width: 200,
+            render: (type, expense) => {
+                return <Select className={"w-full"} defaultValue={ExpenseManager.getExpenseTypeLabel(type)} onChange={(type) => handleTypeUpdate(expense._id, type)} >
+                    {ExpenseManager.getExpenseTypeList().map(type => <Select.Option key={type} value={type}>{ExpenseManager.getExpenseTypeLabel(type)}</Select.Option>)}
+                </Select>
+            }
         },
         {
             title: 'Time',
@@ -72,31 +99,34 @@ export default function ExpenseTable() {
             render: (userId) => {
                 if (!users) return <p>Loading...</p>;
                 const user = users.find(user => user._id === userId);
+                if (!user) return <p>-</p>
                 return <p>{user.surname}</p>
             }
         },
     ];
 
-    if (!expenses || !orders) {
-        return <div>Loading...</div>;
-    }
-
-    return <Table
+    return <>
+    <Table
         className={"mt-2 w-full"}
         dataSource={expenses}
         columns={columns}
         size={"small"}
         key={"_id"}
+        loading={isLoading}
         rowClassName={(record) => {
             let commonClasses = "text-center";
             if (!record.orderId) commonClasses += " bg-red-100"
             return commonClasses;
         }}
-        title={() => <ExpenseTableHeader loadExpenses={loadExpenses} />}
+        title={() => <ExpenseTableHeader loadExpenses={loadExpenses} setIsLoading={setIsLoading} setOpenCreateModal={setOpenCreateModal} />}
     />
+        {
+            openCreateModal && <ExpenseCreateModal open={openCreateModal} handleReload={loadData} closeCreateModal={() => setOpenCreateModal(false)} />
+        }
+        </>
 }
 
-export function ExpenseTableHeader({loadExpenses}) {
+export function ExpenseTableHeader({loadExpenses, setIsLoading, setOpenCreateModal}) {
 
     async function handleSyncExpenses() {
         const now = new Date();
@@ -104,18 +134,25 @@ export function ExpenseTableHeader({loadExpenses}) {
             from: Number((now.getTime() - ONE_DAY).toString().slice(0, -3)),
             to: Number(now.getTime().toString().slice(0, -3))
         }
+        setIsLoading(true);
         await FinanceService.syncExpenses(dto)
         await loadExpenses();
+        setIsLoading(false);
     }
 
     return (
         <div className={"flex justify-between align-middle"}>
             <Typography.Title level={4}>Expenses</Typography.Title>
-            <Button onClick={handleSyncExpenses}>Sync expenses</Button>
+            <div>
+                <Button icon={<FontAwesomeIcon icon={faPlus}/>} className={"mr-2 bg-sky-400 text-white"} onClick={() => setOpenCreateModal(true)}>Add expense</Button>
+                <Button onClick={handleSyncExpenses}>Sync expenses</Button>
+            </div>
         </div>
     )
 }
 
 ExpenseTableHeader.propTypes = {
-    loadExpenses: PropTypes.func.isRequired
+    loadExpenses: PropTypes.func.isRequired,
+    setIsLoading: PropTypes.func.isRequired,
+    setOpenCreateModal: PropTypes.func.isRequired
 }

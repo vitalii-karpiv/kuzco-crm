@@ -13,6 +13,7 @@ import SaleDetail from "./pages/sale-detail.jsx";
 import Finances from "./pages/finances.jsx";
 import Inventory from "./pages/inventory.jsx";
 import StockDetail from "./pages/stock-detail.jsx";
+import Root from "./pages/root.jsx";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -47,6 +48,7 @@ const Router = () => {
                         </Sider>
                         {/* --- Actual content --- */}
                         <Routes>
+                            <Route element={<Root/>} path={"/"} exact/>
                             <Route element={<Login/>} path={"/login"} exact/>
                             <Route element={<PrivateRoutes/>}>
                                 <Route element={<Dashboard/>} path={"/dashboard"} exact/>

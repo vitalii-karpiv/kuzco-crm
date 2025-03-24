@@ -13,6 +13,10 @@ export default class FinanceService {
         const result = await $api.post(`/finance/expense/sync`, dto);
         return result.data;
     }
+    static async createExpense(dto) {
+        const result = await $api.post(`/finance/expense`, dto);
+        return result.data;
+    }
     static async balanceList(dto) {
         const result = await $api.post(`/finance/balance/list`, dto);
         return result.data;

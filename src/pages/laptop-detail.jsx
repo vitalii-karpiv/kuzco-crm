@@ -1,4 +1,4 @@
-import {useNavigate, useParams} from "react-router-dom";
+import {useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import Loading from "../components/loading.jsx";
 import LaptopService from "../api/services/laptop-service.js";
@@ -8,7 +8,6 @@ import UpdateCharacteristicsModal from "../components/laptop-detail/update-chara
 import BuyStockModal from "../components/laptop-detail/buy-stock-modal.jsx";
 import StockService from "../api/services/stock-service.js";
 import LaptopManager from "../helpers/laptop-manager.js";
-import SaleService from "../api/services/sale-service.js";
 import ImageService from "../api/services/image-service.js";
 import {API_URL} from "../api/http/index.js";
 import CharacteristicsBlock from "../components/laptop-detail/characteristics-block.jsx";
@@ -23,7 +22,6 @@ import SaleCreateModal from "../components/laptop-detail/sale-create-modal.jsx";
 
 export default function LaptopDetail() {
     let {id} = useParams();
-    const navigate = useNavigate();
     const [laptop, setLaptop] = useState();
     const [imageList, setImageList] = useState();
     const [defectList, setDefectList] = useState();
@@ -103,7 +101,7 @@ export default function LaptopDetail() {
 
     return <div className={"block w-full mx-5"}>
         <header className={"flex justify-between items-center"}>
-            <Typography.Title level={3}>{laptop.name}</Typography.Title>
+            <Typography.Title level={3}><Typography.Title level={4} className={"inline"}>#{laptop.code}</Typography.Title> {laptop.name}</Typography.Title>
             <div className={"flex justify-between items-center"}>
                 <Select
                     defaultValue={laptop.state}
@@ -125,15 +123,15 @@ export default function LaptopDetail() {
         </header>
         <div className={"flex mb-3"}>
             <CharacteristicsBlock laptop={laptop}/>
-            <ToBuyBlock laptop={laptop} setStockOpt={setStockOpt} setLaptop={setLaptop}/>
+            <TechCheckBlock laptop={laptop} setLaptop={setLaptop}/>
         </div>
         <div className={"flex mb-3"}>
             <ComplectationBlock stockList={stockList} setStockList={setStockList} laptopId={laptop?._id}/>
-            <MarketplaceBlock laptop={laptop} setLaptop={setLaptop}/>
+            <ToBuyBlock laptop={laptop} setStockOpt={setStockOpt} setLaptop={setLaptop}/>
         </div>
         <div className={"flex mb-3"}>
             <FinanceBlock laptop={laptop} setLaptop={setLaptop}/>
-            <TechCheckBlock laptop={laptop} setLaptop={setLaptop}/>
+            <MarketplaceBlock laptop={laptop} setLaptop={setLaptop}/>
         </div>
         <div className={"flex mb-3"}>
             <Card bordered={false} hoverable={true} className={"w-2/4 mr-3"}>
