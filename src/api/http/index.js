@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const API_URL = `https://www.kuzcocrm.com`
+export const API_URL = `https://api.kuzcocrm.com`
 
 const $api = axios.create({
     withCredentials: true,
