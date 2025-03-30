@@ -1,4 +1,4 @@
-import {useParams} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import Loading from "../components/loading.jsx";
 import LaptopService from "../api/services/laptop-service.js";
@@ -18,6 +18,8 @@ import TechCheckBlock from "../components/laptop-detail/tech-check-block.jsx";
 import LaptopStateTag from "../components/common/laptop-state-tag.jsx";
 import SaleCreateModal from "../components/laptop-detail/sale-create-modal.jsx";
 import UserService from "../api/services/user-service.js";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faSquareUpRight} from "@fortawesome/free-solid-svg-icons";
 
 export default function LaptopDetail() {
     let {id} = useParams();
@@ -100,6 +102,9 @@ export default function LaptopDetail() {
         <header className={"flex justify-between items-center"}>
             <Typography.Title level={3}><Typography.Title level={4} className={"inline"}>#{laptop.code}</Typography.Title> {laptop.name}</Typography.Title>
             <div className={"flex justify-between items-center"}>
+                <Link target={"_blank"} to={`/orders/orderDetail/${laptop.orderId}`} className={"mr-2"}>
+                    <FontAwesomeIcon icon={faSquareUpRight}/> Order
+                </Link>
                 {userList && <Select
                     defaultValue={laptop.assignee}
                     placement={"bottomRight"}
