@@ -147,7 +147,7 @@ export default function LaptopDetail() {
             </div>
         </header>
         <div className={"flex mb-3"}>
-            <CharacteristicsBlock laptop={laptop}/>
+            <CharacteristicsBlock laptop={laptop} setLaptop={setLaptop} />
             <TechCheckBlock laptop={laptop} setLaptop={setLaptop}/>
         </div>
         <div className={"flex mb-3"}>

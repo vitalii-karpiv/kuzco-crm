@@ -1,13 +1,27 @@
-import {Card, Checkbox, Input, Select, Typography} from "antd";
+import {Card, Checkbox, Input, message, Select, Typography} from "antd";
 import PropTypes from "prop-types";
 import LaptopService from "../../api/services/laptop-service.js";
-import TextArea from "antd/es/input/TextArea.js";
 import LaptopManager from "../../helpers/laptop-manager.js";
 
-export default function CharacteristicsBlock({laptop = {}}) {
+export default function CharacteristicsBlock({laptop = {}, setLaptop}) {
+
+    const [messageApi, contextHolder] = message.useMessage();
 
     async function handleSaveProperty(property, value) {
-        await LaptopService.update({id: laptop._id, characteristics: {...laptop.characteristics, [property]: value}});
+        if (laptop?.characteristics?.[property] && laptop.characteristics[property] === value) {
+            return;
+        }
+        let updated;
+        try {
+            updated = await LaptopService.update({id: laptop._id, characteristics: {...laptop.characteristics, [property]: value}});
+            setLaptop(updated);
+        } catch (e) {
+            messageApi.open({
+                duration: 3,
+                type: 'error',
+                content: 'Laptop update failed. Please refresh the page.',
+            });
+        }
     }
 
     async function handleSaveNote(value) {
@@ -20,6 +34,7 @@ export default function CharacteristicsBlock({laptop = {}}) {
 
     return (
         <Card bordered={false} hoverable={true} className={"w-2/4 mr-3"}>
+            {contextHolder}
             <div className={"flex justify-between"}>
                 <Typography.Title level={4}>Characteristics</Typography.Title>
             </div>
@@ -59,6 +74,7 @@ export default function CharacteristicsBlock({laptop = {}}) {
                     <p className={"w-1/4"}>SSD: </p>
                     <Input
                         className={"w-2/3"}
+                        type={"number"}
                         onBlur={(e) => handleSaveProperty("ssd", parseFloat(e.target.value))}
                         defaultValue={laptop.characteristics?.ssd}
                         size={"small"}/>
@@ -67,8 +83,18 @@ export default function CharacteristicsBlock({laptop = {}}) {
                     <p className={"w-1/4"}>RAM: </p>
                     <Input
                         className={"w-2/3"}
+                        type={"number"}
                         onBlur={(e) => handleSaveProperty("ram", parseFloat(e.target.value))}
                         defaultValue={laptop.characteristics?.ram}
+                        size={"small"}/>
+                </div>
+                <div className={"flex mb-2"}>
+                    <p className={"w-1/4"}>Battery (знос): </p>
+                    <Input
+                        type={"number"}
+                        className={"w-2/3"}
+                        onBlur={(e) => handleSaveProperty("battery", parseInt(e.target.value))}
+                        defaultValue={laptop.characteristics?.battery}
                         size={"small"}/>
                 </div>
                 <div className={"flex mb-2"}>
@@ -128,7 +154,7 @@ export default function CharacteristicsBlock({laptop = {}}) {
 
                 <div className={"flex mb-2"}>
                     <p className={"w-1/4"}>Note: </p>
-                    <TextArea
+                    <Input.TextArea
                         rows={4}
                         textArea
                         className={"w-2/3"}
@@ -144,4 +170,5 @@ export default function CharacteristicsBlock({laptop = {}}) {
 
 CharacteristicsBlock.propTypes = {
     laptop: PropTypes.object.isRequired,
+    setLaptop: PropTypes.func.isRequired,
 }
