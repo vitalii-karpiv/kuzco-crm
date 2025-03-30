@@ -1,7 +1,9 @@
-import {Card, Checkbox, Input, message, Select, Typography} from "antd";
+import {Button, Card, Checkbox, Input, message, Select, Typography} from "antd";
 import PropTypes from "prop-types";
+import {faSquareUpRight} from "@fortawesome/free-solid-svg-icons";
 import LaptopService from "../../api/services/laptop-service.js";
 import LaptopManager from "../../helpers/laptop-manager.js";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 
 export default function CharacteristicsBlock({laptop = {}, setLaptop}) {
 
@@ -13,7 +15,10 @@ export default function CharacteristicsBlock({laptop = {}, setLaptop}) {
         }
         let updated;
         try {
-            updated = await LaptopService.update({id: laptop._id, characteristics: {...laptop.characteristics, [property]: value}});
+            updated = await LaptopService.update({
+                id: laptop._id,
+                characteristics: {...laptop.characteristics, [property]: value}
+            });
             setLaptop(updated);
         } catch (e) {
             messageApi.open({
@@ -24,12 +29,18 @@ export default function CharacteristicsBlock({laptop = {}, setLaptop}) {
         }
     }
 
-    async function handleSaveNote(value) {
-        await LaptopService.update({id: laptop._id, note: value});
-    }
-
-    async function handleSaveServiceTag(value) {
-        await LaptopService.update({id: laptop._id, serviceTag: value});
+    async function handleUpdateAttribute(key, value) {
+        let updated;
+        try {
+            updated = await LaptopService.update({id: laptop._id, [key]: value});
+        } catch (e) {
+            messageApi.open({
+                duration: 3,
+                type: 'error',
+                content: 'Laptop update failed. Please refresh the page.',
+            });
+        }
+        setLaptop(updated);
     }
 
     return (
@@ -40,10 +51,25 @@ export default function CharacteristicsBlock({laptop = {}, setLaptop}) {
             </div>
             <div className={""}>
                 <div className={"flex mb-2"}>
+                    <p className={"w-1/4"}>Photos: </p>
+                    <div className={"w-2/3 flex justify-between"}>
+                        <Input
+                            className={"mr-2"}
+                            onBlur={(e) => handleUpdateAttribute("photoUri", e.target.value)}
+                            defaultValue={laptop.photoUri}
+                            size={"small"}/>
+                        <Button size={"small"} disabled={!laptop.photoUri}>
+                            <a href={laptop.photoUri} target={"_blank"}>
+                                <FontAwesomeIcon icon={faSquareUpRight}/>
+                            </a>
+                        </Button>
+                    </div>
+                </div>
+                <div className={"flex mb-2"}>
                     <p className={"w-1/4"}>Service Tag: </p>
                     <Input
                         className={"w-2/3"}
-                        onBlur={(e) => handleSaveServiceTag(e.target.value)}
+                        onBlur={(e) => handleUpdateAttribute("serviceTag", e.target.value)}
                         defaultValue={laptop.serviceTag}
                         size={"small"}/>
                 </div>
@@ -67,7 +93,8 @@ export default function CharacteristicsBlock({laptop = {}, setLaptop}) {
                         <Checkbox className={""} defaultChecked={laptop.characteristics?.discrete}
                                   onChange={(e) => handleSaveProperty("discrete", e.target.checked)}>Discrete</Checkbox>
                         <Checkbox className={""} defaultChecked={laptop.characteristics?.keyLight}
-                                  onChange={(e) => handleSaveProperty("keyLight", e.target.checked)}>Підсвітка клави</Checkbox>
+                                  onChange={(e) => handleSaveProperty("keyLight", e.target.checked)}>Підсвітка
+                            клави</Checkbox>
                     </div>
                 </div>
                 <div className={"flex mb-2"}>
@@ -158,7 +185,7 @@ export default function CharacteristicsBlock({laptop = {}, setLaptop}) {
                         rows={4}
                         textArea
                         className={"w-2/3"}
-                        onBlur={(e) => handleSaveNote(e.target.value)}
+                        onBlur={(e) => handleUpdateAttribute("note", e.target.value)}
                         defaultValue={laptop.note}
                         size={"small"}
                     />

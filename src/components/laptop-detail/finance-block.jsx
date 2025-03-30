@@ -21,7 +21,7 @@ export default function FinanceBlock({laptop, setLaptop}) {
     }
 
     return (
-        <Card bordered={false} hoverable={true} className={"w-2/4 mx-2"}>
+        <Card bordered={false} hoverable={true} className={"w-2/4 mr-3"}>
             <div className={"flex justify-between align-middle"}>
                 <Typography.Title level={4}>Finances</Typography.Title>
             </div>

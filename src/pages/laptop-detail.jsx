@@ -2,14 +2,12 @@ import {useParams} from "react-router-dom";
 import {useEffect, useState} from "react";
 import Loading from "../components/loading.jsx";
 import LaptopService from "../api/services/laptop-service.js";
-import {Button, Card, Image, Select, Typography, Upload} from "antd";
-import {UploadOutlined} from "@ant-design/icons";
+import {Button, Select, Typography} from "antd";
 import UpdateCharacteristicsModal from "../components/laptop-detail/update-characteristics-modal.jsx";
 import BuyStockModal from "../components/laptop-detail/buy-stock-modal.jsx";
 import StockService from "../api/services/stock-service.js";
 import LaptopManager from "../helpers/laptop-manager.js";
 import ImageService from "../api/services/image-service.js";
-import {API_URL} from "../api/http/index.js";
 import CharacteristicsBlock from "../components/laptop-detail/characteristics-block.jsx";
 import ToBuyBlock from "../components/laptop-detail/to-buy-block.jsx";
 import ComplectationBlock from "../components/laptop-detail/complectation-block.jsx";
@@ -24,8 +22,6 @@ import UserService from "../api/services/user-service.js";
 export default function LaptopDetail() {
     let {id} = useParams();
     const [laptop, setLaptop] = useState();
-    const [imageList, setImageList] = useState();
-    const [defectList, setDefectList] = useState();
     const [stockList, setStockList] = useState();
     const [userList, setUserList] = useState();
     const [showUpdateCharacteristics, setShowUpdateCharacteristics] = useState(false);
@@ -86,18 +82,6 @@ export default function LaptopDetail() {
         setLaptop(updated);
     }
 
-    const handleImageChange = (info) => {
-        if (info.fileList.every(file => file.status === "done")) {
-            loadImages()
-        }
-    };
-
-    const handleDefectChange = (info) => {
-        if (info.fileList.every(file => file.status === "done")) {
-            loadDefects()
-        }
-    };
-
     const loadStock = async () => {
         const stockListDto = await StockService.list({laptopId: id});
         setStockList(stockListDto.itemList);
@@ -146,9 +130,12 @@ export default function LaptopDetail() {
                         disabled={LaptopManager.getFinalStates().includes(laptop.state)}>Продано!</Button>
             </div>
         </header>
-        <div className={"flex mb-3"}>
+        <div className={"flex mb-1 items-start"}>
             <CharacteristicsBlock laptop={laptop} setLaptop={setLaptop} />
-            <TechCheckBlock laptop={laptop} setLaptop={setLaptop}/>
+            <div className={"w-2/4 flex-col"}>
+                <TechCheckBlock laptop={laptop} setLaptop={setLaptop}/>
+                <DefectsBlock laptop={laptop} setLaptop={setLaptop} />
+            </div>
         </div>
         <div className={"flex mb-3"}>
             <ComplectationBlock stockList={stockList} setStockList={setStockList} laptopId={laptop?._id}/>
@@ -157,36 +144,6 @@ export default function LaptopDetail() {
         <div className={"flex mb-3"}>
             <FinanceBlock laptop={laptop} setLaptop={setLaptop}/>
             <MarketplaceBlock laptop={laptop} setLaptop={setLaptop}/>
-        </div>
-        <div className={"flex mb-3"}>
-            <Card bordered={false} hoverable={true} className={"w-2/4 mr-3"}>
-                <Typography.Title level={4}>Photos</Typography.Title>
-                <div>
-                    <div className={"mb-2"}>
-                        {imageList && <Image.PreviewGroup>
-                            {imageList.map((item) => (
-                                <div className={"m-1 p-1 inline"} key={item}>
-                                    <Image key={item} src={item} width={80} height={80} className={"block rounded-xl"}/>
-                                </div>
-                            ))}
-                        </Image.PreviewGroup>
-                        }
-                    </div>
-
-                    <Upload
-                        name="image"
-                        action={`${API_URL}/image/upload`}
-                        data={{laptopId: id}}
-                        multiple={true}
-                        onChange={handleImageChange}
-                        showUploadList={false}
-                    >
-                        <Button icon={<UploadOutlined/>}>Click to Upload</Button>
-                    </Upload>
-                </div>
-            </Card>
-            <DefectsBlock laptop={laptop} setLaptop={setLaptop} handleDefectChange={handleDefectChange}
-                          defectImageList={defectList}/>
         </div>
         {/*  MODALS  */}
         {showUpdateCharacteristics && <UpdateCharacteristicsModal open={showUpdateCharacteristics}
