@@ -1,6 +1,7 @@
 const expenseTypeList = [
     "delivery",
     "purchase",
+    "advertisement",
     "stock",
     "tax",
     "other",
@@ -9,6 +10,7 @@ const expenseTypeList = [
 const expenseTypeLabelMap = {
     "delivery": "Delivery",
     "purchase": "Purchase",
+    "advertisement": "Advertisement",
     "stock": "Stock",
     "tax": "Tax",
     "other": "Other",

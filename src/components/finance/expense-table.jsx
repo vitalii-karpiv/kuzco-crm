@@ -14,6 +14,8 @@ import ExpenseCreateModal from "./expense-create-modal.jsx";
 
 const ONE_DAY = 86400000
 
+const FOOTER = () => <div></div>
+
 export default function ExpenseTable() {
     const [expenses, setExpenses] = useState([]);
     const [orders, setOrders] = useState([]);
@@ -62,7 +64,7 @@ export default function ExpenseTable() {
             title: 'Amount',
             dataIndex: 'amount',
             key: 'amount',
-            render: (amount) => <PriceView amount={amount} />
+            render: (amount) => <PriceView amount={String(amount)}/>
         },
         {
             title: 'Type',
@@ -70,8 +72,10 @@ export default function ExpenseTable() {
             key: 'type',
             width: 200,
             render: (type, expense) => {
-                return <Select className={"w-full"} defaultValue={ExpenseManager.getExpenseTypeLabel(type)} onChange={(type) => handleTypeUpdate(expense._id, type)} >
-                    {ExpenseManager.getExpenseTypeList().map(type => <Select.Option key={type} value={type}>{ExpenseManager.getExpenseTypeLabel(type)}</Select.Option>)}
+                return <Select className={"w-full"} value={ExpenseManager.getExpenseTypeLabel(type)}
+                               onChange={(type) => handleTypeUpdate(expense._id, type)}>
+                    {ExpenseManager.getExpenseTypeList().map(type => <Select.Option key={type}
+                                                                                    value={type}>{ExpenseManager.getExpenseTypeLabel(type)}</Select.Option>)}
                 </Select>
             }
         },
@@ -79,7 +83,7 @@ export default function ExpenseTable() {
             title: 'Time',
             dataIndex: 'time',
             key: 'time',
-            render: (date) => <DateView dateStr={new Date(parseInt(date) * 1000).toISOString()} showTime />
+            render: (date) => <DateView dateStr={new Date(parseInt(date) * 1000).toISOString()} showTime/>
         },
         {
             title: 'Order',
@@ -87,7 +91,14 @@ export default function ExpenseTable() {
             key: 'orderId',
             width: 300,
             render: (orderId, expense) => {
-                return <Select className={"w-full"} defaultValue={orders.find(order => order._id === orderId)?.name} onChange={(orderId) => handleOrderSelect(orderId, expense._id)}>
+                return <Select className={"w-full"} value={orders.find(order => order._id === orderId)?._id}
+                               onChange={(orderId) => handleOrderSelect(orderId, expense._id)}
+                               showSearch
+                               filterOption={(input, option) => {
+                                   return input && option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                               }}
+
+                >
                     {orders.map(order => <Select.Option key={order._id} value={order._id}>{order.name}</Select.Option>)}
                 </Select>
             }
@@ -106,24 +117,33 @@ export default function ExpenseTable() {
     ];
 
     return <>
-    <Table
-        className={"mt-2 w-full"}
-        dataSource={expenses}
-        columns={columns}
-        size={"small"}
-        key={"_id"}
-        loading={isLoading}
-        rowClassName={(record) => {
-            let commonClasses = "text-center";
-            if (!record.orderId) commonClasses += " bg-red-100"
-            return commonClasses;
-        }}
-        title={() => <ExpenseTableHeader loadExpenses={loadExpenses} setIsLoading={setIsLoading} setOpenCreateModal={setOpenCreateModal} />}
-    />
+        <Table
+            className={"my-2 w-full"}
+            dataSource={expenses}
+            columns={columns}
+            size={"small"}
+            key={"_id"}
+            pagination={false}
+            virtual={true}
+            scroll={{y: 500}}
+            onScroll={() => {
+                // TODO: load more data when scrolled to bottom
+            }}
+            loading={isLoading}
+            rowClassName={(record) => {
+                let commonClasses = "text-center";
+                if (!record.orderId) commonClasses += " bg-pink-100"
+                else commonClasses += " bg-cyan-50"
+                return commonClasses;
+            }}
+            title={() => <ExpenseTableHeader loadExpenses={loadExpenses} setIsLoading={setIsLoading} setOpenCreateModal={setOpenCreateModal} />}
+            footer={FOOTER}
+        />
         {
-            openCreateModal && <ExpenseCreateModal open={openCreateModal} handleReload={loadData} closeCreateModal={() => setOpenCreateModal(false)} />
+            openCreateModal && <ExpenseCreateModal open={openCreateModal} handleReload={loadData}
+                                                   closeCreateModal={() => setOpenCreateModal(false)}/>
         }
-        </>
+    </>
 }
 
 export function ExpenseTableHeader({loadExpenses, setIsLoading, setOpenCreateModal}) {
@@ -144,7 +164,8 @@ export function ExpenseTableHeader({loadExpenses, setIsLoading, setOpenCreateMod
         <div className={"flex justify-between align-middle"}>
             <Typography.Title level={4}>Expenses</Typography.Title>
             <div>
-                <Button icon={<FontAwesomeIcon icon={faPlus}/>} className={"mr-2 bg-sky-400 text-white"} onClick={() => setOpenCreateModal(true)}>Add expense</Button>
+                <Button icon={<FontAwesomeIcon icon={faPlus}/>} className={"mr-2 bg-sky-400 text-white"}
+                        onClick={() => setOpenCreateModal(true)}>Add expense</Button>
                 <Button onClick={handleSyncExpenses}>Sync expenses</Button>
             </div>
         </div>

@@ -60,6 +60,7 @@ export default function InvestmentTable() {
         dataSource={investments}
         columns={columns}
         size={"small"}
+        key={"_id"}
         title={() => <Typography.Title level={4}>Investments</Typography.Title>}
     />
 }
