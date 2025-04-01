@@ -2,21 +2,42 @@ const LAPTOP_STATE_LIST = ["new", "toService", "toTest", "toPhotoSession", "toPu
 const RESOLUTION_LIST = ["hd", "fhd", "qhd", "uhd"];
 const PANEL_TYPE_LIST = ["tn", "ips", "oled"];
 const REFRESH_RATE_LIST = ["60", "120", "144", "240"];
-const PORT_LIST = ["TYPE-C", "HDMI", "USB-A", "Jack", "MicroSD", "Ethernet"];
+const PORT_LIST = [
+    "TYPE-C",
+    "HDMI",
+    "USB-A",
+    "USB-B",
+    "USB Mini",
+    "USB Micro",
+    "Jack",
+    "MicroSD",
+    "SD Card",
+    "Ethernet",
+    "VGA",
+    "DVI",
+    "DisplayPort",
+    "Thunderbolt",
+    "Lightning",
+    "Coaxial",
+    "RCA",
+    "Optical Audio (TOSLINK)"
+];
+
 
 const REFRESH_RATE_LABEL_MAP = {
-    "60" : "60Hz",
-    "120": "120Hz",
-    "144": "144Hz",
-    "240": "240Hz",
+    "60" : "60 Hz",
+    "120": "120 Hz",
+    "144": "144 Hz",
+    "240": "240 Hz",
 }
 
 const RESOLUTION_LABEL_MAP = {
-    "hd" : "HD",
-    "fhd": "FHD",
-    "qhd": "QHD 2k",
-    "uhd": "UHD 4K",
-}
+    "hd" : "HD (1280x720)",
+    "fhd": "Full HD (1920x1080)",
+    "qhd": "Quad HD 2K (2560x1440)",
+    "uhd": "Ultra HD 4K (3840x2160)",
+};
+
 
 const LAPTOP_STATE_LABEL_MAP = {
     "new" : "New",
