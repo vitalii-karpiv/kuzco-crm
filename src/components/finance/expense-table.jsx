@@ -92,7 +92,13 @@ export default function ExpenseTable() {
             width: 300,
             render: (orderId, expense) => {
                 return <Select className={"w-full"} value={orders.find(order => order._id === orderId)?._id}
-                               onChange={(orderId) => handleOrderSelect(orderId, expense._id)}>
+                               onChange={(orderId) => handleOrderSelect(orderId, expense._id)}
+                               showSearch
+                               filterOption={(input, option) => {
+                                   return input && option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                               }}
+
+                >
                     {orders.map(order => <Select.Option key={order._id} value={order._id}>{order.name}</Select.Option>)}
                 </Select>
             }
@@ -126,7 +132,8 @@ export default function ExpenseTable() {
             loading={isLoading}
             rowClassName={(record) => {
                 let commonClasses = "text-center";
-                if (!record.orderId) commonClasses += " bg-red-100"
+                if (!record.orderId) commonClasses += " bg-pink-100"
+                else commonClasses += " bg-cyan-50"
                 return commonClasses;
             }}
             title={() => <ExpenseTableHeader loadExpenses={loadExpenses} setIsLoading={setIsLoading} setOpenCreateModal={setOpenCreateModal} />}
