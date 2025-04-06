@@ -15,6 +15,7 @@ export default function Inventory() {
     const [stocks, setStocks] = useState([]);
     const [filters, setFilters] = useState({state: StockManager.getStockStateMap().FREE});
     const [openCreateModal, setOpenCreateModal] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         fetchData();
@@ -24,6 +25,7 @@ export default function Inventory() {
         const loadedStocks = await loadStocks();
         let loadedLaptops = await loadLaptops(loadedStocks);
         prepareDataSource(loadedStocks, loadedLaptops);
+        setIsLoading(false);
     }
 
     function prepareDataSource(loadedStocks, loadedLaptops) {
@@ -94,6 +96,7 @@ export default function Inventory() {
                 className={"ml-3 w-full"}
                 dataSource={stocks}
                 size={"small"}
+                loading={isLoading}
                 // bordered // TODO: styling
                 // rowClassName={(record) => {
                 //     let commonClasses = "text-center text-white hover:text-black ";
