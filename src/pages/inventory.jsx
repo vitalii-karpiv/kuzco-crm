@@ -97,6 +97,11 @@ export default function Inventory() {
                 className={"ml-3 w-full"}
                 dataSource={stocks}
                 size={"small"}
+                pagination={false}
+                scroll={{y: 470}}
+                onScroll={() => {
+                    // TODO: load more data when scrolled to bottom
+                }}
                 loading={isLoading}
                 columns={getColumns()}
                 title={() => <InventoryTableHeader onClick={() => setOpenCreateModal(true)}/>}
