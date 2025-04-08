@@ -22,6 +22,7 @@ export default function Inventory() {
     }, [filters]);
 
     async function fetchData() {
+        setIsLoading(true);
         const loadedStocks = await loadStocks();
         let loadedLaptops = await loadLaptops(loadedStocks);
         prepareDataSource(loadedStocks, loadedLaptops);
@@ -97,13 +98,6 @@ export default function Inventory() {
                 dataSource={stocks}
                 size={"small"}
                 loading={isLoading}
-                // bordered // TODO: styling
-                // rowClassName={(record) => {
-                //     let commonClasses = "text-center text-white hover:text-black ";
-                //     if (record.state === StockManager.getStockStateMap().FREE) commonClasses += "bg-emerald-900"
-                //     else commonClasses += "bg-slate-800"
-                //     return commonClasses;
-                // }}
                 columns={getColumns()}
                 title={() => <InventoryTableHeader onClick={() => setOpenCreateModal(true)}/>}
                 onRow={(record) => {

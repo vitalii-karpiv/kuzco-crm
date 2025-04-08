@@ -2,15 +2,18 @@ import {Form, Input, Modal, Select} from 'antd';
 import StockService from "../../api/services/stock-service.js";
 import PropTypes from 'prop-types';
 import StockManager from "../../helpers/stock-manager.js";
+import {useState} from "react";
 
 export default function CreateStockModal({createModalOpen, closeCreateModal, handleReload}) {
-
+    const [isLoading, setIsLoading] = useState(false);
     const [form] = Form.useForm();
 
     const onCreate = async (values) => {
+        setIsLoading(true);
         try {
             await StockService.create({...values, state: StockManager.getStockStateMap().FREE, price: parseFloat(values.price)});
             await handleReload();
+            setIsLoading(false);
             closeCreateModal();
         } catch (e) {
             console.error(e);
@@ -24,6 +27,7 @@ export default function CreateStockModal({createModalOpen, closeCreateModal, han
                okText="Create"
                cancelText="Cancel"
                okButtonProps={{
+                   loading: isLoading,
                    autoFocus: true,
                    htmlType: 'submit',
                }}
