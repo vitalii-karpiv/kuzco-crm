@@ -26,18 +26,23 @@ const STOCK_TYPE_LABEL_MAP = {
     charger : "Charger",
 }
 
+const STOCK_STATE_LIST = ["free", "booked", "sold"];
+
 const STOCK_STATE_MAP = {
     FREE : "free",
     BOOKED : "booked",
+    SOLD : "sold",
 }
 
 const STOCK_STATE_LABEL_MAP = {
     free : "Free",
     booked : "Booked",
+    sold : "Sold",
 }
 const STOCK_STATE_COLOR_MAP = {
     free : "green",
     booked : "red",
+    sold : "purple",
 }
 
 class StockManager {
@@ -56,6 +61,10 @@ class StockManager {
 
     getStockStateMap() {
         return STOCK_STATE_MAP;
+    }
+
+    getStockStateList() {
+        return STOCK_STATE_LIST;
     }
 
     getStockStateLabel(state) {

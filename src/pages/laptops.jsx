@@ -87,6 +87,11 @@ export default function Laptops() {
                 dataSource={laptops.map((laptop, index) => ({...laptop, key: index}))}
                 size={"small"}
                 columns={getColumns()}
+                pagination={false}
+                scroll={{y: 500}}
+                onScroll={() => {
+                    // TODO: load more data when scrolled to bottom
+                }}
                 key={"_id"}
                 expandable={{
                     expandedRowRender: (laptop) => (

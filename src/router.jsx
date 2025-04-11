@@ -7,7 +7,7 @@ import Login from "./pages/login.jsx";
 import PrivateRoutes from "./utils/private-routes.jsx";
 import OrderDetail from "./pages/order-detail.jsx";
 import LaptopDetail from "./pages/laptop-detail.jsx";
-import {Layout, theme, Typography} from "antd";
+import {Layout, Typography} from "antd";
 import Sales from "./pages/sales.jsx";
 import SaleDetail from "./pages/sale-detail.jsx";
 import Finances from "./pages/finances.jsx";
@@ -18,21 +18,19 @@ import Root from "./pages/root.jsx";
 const { Header, Content, Footer, Sider } = Layout;
 
 const Router = () => {
-    const {
-        token: { borderRadiusLG },
-    } = theme.useToken();
 
     return (
         <BrowserRouter>
-            <Layout style={{ background: "#EEEEEE" }}>
+            <Layout style={{ background: "#EEEEEE", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
                 <Header style={{ display: 'flex', alignItems: 'center', background: "#6C7A89" }}>
                     <Typography.Title style={{marginBottom: "0px", color: "white"}} level={3}>KUZCO CRM 🤘</Typography.Title>
                 </Header>
-                <Content className={"px-14"}>
+                <Content className={"flex"}>
                     <Layout
                         style={{
                             background: "#D2D7D3",
-                            borderRadius: borderRadiusLG,
+                            margin: 0,
+                            flex: 1,
                         }}
                         className={"my-5 p-5"}
                     >
@@ -41,7 +39,7 @@ const Router = () => {
                             style={{
                                 background: "#ffffff",
                                 borderRadius: "10px",
-                                overflow: "hidden"
+                                overflow: "hidden",
                             }}
                         >
                             <MainMenu />

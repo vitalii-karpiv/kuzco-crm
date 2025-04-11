@@ -13,17 +13,20 @@ import StockStateTag from "../components/common/stock-state-tag.jsx";
 export default function Inventory() {
     const navigate = useNavigate();
     const [stocks, setStocks] = useState([]);
-    const [filters, setFilters] = useState({state: StockManager.getStockStateMap().FREE});
+    const [filters, setFilters] = useState({});
     const [openCreateModal, setOpenCreateModal] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         fetchData();
     }, [filters]);
 
     async function fetchData() {
+        setIsLoading(true);
         const loadedStocks = await loadStocks();
         let loadedLaptops = await loadLaptops(loadedStocks);
         prepareDataSource(loadedStocks, loadedLaptops);
+        setIsLoading(false);
     }
 
     function prepareDataSource(loadedStocks, loadedLaptops) {
@@ -94,13 +97,12 @@ export default function Inventory() {
                 className={"ml-3 w-full"}
                 dataSource={stocks}
                 size={"small"}
-                // bordered // TODO: styling
-                // rowClassName={(record) => {
-                //     let commonClasses = "text-center text-white hover:text-black ";
-                //     if (record.state === StockManager.getStockStateMap().FREE) commonClasses += "bg-emerald-900"
-                //     else commonClasses += "bg-slate-800"
-                //     return commonClasses;
-                // }}
+                pagination={false}
+                scroll={{y: 470}}
+                onScroll={() => {
+                    // TODO: load more data when scrolled to bottom
+                }}
+                loading={isLoading}
                 columns={getColumns()}
                 title={() => <InventoryTableHeader onClick={() => setOpenCreateModal(true)}/>}
                 onRow={(record) => {
