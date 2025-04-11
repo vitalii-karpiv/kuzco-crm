@@ -35,7 +35,7 @@ export default function ExpenseCreateModal({open, closeCreateModal, handleReload
         const date = new Date(values.date.toDate())
         const time = new Date(values.time.toDate())
         time.setDate(date.getDate())
-        values.amount = parseFloat(values.amount) * 100;
+        values.amount = parseFloat(values.amount) * 100 * -1;
         values.time = parseFloat(parseFloat(time.getTime() / 1000).toFixed(0));
         try {
             await FinanceService.createExpense(values);
