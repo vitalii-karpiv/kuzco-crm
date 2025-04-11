@@ -13,7 +13,7 @@ import StockStateTag from "../components/common/stock-state-tag.jsx";
 export default function Inventory() {
     const navigate = useNavigate();
     const [stocks, setStocks] = useState([]);
-    const [filters, setFilters] = useState({state: StockManager.getStockStateMap().FREE});
+    const [filters, setFilters] = useState({});
     const [openCreateModal, setOpenCreateModal] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
