@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {Button, Table} from "antd";
+import {Button, message, Table} from "antd";
 import LaptopService from "../api/services/laptop-service.js";
 import Loading from "../components/loading.jsx";
 import {DeleteOutlined, SearchOutlined} from "@ant-design/icons";
@@ -9,6 +9,8 @@ import CreateLaptopModal from "../components/laptop/create-laptop-modal.jsx";
 import LaptopStateTag from "../components/common/laptop-state-tag.jsx";
 import SorterBar from "../components/laptop-detail/sorter-bar.jsx";
 import FilterBar from "../components/laptop-detail/filter-bar.jsx";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faCopy} from "@fortawesome/free-solid-svg-icons";
 
 export default function Laptops() {
     const [laptops, setLaptops] = useState();
@@ -28,6 +30,51 @@ export default function Laptops() {
     async function loadLaptops() {
         const ordersDto = await LaptopService.list({...filters, sorters});
         setLaptops(ordersDto.itemList);
+    }
+    function handleCopy(laptop) {
+        navigator.clipboard.writeText(laptopCharacteristics(laptop))
+            .then(() => {
+                message.success("Characteristics copied!");
+            })
+            .catch(() => {
+                message.error("Failed to copy.");
+            });
+    }
+
+     function laptopCharacteristics(laptop) {
+         const name = laptop.name;
+         const serviceTag = laptop.serviceTag;
+         const processor = laptop.characteristics?.processor;
+         const videocard = laptop.characteristics?.videocard;
+         const discrete = laptop.characteristics?.discrete;
+         const keylight = laptop.characteristics?.keyLight;
+         const ssd = laptop.characteristics?.ssd;
+         const ram = laptop.characteristics?.ram;
+         const screenSize = laptop.characteristics?.screenSize;
+         const touch = laptop.characteristics?.touch;
+         const resolution = laptop.characteristics?.resolution;
+         const panelType = laptop.characteristics?.panelType;
+         const refreshRate = laptop.characteristics?.refreshRate;
+         const ports = laptop.characteristics?.ports;
+         const note = laptop.note;
+
+         return `
+         ${name}: 
+         Service Tag: ${serviceTag || "not specified"},
+         Processor: ${processor || "not specified"},
+         Videocard: ${videocard ? `${videocard} GB` : "not specified"},
+         Discrete: ${discrete ? `yes` : "no"},
+         Keylight: ${keylight ? "yes" : "no"},
+         SSD: ${ssd ? `${ssd} GB` : "not specified"},
+         RAM: ${ram ? `${ram} GB` : "not specified"},
+         Screen Size: ${screenSize ? `${screenSize}"` : "not specified"},
+         Touch: ${touch ? "yes" : "no"},
+         Resolution: ${resolution || "not specified"},
+         Panel Type: ${panelType || "not specified"},
+         Refresh Rate: ${refreshRate ? `${refreshRate} Hz` : "not specified"},
+         Ports: ${ports || "not specified"},
+         Note: ${note || "none"}
+  `;
     }
 
     const getColumns = () => {
@@ -98,7 +145,10 @@ export default function Laptops() {
                         <div
                             className={"bg-amber-50 m-0"}
                         >
-                            {`TODO: characteristics, ${laptop.name}`}
+                            {` ${laptopCharacteristics(laptop)}`}
+                            <Button className={"ml-2 text-gray-500"} size={"small"} shape={"circle"} onClick={() => {handleCopy(laptop)}}>
+                                <FontAwesomeIcon icon={faCopy}/>
+                            </Button>
                         </div>
                     ),
                     rowExpandable: (laptop) => laptop.characteristics,

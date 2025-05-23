@@ -19,7 +19,19 @@ const ORDER_STATES_COLORS_LABELS = {
     "delivered": "Delivered",
     "sold": "Sold",
 }
+const COUNTERPARTY_LIST = ["revasevych","karpiv", "glukhan"];
 
+const COUNTERPARTY_COLOURS = {
+    "revasevych": "magenta",
+    "karpiv": "volcano",
+    "glukhan": "purple",
+}
+
+const COUNTERPARTY_COLOURS_LABELS = {
+    "revasevych": "Revasevych",
+    "karpiv": "Karpiv",
+    "glukhan": "Glukhan",
+}
 class OrderManager {
 
     getOrderStateList() {
@@ -39,6 +51,18 @@ class OrderManager {
             text: ORDER_STATES_COLORS_LABELS[state],
             value: state,
         }})
+    }
+
+    getCounterpartyList() {
+        return COUNTERPARTY_LIST
+    }
+
+    getCounterpartyColor(counterparty) {
+        return COUNTERPARTY_COLOURS[counterparty];
+    }
+
+    getCounterpartyLabel(counterparty) {
+        return COUNTERPARTY_COLOURS_LABELS[counterparty];
     }
 }
 
