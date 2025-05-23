@@ -8,6 +8,8 @@ import {useEffect, useState} from "react";
 import FinanceService from "../../api/services/finance-service.js";
 import PriceView from "../price-view.jsx";
 import OrderStateTag from "../common/order-state-tag.jsx";
+import CounterpartyStateTag from "../common/counterparty-state-tag.jsx";
+import orderManager from "../../helpers/order-manager.js";
 
 export default function BasicInfoBlock({order = {}, setOrder}) {
 
@@ -21,6 +23,7 @@ export default function BasicInfoBlock({order = {}, setOrder}) {
             setPricePerOrder(pricePerOrder);
             setPricePerLaptop(pricePerLaptop);
         }
+
         loadPrices();
     }, [order._id, order.itemsInLot]);
 
@@ -31,6 +34,10 @@ export default function BasicInfoBlock({order = {}, setOrder}) {
 
     async function handleSetState(state) {
         const updated = await OrderService.setState({id: order._id, state });
+        setOrder(updated);
+    }
+    async function handleSetCounterparty(counterparty) {
+        const updated = await OrderService.update({id: order._id, counterparty });
         setOrder(updated);
     }
 
@@ -97,6 +104,24 @@ export default function BasicInfoBlock({order = {}, setOrder}) {
                     </Select>
 
                 </div>
+
+                <div className={"flex mb-3"}>
+                    <p className={"w-1/4"}>Counterparty: </p>
+                    <Select
+                        className={"w-2/3"}
+                    defaultValue={order.counterparty}
+                    variant={"borderless"}
+                    placement={"bottomRight"}
+                    suffixIcon={null}
+                    popupClassName={"min-w-44"}
+                    onChange={(counterparty) => handleSetCounterparty(counterparty)}
+                    >
+                        {orderManager.getCounterpartyList().map(counterparty => <Select.Option key={counterparty} value={counterparty}><CounterpartyStateTag counterparty={counterparty} /></Select.Option>)}
+                    </Select>
+                </div>
+
+
+
                 <div className={"flex mb-3"}>
                     <p className={"w-1/4"}>Note: </p>
                     <TextArea

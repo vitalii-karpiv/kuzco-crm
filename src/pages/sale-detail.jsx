@@ -19,7 +19,7 @@ export default function SaleDetail() {
 
     useEffect(() => {
         loadSale();
-    }, []);
+    }, [id]);
 
     useEffect(() => {
         if (sale) {

@@ -17,6 +17,10 @@ export default class OrderService {
         const result = await $api.post("/order/setState", dto);
         return result.data;
     }
+    static async setCounterparty(dto) {
+        const result = await $api.post("/order/setCounterparty", dto);
+        return result.data;
+    }
     static async create(dto) {
         const result = await $api.post("/order", dto);
         return result.data;

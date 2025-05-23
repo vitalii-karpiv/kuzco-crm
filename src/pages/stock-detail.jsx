@@ -1,14 +1,17 @@
-import {useParams} from "react-router-dom";
-import {Card, Input, Select} from "antd";
+import {useParams, useNavigate} from "react-router-dom";
+import {Button, Card, Input, Select} from "antd";
 import {useEffect, useState} from "react";
 import StockService from "../api/services/stock-service.js";
 import Loading from "../components/loading.jsx";
 import StockManager from "../helpers/stock-manager.js";
 import LaptopService from "../api/services/laptop-service.js";
 import LaptopManager from "../helpers/laptop-manager.js";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faArrowLeft} from "@fortawesome/free-solid-svg-icons";
 
 export default function StockDetail() {
     let {id} = useParams();
+    const navigate = useNavigate();
 
     const [stock, setStock] = useState();
     const [laptop, setLaptop] = useState();
@@ -118,6 +121,9 @@ export default function StockDetail() {
                                        value={laptop._id}>{laptop.name}</Select.Option>
                     )}
                 </Select>
+                <Button className={"ml-2"} shape={"circle"} size={"small"} onClick={() => navigate(`/laptops/laptopDetail/${laptop._id}`)}>
+                    <FontAwesomeIcon icon={faArrowLeft} />
+                </Button>
             </div>
         </Card>
     )
