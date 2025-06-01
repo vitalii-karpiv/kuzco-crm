@@ -3,27 +3,21 @@ import OrderService from "../../api/services/order-service.js";
 import {useEffect, useState} from "react";
 import PropTypes from 'prop-types';
 import ExpenseManager from "../../helpers/expense-manager.js";
-import UserService from "../../api/services/user-service.js";
 import FinanceService from "../../api/services/finance-service.js";
 import dayjs from "dayjs";
+import {useUserContext} from "../user-context.jsx";
 
 export default function ExpenseCreateModal({open, closeCreateModal, handleReload}) {
 
     const [form] = Form.useForm();
 
     const [showErrorAlert, setShowErrorAlert] = useState(false);
-    const [userList, setUserList] = useState([]);
     const [orderList, setOrderList] = useState([]);
+    const { users: userList } = useUserContext();
 
     useEffect(() => {
-        loadUserList()
         loadOrderList()
     }, []);
-
-    async function loadUserList() {
-        const usersDto = await UserService.list();
-        setUserList(usersDto);
-    }
 
     async function loadOrderList() {
         const orderDto = await OrderService.list();

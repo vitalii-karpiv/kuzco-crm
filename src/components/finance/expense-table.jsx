@@ -6,11 +6,11 @@ import OrderService from "../../api/services/order-service.js";
 import FinanceService from "../../api/services/finance-service.js";
 import PropTypes from "prop-types";
 import PriceView from "../price-view.jsx";
-import UserService from "../../api/services/user-service.js";
 import ExpenseManager from "../../helpers/expense-manager.js";
 import {faPlus} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import ExpenseCreateModal from "./expense-create-modal.jsx";
+import {useUserContext} from "../user-context.jsx";
 
 const ONE_DAY = 86400000
 
@@ -19,9 +19,9 @@ const FOOTER = () => <div></div>
 export default function ExpenseTable() {
     const [expenses, setExpenses] = useState([]);
     const [orders, setOrders] = useState([]);
-    const [users, setUsers] = useState();
     const [isLoading, setIsLoading] = useState(true);
     const [openCreateModal, setOpenCreateModal] = useState(false);
+    const { users } = useUserContext();
 
     useEffect(() => {
         loadData()
@@ -30,7 +30,6 @@ export default function ExpenseTable() {
     async function loadData() {
         await loadExpenses();
         await loadOrders();
-        await loadUsers();
         setIsLoading(false);
     }
 
@@ -42,11 +41,6 @@ export default function ExpenseTable() {
     async function loadOrders() {
         const ordersDtoOut = await OrderService.list({});
         setOrders(ordersDtoOut.itemList);
-    }
-
-    async function loadUsers() {
-        const usersList = await UserService.list();
-        setUsers(usersList);
     }
 
     async function handleOrderSelect(orderId, expenseId) {
