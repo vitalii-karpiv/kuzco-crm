@@ -43,38 +43,15 @@ export default function Laptops() {
 
      function laptopCharacteristics(laptop) {
          const name = laptop.name;
-         const serviceTag = laptop.serviceTag;
          const processor = laptop.characteristics?.processor;
          const videocard = laptop.characteristics?.videocard;
-         const discrete = laptop.characteristics?.discrete;
-         const keylight = laptop.characteristics?.keyLight;
          const ssd = laptop.characteristics?.ssd;
          const ram = laptop.characteristics?.ram;
          const screenSize = laptop.characteristics?.screenSize;
-         const touch = laptop.characteristics?.touch;
          const resolution = laptop.characteristics?.resolution;
          const panelType = laptop.characteristics?.panelType;
-         const refreshRate = laptop.characteristics?.refreshRate;
-         const ports = laptop.characteristics?.ports;
-         const note = laptop.note;
 
-         return `
-         ${name}: 
-         Service Tag: ${serviceTag || "not specified"},
-         Processor: ${processor || "not specified"},
-         Videocard: ${videocard ? `${videocard} GB` : "not specified"},
-         Discrete: ${discrete ? `yes` : "no"},
-         Keylight: ${keylight ? "yes" : "no"},
-         SSD: ${ssd ? `${ssd} GB` : "not specified"},
-         RAM: ${ram ? `${ram} GB` : "not specified"},
-         Screen Size: ${screenSize ? `${screenSize}"` : "not specified"},
-         Touch: ${touch ? "yes" : "no"},
-         Resolution: ${resolution || "not specified"},
-         Panel Type: ${panelType || "not specified"},
-         Refresh Rate: ${refreshRate ? `${refreshRate} Hz` : "not specified"},
-         Ports: ${ports || "not specified"},
-         Note: ${note || "none"}
-  `;
+         return `${name}: | ${processor || "not specified"} | ${videocard ? `${videocard} GB` : "not specified"} | ${ssd ? `${ssd} GB` : "not specified"} | ${ram ? `${ram} GB` : "not specified"} | ${screenSize ? `${screenSize}"` : "not specified"} ${resolution || "not specified"} ${panelType || "not specified"}`;
     }
 
     const getColumns = () => {
