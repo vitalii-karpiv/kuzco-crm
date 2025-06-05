@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {Button, message, Table} from "antd";
+import {Button, message, Popconfirm, Table} from "antd";
 import LaptopService from "../api/services/laptop-service.js";
 import Loading from "../components/loading.jsx";
 import {DeleteOutlined, SearchOutlined} from "@ant-design/icons";
@@ -31,6 +31,18 @@ export default function Laptops() {
         const ordersDto = await LaptopService.list({...filters, sorters});
         setLaptops(ordersDto.itemList);
     }
+
+     const handleDelete = async (id) => {
+      try {
+        await LaptopService.delete(id);
+        message.success("Laptop deleted");
+        await loadLaptops();
+      }
+      catch (error) {
+          message.error('Failed to delete laptop');
+      }
+     }
+
     function handleCopy(laptop) {
         navigator.clipboard.writeText(laptopCharacteristics(laptop))
             .then(() => {
@@ -51,7 +63,7 @@ export default function Laptops() {
          const resolution = laptop.characteristics?.resolution;
          const panelType = laptop.characteristics?.panelType;
 
-         return `${name}: | ${processor || "not specified"} | ${videocard ? `${videocard} GB` : "not specified"} | ${ssd ? `${ssd} GB` : "not specified"} | ${ram ? `${ram} GB` : "not specified"} | ${screenSize ? `${screenSize}"` : "not specified"} ${resolution || "not specified"} ${panelType || "not specified"}`;
+         return `${name} | ${processor || "not specified"} | ${videocard ? `${videocard} GB` : "not specified"} | ${ssd ? `${ssd} GB` : "not specified"} | ${ram ? `${ram} GB` : "not specified"} | ${screenSize ? `${screenSize}"` : "not specified"} ${resolution || "not specified"} ${panelType || "not specified"}`;
     }
 
     const getColumns = () => {
@@ -91,7 +103,13 @@ export default function Laptops() {
                 render: (record) => {
                     return <div className={"w-full flex justify-evenly"}>
                         <Button onClick={() => navigate(`laptopDetail/${record._id}`)} shape="circle" icon={<SearchOutlined />} />
-                        <Button onClick={() => console.log(`delete ${record._id}`)} shape="circle" icon={<DeleteOutlined />} />
+                        <Popconfirm
+                            title={'Are you sure you want to delete this laptop?'}
+                            onConfirm={() => handleDelete(record._id)}
+                            okText={'Yes'}
+                            cancelText="No">
+                        <Button shape="circle" icon={<DeleteOutlined />} danger />
+                        </Popconfirm>
                     </div>
                 },
             },
