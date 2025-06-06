@@ -35,11 +35,11 @@ export default function Laptops() {
      const handleDelete = async (id) => {
       try {
         await LaptopService.delete(id);
-        message.success("Laptop deleted");
+        message.success("Laptop deleted!");
         await loadLaptops();
       }
       catch (error) {
-          message.error('Failed to delete laptop');
+          message.error('Failed to delete laptop!');
       }
      }
 
