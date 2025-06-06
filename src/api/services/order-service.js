@@ -26,7 +26,7 @@ export default class OrderService {
         return result.data;
     }
     static async delete(id) {
-        const result = await $api.get(`/order/${id}`);
+        const result = await $api.delete(`/order/${id}`);
         return result.data;
     }
 }

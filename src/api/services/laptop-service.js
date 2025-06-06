@@ -22,7 +22,7 @@ export default class LaptopService {
         return result.data;
     }
     static async delete(id) {
-        const result = await $api.get(`/laptop/${id}`);
+        const result = await $api.delete(`/laptop/${id}`);
         return result.data;
     }
     static async getDescription(id) {

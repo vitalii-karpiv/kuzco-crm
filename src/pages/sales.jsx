@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {Button, Table} from "antd";
+import {Button, message, Popconfirm, Table} from "antd";
 import Loading from "../components/loading.jsx";
 import SaleService from "../api/services/sale-service.js";
 import SalesTableHeader from "../components/sale/sales-table-header.jsx";
@@ -45,6 +45,18 @@ export default function Sales() {
     async function loadLaptops() {
         const laptopsDtoOut = await LaptopService.list({idList: sales.map(sale => sale.laptopId)});
         setLaptops(laptopsDtoOut.itemList);
+    }
+
+    const handleDelete = async (id) => {
+        try {
+            await SaleService.delete(id);
+            message.success("Sale deleted!");
+            await loadSales();
+            await loadLaptops();
+        }
+        catch (error) {
+            message.error('Failed to delete sale!');
+        }
     }
 
     function setLaptopNames() {
@@ -100,7 +112,13 @@ export default function Sales() {
                 render: (record) => {
                     return <div className={"w-full flex justify-evenly"}>
                         <Button onClick={() => navigate(`saleDetail/${record._id}`)} shape="circle" icon={<SearchOutlined />} />
-                        <Button onClick={() => console.log(`delete ${record._id}`)} shape="circle" icon={<DeleteOutlined />} />
+                        <Popconfirm
+                            title={'Are you sure you want to delete this sale?'}
+                            onConfirm={() => handleDelete(record._id)}
+                            okText={'Yes'}
+                            cancelText="No">
+                            <Button shape="circle" icon={<DeleteOutlined />} className={'hover:!text-red-600  hover:!border-red-700'} />
+                        </Popconfirm>
                     </div>
                 },
             },
