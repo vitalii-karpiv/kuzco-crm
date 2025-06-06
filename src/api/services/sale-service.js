@@ -22,7 +22,7 @@ export default class SaleService {
         return result.data;
     }
     static async delete(id) {
-        const result = await $api.get(`/sale/${id}`);
+        const result = await $api.delete(`/sale/${id}`);
         return result.data;
     }
 }
