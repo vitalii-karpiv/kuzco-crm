@@ -108,7 +108,7 @@ export default function Laptops() {
                             onConfirm={() => handleDelete(record._id)}
                             okText={'Yes'}
                             cancelText="No">
-                        <Button shape="circle" icon={<DeleteOutlined />} danger />
+                        <Button shape="circle" icon={<DeleteOutlined />} className={'hover:!text-red-600  hover:!border-red-700'} />
                         </Popconfirm>
                     </div>
                 },
