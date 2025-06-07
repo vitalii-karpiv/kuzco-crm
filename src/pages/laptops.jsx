@@ -1,16 +1,17 @@
 import {useEffect, useState} from "react";
-import {Button, message, Table} from "antd";
+import {Button, message, Popconfirm, Table, Select} from "antd";
 import LaptopService from "../api/services/laptop-service.js";
 import Loading from "../components/loading.jsx";
 import {DeleteOutlined, SearchOutlined} from "@ant-design/icons";
 import {useNavigate} from "react-router-dom";
 import LaptopsTableHeader from "../components/laptop/laptops-table-header.jsx";
 import CreateLaptopModal from "../components/laptop/create-laptop-modal.jsx";
-import LaptopStateTag from "../components/common/laptop-state-tag.jsx";
 import SorterBar from "../components/laptop-detail/sorter-bar.jsx";
 import FilterBar from "../components/laptop-detail/filter-bar.jsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCopy} from "@fortawesome/free-solid-svg-icons";
+import LaptopManager from "../helpers/laptop-manager.js";
+import LaptopStateTag from "../components/common/laptop-state-tag.jsx";
 
 export default function Laptops() {
     const [laptops, setLaptops] = useState();
@@ -31,6 +32,24 @@ export default function Laptops() {
         const ordersDto = await LaptopService.list({...filters, sorters});
         setLaptops(ordersDto.itemList);
     }
+
+     const handleDelete = async (id) => {
+      try {
+        await LaptopService.delete(id);
+        message.success("Laptop deleted!");
+        await loadLaptops();
+      }
+      catch (error) {
+          message.error('Failed to delete laptop!');
+      }
+     }
+
+    const handleSetState = async (laptopId, newState) => {
+        const updatedLaptop = await LaptopService.setState({ id: laptopId, state: newState });
+
+        setLaptops(prev => prev.map(laptop => laptop._id === updatedLaptop._id ? updatedLaptop : laptop));
+    };
+
     function handleCopy(laptop) {
         navigator.clipboard.writeText(laptopCharacteristics(laptop))
             .then(() => {
@@ -51,7 +70,7 @@ export default function Laptops() {
          const resolution = laptop.characteristics?.resolution;
          const panelType = laptop.characteristics?.panelType;
 
-         return `${name}: | ${processor || "not specified"} | ${videocard ? `${videocard} GB` : "not specified"} | ${ssd ? `${ssd} GB` : "not specified"} | ${ram ? `${ram} GB` : "not specified"} | ${screenSize ? `${screenSize}"` : "not specified"} ${resolution || "not specified"} ${panelType || "not specified"}`;
+         return `${name} | ${processor || "not specified"} | ${videocard ? `${videocard} GB` : "not specified"} | ${ssd ? `${ssd} GB` : "not specified"} | ${ram ? `${ram} GB` : "not specified"} | ${screenSize ? `${screenSize}"` : "not specified"} ${resolution || "not specified"} ${panelType || "not specified"}`;
     }
 
     const getColumns = () => {
@@ -71,7 +90,19 @@ export default function Laptops() {
                 title: 'State',
                 dataIndex: 'state',
                 key: 'state',
-                render: state =>  <LaptopStateTag state={state} />
+                render: (state, record) =>  (
+                    <Select
+                        defaultValue={state}
+                        variant={"borderless"}
+                        placement={"bottomRight"}
+                        suffixIcon={null}
+                        popupClassName={"min-w-44"}
+                        onChange={(newState) => handleSetState(record._id, newState)}
+                    >
+                        {LaptopManager.getLaptopStateList().map(state => <Select.Option key={state} value={state}><LaptopStateTag
+                            state={state}/></Select.Option>)}
+                    </Select>
+                )
             },
             {
                 title: 'Limit Price',
@@ -91,7 +122,13 @@ export default function Laptops() {
                 render: (record) => {
                     return <div className={"w-full flex justify-evenly"}>
                         <Button onClick={() => navigate(`laptopDetail/${record._id}`)} shape="circle" icon={<SearchOutlined />} />
-                        <Button onClick={() => console.log(`delete ${record._id}`)} shape="circle" icon={<DeleteOutlined />} />
+                        <Popconfirm
+                            title={'Are you sure you want to delete this laptop?'}
+                            onConfirm={() => handleDelete(record._id)}
+                            okText={'Yes'}
+                            cancelText="No">
+                        <Button shape="circle" icon={<DeleteOutlined />} className={'hover:!text-red-600  hover:!border-red-700'} />
+                        </Popconfirm>
                     </div>
                 },
             },
