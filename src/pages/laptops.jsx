@@ -1,16 +1,17 @@
 import {useEffect, useState} from "react";
-import {Button, message, Popconfirm, Table} from "antd";
+import {Button, message, Popconfirm, Table, Select} from "antd";
 import LaptopService from "../api/services/laptop-service.js";
 import Loading from "../components/loading.jsx";
 import {DeleteOutlined, SearchOutlined} from "@ant-design/icons";
 import {useNavigate} from "react-router-dom";
 import LaptopsTableHeader from "../components/laptop/laptops-table-header.jsx";
 import CreateLaptopModal from "../components/laptop/create-laptop-modal.jsx";
-import LaptopStateTag from "../components/common/laptop-state-tag.jsx";
 import SorterBar from "../components/laptop-detail/sorter-bar.jsx";
 import FilterBar from "../components/laptop-detail/filter-bar.jsx";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faCopy} from "@fortawesome/free-solid-svg-icons";
+import LaptopManager from "../helpers/laptop-manager.js";
+import LaptopStateTag from "../components/common/laptop-state-tag.jsx";
 
 export default function Laptops() {
     const [laptops, setLaptops] = useState();
@@ -42,6 +43,12 @@ export default function Laptops() {
           message.error('Failed to delete laptop!');
       }
      }
+
+    const handleSetState = async (laptopId, newState) => {
+        const updatedLaptop = await LaptopService.setState({ id: laptopId, state: newState });
+
+        setLaptops(prev => prev.map(laptop => laptop._id === updatedLaptop._id ? updatedLaptop : laptop));
+    };
 
     function handleCopy(laptop) {
         navigator.clipboard.writeText(laptopCharacteristics(laptop))
@@ -83,7 +90,19 @@ export default function Laptops() {
                 title: 'State',
                 dataIndex: 'state',
                 key: 'state',
-                render: state =>  <LaptopStateTag state={state} />
+                render: (state, record) =>  (
+                    <Select
+                        defaultValue={state}
+                        variant={"borderless"}
+                        placement={"bottomRight"}
+                        suffixIcon={null}
+                        popupClassName={"min-w-44"}
+                        onChange={(newState) => handleSetState(record._id, newState)}
+                    >
+                        {LaptopManager.getLaptopStateList().map(state => <Select.Option key={state} value={state}><LaptopStateTag
+                            state={state}/></Select.Option>)}
+                    </Select>
+                )
             },
             {
                 title: 'Limit Price',
