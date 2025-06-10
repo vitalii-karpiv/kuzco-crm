@@ -29,6 +29,7 @@ export default function StockDetail() {
 
     async function loadStock() {
         const stock = await StockService.get(id);
+        document.title = `${stock.code}`;
         if (stock.laptopId) {
             loadLaptop(stock.laptopId);
         }

@@ -12,6 +12,7 @@ import DateView from "../components/date-view.jsx";
 import OrderStateTag from "../components/common/order-state-tag.jsx";
 
 export default function Orders() {
+    document.title = "Orders";
     const [isLoading, setIsLoading] = useState(true);
     const [orders, setOrders] = useState([]);
     const navigate = useNavigate();

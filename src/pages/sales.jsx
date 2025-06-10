@@ -12,6 +12,7 @@ import SaleStateTag from "../components/common/sale-state-tag.jsx";
 import FilterAndSorterBar from "../components/sale/filter-and-sorter-bar.jsx";
 
 export default function Sales() {
+    document.title = "Sales";
     const [sales, setSales] = useState();
     const [laptops, setLaptops] = useState();
     const [filters, setFilters] = useState({});

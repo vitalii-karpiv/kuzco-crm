@@ -6,7 +6,7 @@ import StockStateTag from "../common/stock-state-tag.jsx";
 export default function FilterBar({filters, setFilters}) {
 
     return (
-        <Card bordered={true} size={"small"} className={"w-full ml-3 mb-2"}>
+        <Card bordered={true} size={"small"} className={"ml-3 mb-2"}>
             <Typography.Title level={5}>Filter bar</Typography.Title>
             <div className={"flex"}>
                 <Select className={"w-40 mr-2"}

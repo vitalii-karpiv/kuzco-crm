@@ -37,6 +37,7 @@ export default function LaptopDetail() {
 
     const loadLaptop = async () => {
         const laptop = await LaptopService.get(id);
+        document.title = `${laptop.code}`
         setLaptop(laptop);
     }
 

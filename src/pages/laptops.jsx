@@ -14,6 +14,7 @@ import LaptopManager from "../helpers/laptop-manager.js";
 import LaptopStateTag from "../components/common/laptop-state-tag.jsx";
 
 export default function Laptops() {
+    document.title = "Laptops"
     const [laptops, setLaptops] = useState();
     const navigate = useNavigate();
     const [filters, setFilters] = useState({});

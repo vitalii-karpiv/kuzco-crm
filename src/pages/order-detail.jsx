@@ -16,6 +16,7 @@ export default function OrderDetail() {
     useEffect(() => {
         async function loadOrder() {
             const order = await OrderService.get(id);
+            document.title = `${order.code}`;
             setOrder(order);
         }
 
