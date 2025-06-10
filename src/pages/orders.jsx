@@ -1,4 +1,4 @@
-import { useRef, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import OrderService from "../api/services/order-service.js";
 import {Table, Button, message, Popconfirm} from "antd";
 import {useNavigate} from "react-router-dom";
@@ -31,12 +31,15 @@ export default function Orders() {
         setSearchText('');
     };
 
+    useEffect(() => {
+        loadOrders();
+    }, []);
+
     async function loadOrders() {
         const ordersDto = await OrderService.list({});
         setOrders(ordersDto.itemList);
         setIsLoading(false);
     }
-    loadOrders();
 
     const handleDelete = async (id) => {
         try {
