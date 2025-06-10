@@ -144,7 +144,7 @@ export default function Laptops() {
             <SorterBar sorters={sorters} setSorters={setSorters} />
             <FilterBar filters={filters} setFilters={setFilters}/>
             <Table
-                className={"ml-3 w-full"}
+                className={"ml-3"}
                 dataSource={laptops.map((laptop, index) => ({...laptop, key: index}))}
                 size={"small"}
                 columns={getColumns()}

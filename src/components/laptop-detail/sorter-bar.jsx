@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 
 export default function SorterBar({ sorters, setSorters }) {
     return (
-        <Card bordered={true} className={"w-full ml-3"}>
+        <Card bordered={true} className={"ml-3"}>
                 <Typography.Title level={5}>Sorter bar</Typography.Title>
             <div>
                 <Button onClick={() => updateSorter(sorters, "sellPrice", setSorters)} icon={getIcon(sorters.sellPrice)}>Продажна ціна</Button>
