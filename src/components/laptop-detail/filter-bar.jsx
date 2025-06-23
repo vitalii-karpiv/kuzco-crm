@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 export default function FilterBar({filters, setFilters}) {
 
     return (
-        <Card bordered={true} size={"small"} className={"w-full ml-3 my-2"}>
+        <Card bordered={true} size={"small"} className={"ml-3 my-2"}>
             <Typography.Title level={5}>Filter bar</Typography.Title>
             <div className={"flex justify-between"}>
                 <div className={"w-1/4"}>

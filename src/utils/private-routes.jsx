@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import {Navigate, Outlet} from "react-router-dom";
 import AuthManager from "../helpers/auth-manager";
+import {UserProvider} from "../components/user-context.jsx";
 
 const PrivateRoutes = () => {
     const [isAuth, setIsAuth] = useState(false);
@@ -20,7 +21,7 @@ const PrivateRoutes = () => {
     }
 
     return (
-        isAuth ? <Outlet/> : <Navigate to="/login"/>
+        isAuth ? <UserProvider><Outlet/></UserProvider> : <Navigate to="/login"/>
     )
 }
 

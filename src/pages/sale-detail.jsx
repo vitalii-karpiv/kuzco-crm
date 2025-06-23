@@ -19,7 +19,7 @@ export default function SaleDetail() {
 
     useEffect(() => {
         loadSale();
-    }, []);
+    }, [id]);
 
     useEffect(() => {
         if (sale) {
@@ -29,6 +29,7 @@ export default function SaleDetail() {
 
     async function loadSale() {
         const salesDtoOut = await SaleService.get(id);
+        document.title = `${salesDtoOut.code}`;
         setSale(salesDtoOut);
     }
 

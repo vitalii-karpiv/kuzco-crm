@@ -7,7 +7,6 @@ import UpdateCharacteristicsModal from "../components/laptop-detail/update-chara
 import BuyStockModal from "../components/laptop-detail/buy-stock-modal.jsx";
 import StockService from "../api/services/stock-service.js";
 import LaptopManager from "../helpers/laptop-manager.js";
-import ImageService from "../api/services/image-service.js";
 import CharacteristicsBlock from "../components/laptop-detail/characteristics-block.jsx";
 import ToBuyBlock from "../components/laptop-detail/to-buy-block.jsx";
 import ComplectationBlock from "../components/laptop-detail/complectation-block.jsx";
@@ -17,61 +16,29 @@ import DefectsBlock from "../components/laptop-detail/defects-block.jsx";
 import TechCheckBlock from "../components/laptop-detail/tech-check-block.jsx";
 import LaptopStateTag from "../components/common/laptop-state-tag.jsx";
 import SaleCreateModal from "../components/laptop-detail/sale-create-modal.jsx";
-import UserService from "../api/services/user-service.js";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faSquareUpRight} from "@fortawesome/free-solid-svg-icons";
+import {useUserContext} from "../components/user-context.jsx";
 
 export default function LaptopDetail() {
     let {id} = useParams();
     const [laptop, setLaptop] = useState();
     const [stockList, setStockList] = useState();
-    const [userList, setUserList] = useState();
     const [showUpdateCharacteristics, setShowUpdateCharacteristics] = useState(false);
     const [stockOpt, setStockOpt] = useState({show: false, index: null});
+    const { users: userList } = useUserContext();
 
     const [saleCreateOpen, setSaleCreateOpen] = useState(false);
 
     useEffect(() => {
         loadLaptop();
         loadStock();
-        loadUser();
     }, [id]);
-
-    useEffect(() => {
-        loadImages();
-        loadDefects();
-    }, [laptop?._id])
 
     const loadLaptop = async () => {
         const laptop = await LaptopService.get(id);
+        document.title = `${laptop.code}`
         setLaptop(laptop);
-    }
-
-    const loadUser = async () => {
-        const users = await UserService.list();
-        setUserList(users);
-    }
-
-    const loadImages = async () => {
-        const idList = await ImageService.list({laptopId: id, isDefect: false});
-        const loadedImages = [];
-        for (let imgId of idList) {
-            const img = await ImageService.get(imgId);
-            const objectURL = URL.createObjectURL(img);
-            loadedImages.push(objectURL)
-        }
-        setImageList(loadedImages);
-    }
-
-    const loadDefects = async () => {
-        const idList = await ImageService.list({laptopId: id, isDefect: true});
-        const loadedImages = [];
-        for (let imgId of idList) {
-            const img = await ImageService.get(imgId);
-            const objectURL = URL.createObjectURL(img);
-            loadedImages.push(objectURL)
-        }
-        setDefectList(loadedImages);
     }
 
     const handleSetState = async (state) => {

@@ -11,6 +11,7 @@ import FilterBar from "../components/inventory/filter-bar.jsx";
 import StockStateTag from "../components/common/stock-state-tag.jsx";
 
 export default function Inventory() {
+    document.title = "Inventory";
     const navigate = useNavigate();
     const [stocks, setStocks] = useState([]);
     const [filters, setFilters] = useState({});
@@ -94,7 +95,7 @@ export default function Inventory() {
             <FilterBar filters={filters} setFilters={setFilters} />
             <Table
                 rowKey="_id"
-                className={"ml-3 w-full"}
+                className={"ml-3"}
                 dataSource={stocks}
                 size={"small"}
                 pagination={false}

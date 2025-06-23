@@ -1,6 +1,6 @@
 import {useEffect, useRef, useState} from "react";
 import OrderService from "../api/services/order-service.js";
-import {Table, Button} from "antd";
+import {Table, Button, message, Popconfirm} from "antd";
 import {useNavigate} from "react-router-dom";
 import OrderManager from "../helpers/order-manager.js";
 import TableHelper from "../utils/table-helper.jsx";
@@ -12,6 +12,7 @@ import DateView from "../components/date-view.jsx";
 import OrderStateTag from "../components/common/order-state-tag.jsx";
 
 export default function Orders() {
+    document.title = "Orders";
     const [isLoading, setIsLoading] = useState(true);
     const [orders, setOrders] = useState([]);
     const navigate = useNavigate();
@@ -32,13 +33,25 @@ export default function Orders() {
     };
 
     useEffect(() => {
-        async function loadOrders() {
-            const ordersDto = await OrderService.list({});
-            setOrders(ordersDto.itemList);
-            setIsLoading(false);
-        }
         loadOrders();
     }, []);
+
+    async function loadOrders() {
+        const ordersDto = await OrderService.list({});
+        setOrders(ordersDto.itemList);
+        setIsLoading(false);
+    }
+
+    const handleDelete = async (id) => {
+        try {
+            await OrderService.delete(id);
+            message.success('Order deleted!');
+            await loadOrders()
+        }
+        catch (error) {
+            message.error('Failed to delete order!')
+        }
+    }
 
     const handleReload = async () => {
         const ordersDto = await OrderService.list({});
@@ -97,7 +110,13 @@ export default function Orders() {
                 render: (record) => {
                     return <div className={"w-full flex justify-evenly"}>
                         <Button onClick={() => navigate(`orderDetail/${record._id}`)} shape="circle" icon={<SearchOutlined />} />
-                        <Button onClick={() => console.log(`delete ${record._id}`)} shape="circle" icon={<DeleteOutlined />} />
+                        <Popconfirm
+                            title={'Are you sure you want to delete this order?'}
+                            onConfirm={() => handleDelete(record._id)}
+                            okText={'Yes'}
+                            cancelText="No">
+                            <Button shape="circle" icon={<DeleteOutlined />} className={'hover:!text-red-600  hover:!border-red-700'} />
+                        </Popconfirm>
                     </div>
                 },
             },

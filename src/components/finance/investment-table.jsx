@@ -2,28 +2,19 @@ import {Table, Typography} from "antd";
 import {useEffect, useState} from "react";
 import DateView from "../date-view.jsx";
 import InvestmentService from "../../api/services/investment-service.js";
-import UserService from "../../api/services/user-service.js";
+import {useUserContext} from "../user-context.jsx";
 
 export default function InvestmentTable() {
     const [investments, setInvestments] = useState();
-    const [users, setUsers] = useState();
+    const { users } = useUserContext();
 
     useEffect(() => {
         loadInvestments();
     }, []);
 
-    useEffect(() => {
-        loadUsers();
-    }, [investments]);
-
     async function loadInvestments() {
         const investmentsDtoOut = await InvestmentService.list({});
         setInvestments(investmentsDtoOut.itemList);
-    }
-
-    async function loadUsers() {
-        const usersList = await UserService.list();
-        setUsers(usersList);
     }
 
     const columns = [

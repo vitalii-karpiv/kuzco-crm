@@ -6,6 +6,7 @@ import AssignedLaptopList from "../components/dashboard/assigned-laptop-list.jsx
 
 
 export default function Dashboard() {
+    document.title = "Dashboard";
     const [laptopsToBuy, setLaptopsToBuy] = useState();
     const [assignedLaptops, setAssignedLaptops] = useState();
 
