@@ -17,6 +17,10 @@ export default class InvestmentService {
         const result = await $api.get(`/user/${id}`);
         return result.data;
     }
+    static async whoami() {
+        const result = await $api.get(`/user/whoami`);
+        return result.data;
+    }
     static async delete(id) {
         const result = await $api.get(`/user/${id}`);
         return result.data;

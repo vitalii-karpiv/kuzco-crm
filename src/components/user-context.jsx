@@ -6,28 +6,42 @@ const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
     const [users, setUsers] = useState([]);
+    const [me, setMe] = useState();
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const loadUsers = async () => {
-            try {
-                const userList = await UserService.list({});
-                setUsers(userList);
-                setLoading(false);
-            } catch (err) {
-                console.error('Failed to load users:', err);
-            }
-        };
-
-        loadUsers();
+        loadData();
     }, []);
+
+    const loadData = async () => {
+        await Promise.all([loadMe(), loadUsers()]);
+        setLoading(false);
+    }
+
+    const loadMe = async () => {
+        try {
+            const me = await UserService.whoami();
+            setMe(me);
+        } catch (err) {
+            console.error('Failed to load myself:', err);
+        }
+    };
+
+    const loadUsers = async () => {
+        try {
+            const userList = await UserService.list({});
+            setUsers(userList);
+        } catch (err) {
+            console.error('Failed to load users:', err);
+        }
+    };
 
     if (loading) {
         return <h1>Loading users...</h1>;
     }
 
     return (
-        <UserContext.Provider value={{ users }}>
+        <UserContext.Provider value={{ users, me }}>
             {children}
         </UserContext.Provider>
     );
