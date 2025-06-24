@@ -2,6 +2,7 @@ import {Card, Checkbox, Input, Select, Typography} from "antd";
 import LaptopManager from "../../helpers/laptop-manager.js";
 import LaptopStateTag from "../common/laptop-state-tag.jsx";
 import PropTypes from "prop-types";
+import FilterWrapper from "../common/filter-wrapper.jsx";
 
 export default function FilterBar({filters, setFilters}) {
 
@@ -53,18 +54,9 @@ export default function FilterBar({filters, setFilters}) {
     )
 }
 
-function FilterWrapper({label, children}) {
-    return (
-        <div className={"bg-slate-300 p-2 rounded mb-1"}>
-            <Typography.Text className={"block"}>{label}</Typography.Text>
-            {children}
-        </div>
-    )
-}
-
 function CheckboxFilterWrapper({label, filterName, setFilters, filters}) {
     return (
-        <div className={"bg-slate-300 p-2 rounded mb-1"}>
+        <div className={"bg-slate-200 p-2 rounded mb-1"}>
             <Typography.Text className={"mr-2"}>{label}</Typography.Text>
             <Checkbox onClick={e => setFilters({...filters, [filterName]: e.target.checked})}/>
         </div>
@@ -74,11 +66,6 @@ function CheckboxFilterWrapper({label, filterName, setFilters, filters}) {
 FilterBar.propTypes = {
     filters: PropTypes.object.isRequired,
     setFilters: PropTypes.func.isRequired,
-}
-
-FilterWrapper.propTypes = {
-    label: PropTypes.string.isRequired,
-    children: PropTypes.element.isRequired,
 }
 
 CheckboxFilterWrapper.propTypes = {
