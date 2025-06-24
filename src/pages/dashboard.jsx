@@ -4,6 +4,7 @@ import {useEffect, useState} from "react";
 import ToBuy from "../components/dashboard/to-buy.jsx";
 import AssignedLaptopList from "../components/dashboard/assigned-laptop-list.jsx";
 import {useUserContext} from "../components/user-context.jsx";
+import CounterpartyOrderList from "../components/dashboard/counterparty-order-list.jsx";
 
 
 export default function Dashboard() {
@@ -28,13 +29,17 @@ export default function Dashboard() {
     }
 
     return (
-        <div className={"w-full ml-2 flex"}>
-            {   laptopsToBuy &&
-                <ToBuy laptops={laptopsToBuy}/>
-            }
-            {
-                assignedLaptops &&
-                <AssignedLaptopList laptops={assignedLaptops} />
-            }
-        </div>)
+        <div className={"flex flex-col w-full"}>
+            <div className={"w-full ml-2 flex"}>
+                {   laptopsToBuy &&
+                    <ToBuy laptops={laptopsToBuy}/>
+                }
+                {
+                    assignedLaptops &&
+                    <AssignedLaptopList laptops={assignedLaptops} />
+                }
+            </div>
+            <CounterpartyOrderList/>
+        </div>
+    )
 }
