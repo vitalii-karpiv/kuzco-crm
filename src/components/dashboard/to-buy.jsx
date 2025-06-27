@@ -3,7 +3,7 @@ import {Card, Typography} from "antd";
 
 export default function ToBuy({laptops}) {
     return (
-        <Card className={"w-2/4 mr-1"}>
+        <Card className={"w-2/4"}>
             <Typography.Title level={4}>To buy</Typography.Title>
             {
                 !laptops.length ?

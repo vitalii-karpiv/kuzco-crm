@@ -9,18 +9,20 @@ import {useNavigate} from "react-router-dom";
 import StockManager from "../helpers/stock-manager.js";
 import FilterBar from "../components/inventory/filter-bar.jsx";
 import StockStateTag from "../components/common/stock-state-tag.jsx";
+import SorterBar from "../components/inventory/sorter-bar.jsx";
 
 export default function Inventory() {
     document.title = "Inventory";
     const navigate = useNavigate();
     const [stocks, setStocks] = useState([]);
     const [filters, setFilters] = useState({});
+    const [sorters, setSorters] = useState({});
     const [openCreateModal, setOpenCreateModal] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         fetchData();
-    }, [filters]);
+    }, [filters, sorters]);
 
     async function fetchData() {
         setIsLoading(true);
@@ -41,7 +43,7 @@ export default function Inventory() {
     }
 
     async function loadStocks() {
-        const stocksDto = await StockService.list(filters);
+        const stocksDto = await StockService.list({...filters, sorters});
         return stocksDto.itemList;
     }
 
@@ -92,6 +94,7 @@ export default function Inventory() {
     }
     return (
         <div className={"flex-col w-full mr-2"}>
+            <SorterBar sorters={sorters} setSorters={setSorters} />
             <FilterBar filters={filters} setFilters={setFilters} />
             <Table
                 rowKey="_id"

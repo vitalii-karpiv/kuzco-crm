@@ -2,7 +2,7 @@ import $api from "../http";
 
 export default class OrderService {
     static async list(dto) {
-        const result = await $api.get("/order", dto);
+        const result = await $api.post("/order/list", dto);
         return result.data;
     }
     static async get(id) {

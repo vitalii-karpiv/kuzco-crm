@@ -1,4 +1,4 @@
-import {Form, Input, Modal, Select} from 'antd';
+import {Form, Input, InputNumber, Modal, Select} from 'antd';
 import StockService from "../../api/services/stock-service.js";
 import PropTypes from 'prop-types';
 import StockManager from "../../helpers/stock-manager.js";
@@ -82,6 +82,11 @@ export default function CreateStockModal({createModalOpen, closeCreateModal, han
                                        value={type}>{StockManager.getStockTypeLabel(type)}</Select.Option>
                     )}
                 </Select>
+            </Form.Item>
+            <Form.Item
+                name="quantity"
+                label="Quantity">
+                <InputNumber className={"w-full"} min={1} max={100000} defaultValue={1} />
             </Form.Item>
         </Modal>
     )

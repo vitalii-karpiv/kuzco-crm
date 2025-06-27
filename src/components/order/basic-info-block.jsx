@@ -8,13 +8,13 @@ import {useEffect, useState} from "react";
 import FinanceService from "../../api/services/finance-service.js";
 import PriceView from "../price-view.jsx";
 import OrderStateTag from "../common/order-state-tag.jsx";
-import CounterpartyStateTag from "../common/counterparty-state-tag.jsx";
-import orderManager from "../../helpers/order-manager.js";
+import {useUserContext} from "../user-context.jsx";
 
 export default function BasicInfoBlock({order = {}, setOrder}) {
 
     const [pricePerOrder, setPricePerOrder] = useState(0);
     const [pricePerLaptop, setPricePerLaptop] = useState(0);
+    const {users} = useUserContext();
 
     useEffect(() => {
         async function loadPrices() {
@@ -109,14 +109,17 @@ export default function BasicInfoBlock({order = {}, setOrder}) {
                     <p className={"w-1/4"}>Counterparty: </p>
                     <Select
                         className={"w-2/3"}
-                    defaultValue={order.counterparty}
-                    variant={"borderless"}
-                    placement={"bottomRight"}
-                    suffixIcon={null}
-                    popupClassName={"min-w-44"}
-                    onChange={(counterparty) => handleSetCounterparty(counterparty)}
-                    >
-                        {orderManager.getCounterpartyList().map(counterparty => <Select.Option key={counterparty} value={counterparty}><CounterpartyStateTag counterparty={counterparty} /></Select.Option>)}
+                        defaultValue={(() => {
+                            const user = users.find(user => user._id === order.counterparty)
+                            return user ? `${user.name} ${user.surname}` : undefined;
+                        })()}
+                        variant={"borderless"}
+                        placement={"bottomRight"}
+                        suffixIcon={null}
+                        popupClassName={"min-w-44"}
+                        onChange={(counterparty) => handleSetCounterparty(counterparty)}
+                        >
+                            {users.map(user => <Select.Option key={user._id} value={user._id}>{user.name} {user.surname}</Select.Option>)}
                     </Select>
                 </div>
 
