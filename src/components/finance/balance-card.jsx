@@ -25,16 +25,32 @@ export default function BalanceCard() {
 
     const balanceValue = balanceList?.reduce((acc, balance) => acc + balance.value, 0);
 
+    function prettifyNumber(num) {
+        if (num > 999) {
+            return String(num).replace(/\B(?=(\d{3})+(?!\d))/g, " ");
+        }
+        return num.toFixed(2);
+    }
+
     return (
         <Card bordered={false} hoverable={true} className={"w-full"}>
             <div className={"flex justify-between w-full"}>
-                <Typography.Title level={4}>Balance</Typography.Title>
+                <Typography.Title level={4}>Balance: {isLoadingBalance ?
+                        <Spin/> : prettifyNumber(balanceValue)}</Typography.Title>
                 <Button onClick={syncBalances}>Sync balance</Button>
             </div>
-            <div className={"flex align-middle"}>
-                <div className={"bg-neutral-200 p-2 rounded mr-2"}>Balance: {isLoadingBalance ? <Spin /> : balanceValue} uah</div>
-                <div className={"bg-neutral-200 p-2 rounded mr-2"}>Earn: 0 uah</div>
-                <div className={"bg-neutral-200 p-2 rounded"}>Revenue: 0 uah</div>
+            <div className={"flex-col align-middle"}>
+                <div className={"flex mb-2"}>
+                    {balanceList?.map((balance) => (
+                        <div key={balance._id}
+                             className={"bg-indigo-100 p-2 rounded mr-2"}>{balance.title}: {prettifyNumber(balance.value)} uah</div>))
+
+                    }
+                </div>
+                <div className={"flex"}>
+                    <div className={"bg-pink-100 p-2 rounded mr-2"}>Earn: 0 uah</div>
+                    <div className={"bg-fuchsia-100 p-2 rounded"}>Revenue: 0 uah</div>
+                </div>
             </div>
 
         </Card>
