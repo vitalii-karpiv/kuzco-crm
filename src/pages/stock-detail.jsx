@@ -14,7 +14,7 @@ export default function StockDetail() {
     const navigate = useNavigate();
 
     const [stock, setStock] = useState();
-    const [laptop, setLaptop] = useState();
+    const [laptop, setLaptop] = useState({});
     const [laptopList, setLaptopList] = useState([]);
 
     useEffect(() => {

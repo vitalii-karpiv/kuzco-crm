@@ -111,9 +111,9 @@ export default function Orders() {
                     return <div className={"w-full flex justify-evenly"}>
                         <Button onClick={() => navigate(`orderDetail/${record._id}`)} shape="circle" icon={<SearchOutlined />} />
                         <Popconfirm
-                            title={'Are you sure you want to delete this order?'}
+                            title={`Are you sure you want to delete this order? Related laptops also gonna be deleted.`}
                             onConfirm={() => handleDelete(record._id)}
-                            okText={'Yes'}
+                            okText="Yes"
                             cancelText="No">
                             <Button shape="circle" icon={<DeleteOutlined />} className={'hover:!text-red-600  hover:!border-red-700'} />
                         </Popconfirm>

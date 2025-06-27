@@ -8,18 +8,32 @@ import LaptopStateTag from "../common/laptop-state-tag.jsx";
 export default function LaptopDetail({sale}) {
 
     const [laptop, setLaptop] = useState();
+    const [isError, setIsErrors] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const navigate = useNavigate();
 
 
     useEffect(() => {
         loadLaptop();
-    }, [sale._id]);
+    }, [sale._id, sale.state]);
 
     async function loadLaptop() {
-        const laptop = await LaptopService.get(sale.laptopId);
-        setLaptop(laptop);
-        setIsLoading(false)
+        try {
+            const laptop = await LaptopService.get(sale.laptopId);
+            setLaptop(laptop);
+            setIsLoading(false)
+        } catch (e) {
+            setIsErrors(true)
+            console.error(e);
+        }
+    }
+
+    if (isError) {
+        return (
+            <Card bordered={false} hoverable={true} className={""}>
+                <Typography.Text type="danger">Error loading laptop details. Probably related laptop was deleted</Typography.Text>
+            </Card>
+        );
     }
 
     return (

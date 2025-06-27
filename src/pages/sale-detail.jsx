@@ -55,7 +55,7 @@ export default function SaleDetail() {
     return (
         <div className={"block w-full mx-5"}>
             <header className={"flex justify-between align-middle"}>
-                <Typography.Title level={3}>{laptop?.name}</Typography.Title>
+                <Typography.Title level={3}><Typography.Text code>{sale.code}</Typography.Text> {laptop?.name}</Typography.Title>
                 <div className={"flex"}>
                     {sale.state === "new" && <Button className={"bg-amber-200 mr-3"}
                                                      onClick={() => setSaleState("delivering")}>Set delivering</Button>}

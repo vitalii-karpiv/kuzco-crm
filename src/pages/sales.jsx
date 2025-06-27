@@ -65,7 +65,7 @@ export default function Sales() {
         setShouldLoadLaptops(false);
         const updatedSales = sales.map(sale => {
             const laptop = laptops.find(laptop => laptop._id === sale.laptopId);
-            sale.laptopName = laptop.name;
+            sale.laptopName = laptop?.name;
             return sale;
         });
         setSales(updatedSales);

@@ -60,7 +60,7 @@ export default function SalesTableByCustomer({sale}) {
     return (
         <Card bordered={false} hoverable={true} className={"w-full my-2"}>
             <div className={"flex justify-between"}>
-                <Typography.Title level={4}>Other sales</Typography.Title>
+                <Typography.Title level={4}>Other sales of this customer</Typography.Title>
             </div>
             {salesList &&
                 <Table
