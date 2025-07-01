@@ -18,7 +18,7 @@ export default class ExpenseService {
         return result.data;
     }
     static async delete(id) {
-        const result = await $api.get(`/finance/expense/${id}`);
+        const result = await $api.delete(`/finance/expense/${id}`);
         return result.data;
     }
 }

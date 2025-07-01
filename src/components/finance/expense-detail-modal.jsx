@@ -1,4 +1,4 @@
-import {Button, message, Modal, Select, Typography} from "antd";
+import {Button, Divider, InputNumber, message, Modal, Select, Typography} from "antd";
 import PropTypes from "prop-types";
 import PriceView from "../price-view.jsx";
 import DateView from "../date-view.jsx";
@@ -14,10 +14,16 @@ export default function ExpenseDetailModal({expense: externalExpense, orders, op
     const {users} = useUserContext();
     const [isEditing, setIsEditing] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [showSplit, setShowSplit] = useState(false);
     const [expense, setExpense] = useState(externalExpense);
+
+    const [splitCount, setSplitCount] = useState(2);
+    const [splitAmounts, setSplitAmounts] = useState([0, 0]);
 
     const cardOwner = users.find(user => user._id === expense.cardOwner)
     const order = orders.find(order => order._id === expense.orderId)
+    const total = splitAmounts.reduce((sum, val) => sum + val, 0);
+    const isSplitValid = total === expense.amount / -100;
 
     async function handleUpdate() {
         setIsLoading(true);
@@ -32,6 +38,54 @@ export default function ExpenseDetailModal({expense: externalExpense, orders, op
         setIsEditing(false)
     }
 
+    async function handleDelete() {
+        setIsLoading(true);
+        try {
+            await ExpenseService.delete(expense._id);
+            message.success('Expense deleted!');
+        } catch (e) {
+            console.error(e);
+            message.error('Failed to delete expense!')
+        } finally {
+            setIsLoading(false);
+            onClose();
+        }
+    }
+
+    async function handleSplitSave() {
+        if (showSplit === false) {
+            setShowSplit(true)
+            return;
+        }
+        setIsLoading(true);
+        // Create new expenses
+        for (let i = 1; i < splitAmounts.length; i++) {
+            await ExpenseService.create({
+                ...expense,
+                amount: splitAmounts[i] * -100,
+                time: expense.time + i
+            })
+        }
+        // Update current expense
+        await ExpenseService.update({...expense, id: expense._id, amount: splitAmounts[0] * -100})
+        // Show a success message
+        setIsLoading(false);
+        message.success('Expense split!');
+        onClose();
+    }
+
+    function handleSplitCountChange(value) {
+        const count = Number(value) || 0;
+        setSplitCount(count);
+        setSplitAmounts(Array(count).fill(0));
+    }
+
+    function updateAmount(index, value) {
+        const updated = [...splitAmounts];
+        updated[index] = Number(value) || 0;
+        setSplitAmounts(updated);
+    }
+
     return (
         <Modal open={open} title={"Expense Detail"} onCancel={onClose}
                width={800}
@@ -41,10 +95,12 @@ export default function ExpenseDetailModal({expense: externalExpense, orders, op
                        <Button loading={isLoading} icon={<FontAwesomeIcon icon={faPenToSquare}/>} onClick={() => {
                            isEditing ? handleUpdate() : setIsEditing(true)
                        }}>{isEditing ? "Save" : "Edit"}</Button>
-                       <Button disabled={isLoading} className={"bg-red-500 text-white"}
+                       <Button disabled={isLoading} className={"bg-red-500 text-white"} onClick={handleDelete}
                                icon={<FontAwesomeIcon icon={faTrash}/>}>Delete</Button>
-                       <Button disabled={isLoading} className={"bg-blue-500 text-white"}
-                               icon={<FontAwesomeIcon icon={faArrowsSplitUpAndLeft}/>}>Split</Button>
+                       <Button disabled={isLoading || (!isSplitValid && showSplit)} className={"bg-blue-500 text-white"}
+                               onClick={handleSplitSave}
+                               icon={<FontAwesomeIcon
+                                   icon={faArrowsSplitUpAndLeft}/>}>{showSplit ? "Save" : "Split"}</Button>
                    </>
                )}
         >
@@ -104,12 +160,58 @@ export default function ExpenseDetailModal({expense: externalExpense, orders, op
                         </Select>
                         :
                         <p className={"w-2/3"}>
-                            <Typography.Text code>{order?.code}</Typography.Text> <br/>
-                            {order?.name}
+                            {order ? (
+                                <>
+                                    <Typography.Text code>{order.code}</Typography.Text>
+                                    <br/>
+                                    {order.name}
+                                </>
+                            ) : (
+                                "—"
+                            )}
                         </p>
                     }
                 </div>
             </div>
+            {/* SPLIT LOGIC */}
+            {showSplit && (
+                <>
+                    <Divider/>
+
+                    <div className="flex items-center gap-2 mb-2">
+                        <p className="mr-2">Number of splits:</p>
+                        <InputNumber
+                            min={2}
+                            value={splitCount}
+                            onChange={handleSplitCountChange}
+                            size="small"
+                        />
+                        <Typography.Text className={"text-xs"} type={"danger"}>*first split is the original
+                            expense</Typography.Text>
+                    </div>
+
+                    <div className="flex flex-col gap-2">
+                        {splitAmounts.map((amount, index) => (
+                            <div key={index} className="flex items-center gap-2">
+                                <p className="mr-2">Split #{index + 1}:</p>
+                                <InputNumber
+                                    value={amount}
+                                    min={0}
+                                    onChange={(val) => updateAmount(index, val)}
+                                    size="small"
+                                />
+                            </div>
+                        ))}
+                    </div>
+
+                    <Divider/>
+
+                    <p>
+                        Total: {total} / Original: {expense.amount / -100}
+                        {!isSplitValid && <span style={{color: "red", marginLeft: 8}}>(Mismatch)</span>}
+                    </p>
+                </>
+            )}
         </Modal>
     )
 

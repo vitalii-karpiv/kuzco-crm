@@ -24,7 +24,7 @@ export default function ExpenseTable() {
     const [openCreateModal, setOpenCreateModal] = useState(false);
     const [openDetailModal, setOpenDetailModal] = useState(false);
     const [expenseDetail, setExpenseDetail] = useState(null);
-    const { users } = useUserContext();
+    const {users} = useUserContext();
 
     useEffect(() => {
         loadData()
@@ -37,7 +37,7 @@ export default function ExpenseTable() {
     }
 
     async function loadExpenses() {
-        const expensesDtoOut = await ExpenseService.list({});
+        const expensesDtoOut = await ExpenseService.list({deleted: false});
         setExpenses(expensesDtoOut.itemList);
     }
 
@@ -57,8 +57,9 @@ export default function ExpenseTable() {
             title: 'Type',
             dataIndex: 'type',
             key: 'type',
-            width: 200,
-            render: (type) => { return ExpenseManager.getExpenseTypeLabel(type) }
+            render: (type) => {
+                return ExpenseManager.getExpenseTypeLabel(type)
+            }
         },
         {
             title: 'Time',
@@ -74,7 +75,8 @@ export default function ExpenseTable() {
             render: (orderId) => {
                 const order = orders.find(order => order._id === orderId);
                 if (!order) return <p>—</p>
-                return `${order?.code} ${order?.name}` }
+                return <div className={"whitespace-nowrap overflow-hidden scroll-auto"}><Typography.Text code>{order?.code}</Typography.Text> {order?.name}</div>
+            }
         },
         {
             title: 'Card owner',
@@ -117,7 +119,8 @@ export default function ExpenseTable() {
                     },
                 };
             }}
-            title={() => <ExpenseTableHeader loadExpenses={loadExpenses} setIsLoading={setIsLoading} setOpenCreateModal={setOpenCreateModal} />}
+            title={() => <ExpenseTableHeader loadExpenses={loadExpenses} setIsLoading={setIsLoading}
+                                             setOpenCreateModal={setOpenCreateModal}/>}
             footer={FOOTER}
         />
         {
@@ -125,7 +128,16 @@ export default function ExpenseTable() {
                                                    closeCreateModal={() => setOpenCreateModal(false)}/>
         }
         {
-            openDetailModal && expenseDetail && <ExpenseDetailModal open={openDetailModal} onClose={() => setOpenDetailModal(false)} expense={expenseDetail} orders={orders}/>
+            openDetailModal && expenseDetail &&
+            <ExpenseDetailModal
+                open={openDetailModal}
+                onClose={() => {
+                    loadData()
+                    setOpenDetailModal(false)
+                }}
+                expense={expenseDetail}
+                orders={orders}
+            />
         }
 
     </>
