@@ -1,4 +1,4 @@
-import {Button, Select, Table, Typography} from "antd";
+import {Button, Table, Typography} from "antd";
 import {useEffect, useState} from "react";
 import ExpenseService from "../../api/services/expense-service.js";
 import DateView from "../date-view.jsx";
@@ -46,16 +46,6 @@ export default function ExpenseTable() {
         setOrders(ordersDtoOut.itemList);
     }
 
-    async function handleOrderSelect(orderId, expenseId) {
-        await ExpenseService.update({id: expenseId, orderId});
-        await loadExpenses();
-    }
-
-    async function handleTypeUpdate(expenseId, type) {
-        await ExpenseService.update({id: expenseId, type});
-        await loadExpenses();
-    }
-
     const columns = [
         {
             title: 'Amount',
@@ -69,11 +59,6 @@ export default function ExpenseTable() {
             key: 'type',
             width: 200,
             render: (type) => { return ExpenseManager.getExpenseTypeLabel(type) }
-                // return <Select className={"w-full"} value={ExpenseManager.getExpenseTypeLabel(type)}
-                //                onChange={(type) => handleTypeUpdate(expense._id, type)}>
-                //     {ExpenseManager.getExpenseTypeList().map(type => <Select.Option key={type}
-                //                                                                     value={type}>{ExpenseManager.getExpenseTypeLabel(type)}</Select.Option>)}
-                // </Select>
         },
         {
             title: 'Time',
@@ -90,17 +75,6 @@ export default function ExpenseTable() {
                 const order = orders.find(order => order._id === orderId);
                 if (!order) return <p>—</p>
                 return `${order?.code} ${order?.name}` }
-                // return <Select className={"w-full"} value={}
-                //                onChange={(orderId) => handleOrderSelect(orderId, expense._id)}
-                //                showSearch
-                //                filterOption={(input, option) => {
-                //                    return input && option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                //                }}
-                //
-                // >
-                //     {orders.map(order => <Select.Option key={order._id} value={order._id}>{order.name}</Select.Option>)}
-                // </Select>
-
         },
         {
             title: 'Card owner',
