@@ -11,6 +11,7 @@ import {faPlus} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import ExpenseCreateModal from "./expense-create-modal.jsx";
 import {useUserContext} from "../user-context.jsx";
+import ExpenseDetailModal from "./expense-detail-modal.jsx";
 
 const ONE_DAY = 86400000
 
@@ -21,6 +22,8 @@ export default function ExpenseTable() {
     const [orders, setOrders] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [openCreateModal, setOpenCreateModal] = useState(false);
+    const [openDetailModal, setOpenDetailModal] = useState(false);
+    const [expenseDetail, setExpenseDetail] = useState(null);
     const { users } = useUserContext();
 
     useEffect(() => {
@@ -65,13 +68,12 @@ export default function ExpenseTable() {
             dataIndex: 'type',
             key: 'type',
             width: 200,
-            render: (type, expense) => {
-                return <Select className={"w-full"} value={ExpenseManager.getExpenseTypeLabel(type)}
-                               onChange={(type) => handleTypeUpdate(expense._id, type)}>
-                    {ExpenseManager.getExpenseTypeList().map(type => <Select.Option key={type}
-                                                                                    value={type}>{ExpenseManager.getExpenseTypeLabel(type)}</Select.Option>)}
-                </Select>
-            }
+            render: (type) => { return ExpenseManager.getExpenseTypeLabel(type) }
+                // return <Select className={"w-full"} value={ExpenseManager.getExpenseTypeLabel(type)}
+                //                onChange={(type) => handleTypeUpdate(expense._id, type)}>
+                //     {ExpenseManager.getExpenseTypeList().map(type => <Select.Option key={type}
+                //                                                                     value={type}>{ExpenseManager.getExpenseTypeLabel(type)}</Select.Option>)}
+                // </Select>
         },
         {
             title: 'Time',
@@ -84,18 +86,21 @@ export default function ExpenseTable() {
             dataIndex: 'orderId',
             key: 'orderId',
             width: 300,
-            render: (orderId, expense) => {
-                return <Select className={"w-full"} value={orders.find(order => order._id === orderId)?._id}
-                               onChange={(orderId) => handleOrderSelect(orderId, expense._id)}
-                               showSearch
-                               filterOption={(input, option) => {
-                                   return input && option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                               }}
+            render: (orderId) => {
+                const order = orders.find(order => order._id === orderId);
+                if (!order) return <p>—</p>
+                return `${order?.code} ${order?.name}` }
+                // return <Select className={"w-full"} value={}
+                //                onChange={(orderId) => handleOrderSelect(orderId, expense._id)}
+                //                showSearch
+                //                filterOption={(input, option) => {
+                //                    return input && option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                //                }}
+                //
+                // >
+                //     {orders.map(order => <Select.Option key={order._id} value={order._id}>{order.name}</Select.Option>)}
+                // </Select>
 
-                >
-                    {orders.map(order => <Select.Option key={order._id} value={order._id}>{order.name}</Select.Option>)}
-                </Select>
-            }
         },
         {
             title: 'Card owner',
@@ -130,6 +135,14 @@ export default function ExpenseTable() {
                 else commonClasses += " bg-cyan-50"
                 return commonClasses;
             }}
+            onRow={(record) => {
+                return {
+                    onClick: () => {
+                        setExpenseDetail(record)
+                        setOpenDetailModal(true)
+                    },
+                };
+            }}
             title={() => <ExpenseTableHeader loadExpenses={loadExpenses} setIsLoading={setIsLoading} setOpenCreateModal={setOpenCreateModal} />}
             footer={FOOTER}
         />
@@ -137,6 +150,10 @@ export default function ExpenseTable() {
             openCreateModal && <ExpenseCreateModal open={openCreateModal} handleReload={loadData}
                                                    closeCreateModal={() => setOpenCreateModal(false)}/>
         }
+        {
+            openDetailModal && expenseDetail && <ExpenseDetailModal open={openDetailModal} onClose={() => setOpenDetailModal(false)} expense={expenseDetail} orders={orders}/>
+        }
+
     </>
 }
 
