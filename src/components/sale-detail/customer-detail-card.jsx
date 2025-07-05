@@ -12,6 +12,10 @@ export default function CustomerDetailCard({sale}) {
     }, [sale._id]);
 
     async function loadCustomer() {
+        if (!sale.customerId) {
+            setCustomer(null);
+            return;
+        }
         const customerDtoOut = await CustomerService.get(sale.customerId);
         setCustomer(customerDtoOut);
     }

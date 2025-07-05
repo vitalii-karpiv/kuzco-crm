@@ -4,24 +4,27 @@ import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faSort, faSortDown, faSortUp} from "@fortawesome/free-solid-svg-icons";
 import SaleManager from "../../helpers/sale-manager.js";
 import SaleStateTag from "../common/sale-state-tag.jsx";
+import FilterWrapper from "../common/filter-wrapper.jsx";
 
 const {RangePicker} = DatePicker;
 
 export default function FilterAndSorterBar({filters, setFilters, sorters, setSorters}) {
     return (
-        <Card bordered={true} size={"small"} className={"w-full ml-3 mb-2"}>
+        <Card bordered={true} size={"small"} className={"ml-3 mb-2"}>
             <Typography.Title level={5}>Filter & sorter</Typography.Title>
-            <div className={"flex"}>
-                <Button className={"mr-2"} onClick={() => updateSorter(sorters, "date", setSorters)} icon={getIcon(sorters.date)}>Date</Button>
-                <div className={"bg-slate-300 p-2 rounded mb-1 w-40 mr-2"}>
-                    <Select onChange={e => setFilters({...filters, state: e})} className={"w-full"} mode="multiple">
+            <div className={"flex items-center"}>
+                <Button className={"mr-2"} onClick={() => updateSorter(sorters, "date", setSorters)}
+                        icon={getIcon(sorters.date)}>Date</Button>
+                <FilterWrapper label={"State"}>
+                    <Select onChange={e => setFilters({...filters, state: e})} className={"w-40"} mode="multiple">
                         {SaleManager.getSaleStateList().map(state => {
                             return <Select.Option value={state} key={state}><SaleStateTag
                                 state={state}/></Select.Option>
                         })}
                     </Select>
-                </div>
+                </FilterWrapper>
                 <RangePicker picker="date"
+                             className={"h-16"}
                              onChange={(range) => {
                                  let dateRange = null;
                                  if (range?.length) dateRange = {

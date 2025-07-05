@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import FinanceService from "../../api/services/finance-service.js";
 import {useEffect, useState} from "react";
 import LaptopService from "../../api/services/laptop-service.js";
-import PriceView from "../price-view.jsx";
+import ExpenseAmountView from "../expense-amount-view.jsx";
 
 export default function SaleFinanceCard({sale}) {
 
@@ -29,7 +29,7 @@ export default function SaleFinanceCard({sale}) {
     return (
         <Card bordered={false} hoverable={true} className={"mb-2 h-1/2"}>
             <div className={"mb-2"}>
-                Собівартість: <PriceView amount={laptopCostPrice}/>
+                Собівартість: <ExpenseAmountView amount={laptopCostPrice}/>
             </div>
             <div className={"mb-2"}>
                 Рентабельність: <Typography.Text code

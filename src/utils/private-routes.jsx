@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import {Navigate, Outlet} from "react-router-dom";
 import AuthManager from "../helpers/auth-manager";
 import {UserProvider} from "../components/user-context.jsx";
+import Loading from "../components/loading.jsx";
 
 const PrivateRoutes = () => {
     const [isAuth, setIsAuth] = useState(false);
@@ -17,7 +18,7 @@ const PrivateRoutes = () => {
     }, []);
 
     if (isLoading) {
-        return <h1>Loading...</h1>
+        return <Loading/>
     }
 
     return (

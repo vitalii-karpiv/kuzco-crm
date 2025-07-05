@@ -3,7 +3,7 @@ import {Card, Select, Table, Typography} from "antd";
 import {useEffect, useState} from "react";
 import ExpenseService from "../../api/services/expense-service.js";
 import DateView from "../date-view.jsx";
-import PriceView from "../price-view.jsx";
+import ExpenseAmountView from "../expense-amount-view.jsx";
 import ExpenseManager from "../../helpers/expense-manager.js";
 
 export default function ExpenseTable({order = {}}) {
@@ -31,7 +31,7 @@ export default function ExpenseTable({order = {}}) {
                 title: 'Amount',
                 dataIndex: 'amount',
                 key: 'amount',
-                render: (amount) => <PriceView amount={amount} />
+                render: (amount) => <ExpenseAmountView amount={amount} />
             },
             {
                 title: 'Type',

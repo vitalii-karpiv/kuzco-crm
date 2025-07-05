@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types';
 import {Typography} from "antd";
 
-export default function PriceView({amount}) {
+export default function ExpenseAmountView({amount}) {
     function showPrice(amount) {
         const price = parseFloat(amount) / 100 * -1;
         if (price > 999) {
@@ -13,6 +13,6 @@ export default function PriceView({amount}) {
     return <Typography.Text code strong>{showPrice(amount)} грн</Typography.Text>
 }
 
-PriceView.propTypes = {
+ExpenseAmountView.propTypes = {
     amount: PropTypes.string, // string representation of a date
 }

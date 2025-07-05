@@ -1,6 +1,7 @@
 import {useEffect, useState} from "react";
 import {Button, Card, Spin, Typography} from "antd";
 import FinanceService from "../../api/services/finance-service.js";
+import * as FinanceManager from "../../helpers/finance-manager.js";
 
 export default function BalanceCard() {
     const [balanceList, setBalanceList] = useState()
@@ -36,7 +37,7 @@ export default function BalanceCard() {
         <Card bordered={false} hoverable={true} className={"w-full"}>
             <div className={"flex justify-between w-full"}>
                 <Typography.Title level={4}>Balance: {isLoadingBalance ?
-                        <Spin/> : prettifyNumber(balanceValue)}</Typography.Title>
+                        <Spin/> : FinanceManager.prettifyNumber(balanceValue)} UAH</Typography.Title>
                 <Button onClick={syncBalances}>Sync balance</Button>
             </div>
             <div className={"flex-col align-middle"}>
@@ -47,10 +48,11 @@ export default function BalanceCard() {
 
                     }
                 </div>
-                <div className={"flex"}>
-                    <div className={"bg-pink-100 p-2 rounded mr-2"}>Earn: 0 uah</div>
-                    <div className={"bg-fuchsia-100 p-2 rounded"}>Revenue: 0 uah</div>
-                </div>
+                {/* TODO */}
+                {/*<div className={"flex"}>*/}
+                {/*    <div className={"bg-pink-100 p-2 rounded mr-2"}>Earn: 0 uah</div>*/}
+                {/*    <div className={"bg-fuchsia-100 p-2 rounded"}>Revenue: 0 uah</div>*/}
+                {/*</div>*/}
             </div>
 
         </Card>

@@ -6,7 +6,7 @@ import DateView from "../date-view.jsx";
 import OrderService from "../../api/services/order-service.js";
 import {useEffect, useState} from "react";
 import FinanceService from "../../api/services/finance-service.js";
-import PriceView from "../price-view.jsx";
+import ExpenseAmountView from "../expense-amount-view.jsx";
 import OrderStateTag from "../common/order-state-tag.jsx";
 import {useUserContext} from "../user-context.jsx";
 
@@ -50,13 +50,13 @@ export default function BasicInfoBlock({order = {}, setOrder}) {
                 <div className={"flex mb-3"}>
                     <p className={"w-1/4"}>Order cost: </p>
                     <span className={"ml-2"}>
-                        <PriceView amount={pricePerOrder}/>
+                        <ExpenseAmountView amount={pricePerOrder}/>
                     </span>
                 </div>
                 <div className={"flex mb-3"}>
                     <p className={"w-1/4"}>Cost per laptop: </p>
                     <span className={"ml-2"}>
-                        <PriceView amount={pricePerLaptop}/>
+                        <ExpenseAmountView amount={pricePerLaptop}/>
                     </span>
                 </div>
                 <div className={"flex mb-3"}>

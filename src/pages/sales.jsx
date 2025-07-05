@@ -1,6 +1,5 @@
 import {useEffect, useState} from "react";
 import {Button, message, Popconfirm, Table} from "antd";
-import Loading from "../components/loading.jsx";
 import SaleService from "../api/services/sale-service.js";
 import SalesTableHeader from "../components/sale/sales-table-header.jsx";
 import CreateSaleModal from "../components/sale/create-sale-modal.jsx";
@@ -20,6 +19,7 @@ export default function Sales() {
     const [shouldLoadLaptops, setShouldLoadLaptops] = useState(true);
     const navigate = useNavigate();
     const [createModalOpen, setCreateModalOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         loadSales();
@@ -38,9 +38,17 @@ export default function Sales() {
     }, [laptops]);
 
     async function loadSales() {
-        const salesDtoOut = await SaleService.list({...filters, sorters});
-        setSales(salesDtoOut.itemList);
-        setShouldLoadLaptops(true);
+        setIsLoading(true);
+        try {
+            const salesDtoOut = await SaleService.list({...filters, sorters});
+            setSales(salesDtoOut.itemList);
+            setShouldLoadLaptops(true);
+        } catch (e) {
+            message.error("Failed to load sales!");
+            console.error(e);
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     async function loadLaptops() {
@@ -57,7 +65,13 @@ export default function Sales() {
         }
         catch (error) {
             message.error('Failed to delete sale!');
+            console.error(error);
         }
+    }
+
+    function handleCloseCreateModal() {
+        loadSales()
+        setCreateModalOpen(false);
     }
 
     function setLaptopNames() {
@@ -126,23 +140,22 @@ export default function Sales() {
         ]
     }
 
-
-    if (!sales) {
-        return <Loading/>;
-    }
     return (
         <div className={"flex-col w-full"}>
             <FilterAndSorterBar filters={filters} setFilters={setFilters} sorters={sorters} setSorters={setSorters} />
-            <Table
-                className={"ml-3 w-full"}
+            { sales && <Table
+                className={"ml-3"}
                 dataSource={sales}
                 size={"small"}
+                key={"_id"}
+                loading={isLoading}
+                scroll={{y: 500}}
+                pagination={false}
                 columns={getColumns()}
                 title={() => <SalesTableHeader onClick={() => setCreateModalOpen(true)}/>}
-            />
+            />}
             {createModalOpen &&
-                <CreateSaleModal createModalOpen={createModalOpen} onClose={() => setCreateModalOpen(false)}
-                                 onReload={loadSales}/>}
+                <CreateSaleModal createModalOpen={createModalOpen} onClose={handleCloseCreateModal}/>}
         </div>
     )
 }

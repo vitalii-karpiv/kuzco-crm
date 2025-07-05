@@ -8,12 +8,12 @@ const expenseTypeList = [
 ]
 
 const expenseTypeLabelMap = {
-    "delivery": "Delivery",
-    "purchase": "Purchase",
-    "advertisement": "Advertisement",
-    "stock": "Stock",
-    "tax": "Tax",
-    "other": "Other",
+    "delivery": "🚚 Delivery",
+    "purchase": "🛍️ Purchase",
+    "advertisement": "📢 Advertisement",
+    "stock": "⚙️ Stock",
+    "tax": "🏛️ Tax",
+    "other": "🤷 Other",
 }
 
 class ExpenseManager {
@@ -22,7 +22,13 @@ class ExpenseManager {
     }
 
     getExpenseTypeLabel(type) {
-        return expenseTypeLabelMap[type];
+        const typeLabel = expenseTypeLabelMap[type];
+        if (typeLabel) {
+            return typeLabel;
+        } else {
+            console.warn(`Expense type "${type}" is not defined.`);
+            return "—";
+        }
     }
 }
 
