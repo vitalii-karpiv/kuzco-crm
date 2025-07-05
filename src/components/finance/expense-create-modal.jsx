@@ -30,6 +30,7 @@ export default function ExpenseCreateModal({open, closeCreateModal, handleReload
         const time = new Date(values.time.toDate())
         time.setDate(date.getDate())
         values.amount = parseFloat(values.amount) * 100 * -1;
+        values.deleted = false;
         values.time = parseFloat(parseFloat(time.getTime() / 1000).toFixed(0));
         try {
             await FinanceService.createExpense(values);
@@ -110,7 +111,9 @@ export default function ExpenseCreateModal({open, closeCreateModal, handleReload
                        ]}
             >
                 <TimePicker className={"w-full"} format={"HH:mm"}
-                            defaultValue={dayjs(`${new Date().getHours()}:${new Date().getMinutes()}`, "HH:mm")}/>
+                            onChange={e => console.log(e)}
+                            // defaultValue={dayjs(`${new Date().getHours()}:${new Date().getMinutes()}`, "HH:mm")}
+                />
             </Form.Item>
             <Form.Item
                 name="orderId"
