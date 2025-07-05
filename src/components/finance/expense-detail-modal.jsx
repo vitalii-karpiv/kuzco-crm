@@ -1,6 +1,6 @@
 import {Button, Divider, InputNumber, message, Modal, Select, Typography} from "antd";
 import PropTypes from "prop-types";
-import PriceView from "../price-view.jsx";
+import ExpenseAmountView from "../expense-amount-view.jsx";
 import DateView from "../date-view.jsx";
 import {useUserContext} from "../user-context.jsx";
 import ExpenseManager from "../../helpers/expense-manager.js";
@@ -107,7 +107,7 @@ export default function ExpenseDetailModal({expense: externalExpense, orders, op
             <div className={"flex flex-col space-y-2 mb-5"}>
                 <div className={"flex w-full"}>
                     <p className={"w-1/3"}>💸 Amount: </p>
-                    <p className={"w-2/3"}><PriceView amount={String(expense.amount)}/></p>
+                    <p className={"w-2/3"}><ExpenseAmountView amount={String(expense.amount)}/></p>
                 </div>
                 <div className={"flex w-full"}>
                     <p className={"w-1/3"}>💬 Description: </p>

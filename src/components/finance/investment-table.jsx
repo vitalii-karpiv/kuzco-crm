@@ -5,9 +5,12 @@ import InvestmentService from "../../api/services/investment-service.js";
 import {useUserContext} from "../user-context.jsx";
 import InvestmentCreateModal from "./investment-create-modal.jsx";
 import PropTypes from "prop-types";
+import * as FinanceManager from "../../helpers/finance-manager.js";
+import PriceAmountView from "../price-amount-view.jsx";
 
 export default function InvestmentTable() {
     const [investments, setInvestments] = useState();
+    const [filteredInvestments, setFilteredInvestments] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [openCreateModal, setOpenCreateModal] = useState(false);
     const {users} = useUserContext();
@@ -21,6 +24,7 @@ export default function InvestmentTable() {
         try {
             const investmentsDtoOut = await InvestmentService.list({});
             setInvestments(investmentsDtoOut.itemList);
+            setFilteredInvestments(investmentsDtoOut.itemList);
         } catch (e) {
             message.error("Load investments failed!");
             console.error(e);
@@ -28,6 +32,12 @@ export default function InvestmentTable() {
             setIsLoading(false);
         }
     }
+
+    const handleTableChange = (pagination, filters, sorter, extra) => {
+        if (extra.currentDataSource) {
+            setFilteredInvestments(extra.currentDataSource);
+        }
+    };
 
     function handleCloseCreateModal() {
         setOpenCreateModal(false);
@@ -43,12 +53,20 @@ export default function InvestmentTable() {
                 if (!users) return <p>Loading...</p>;
                 const user = users.find(user => user._id === userId);
                 return <p>{user.name} {user.surname}</p>
-            }
+            },
+            filters: users.map(user => {
+                return {
+                    value: user._id,
+                    text: `${user.name} ${user.surname}`
+                }
+            }),
+            onFilter: (value, record) => record.userId === value,
         },
         {
             title: 'Amount',
             dataIndex: 'amount',
             key: 'amount',
+            render: (amount) => <PriceAmountView amount={amount} />
         },
         {
             title: 'Date',
@@ -72,7 +90,8 @@ export default function InvestmentTable() {
             loading={isLoading}
             virtual
             pagination={false}
-            footer={() => <InvestmentTableFooter investments={investments}/>}
+            onChange={handleTableChange}
+            footer={() => <InvestmentTableFooter investments={filteredInvestments} />}
             key={"_id"}
             title={() => <InvestmentTableHeader onCreate={() => setOpenCreateModal(true)} />}
         />
@@ -92,7 +111,7 @@ function InvestmentTableHeader({ onCreate }) {
 function InvestmentTableFooter({ investments }) {
     const totalAmount = investments.reduce((sum, investment) => sum + investment.amount, 0);
     return (
-        <div>Total: {investments.length} investments, amount: <span className={"font-bold"}>{totalAmount}</span> UAH</div>
+        <div>Total: {investments.length} investments, amount: <span className={"font-bold"}>{FinanceManager.prettifyNumber(totalAmount)}</span> UAH</div>
     );
 }
 

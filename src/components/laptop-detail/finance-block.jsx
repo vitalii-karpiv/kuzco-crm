@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import {useEffect, useState} from "react";
 import LaptopService from "../../api/services/laptop-service.js";
 import FinanceService from "../../api/services/finance-service.js";
-import PriceView from "../price-view.jsx";
+import ExpenseAmountView from "../expense-amount-view.jsx";
 
 
 export default function FinanceBlock({laptop, setLaptop}) {
@@ -28,7 +28,7 @@ export default function FinanceBlock({laptop, setLaptop}) {
 
             <Typography.Text className={"block p-2 rounded bg-slate-300"}>
                 <span>Собівартість: </span>
-                <PriceView amount={costPrice}/>
+                <ExpenseAmountView amount={costPrice}/>
             </Typography.Text>
 
             <PriceInput label={"Limit price"} editMode={editLimitPrice} setEditMode={setEditLimitPrice} laptop={laptop} setLaptop={setLaptop} property={"limitPrice"} type={"warning"} />

@@ -5,7 +5,7 @@ import DateView from "../date-view.jsx";
 import OrderService from "../../api/services/order-service.js";
 import FinanceService from "../../api/services/finance-service.js";
 import PropTypes from "prop-types";
-import PriceView from "../price-view.jsx";
+import ExpenseAmountView from "../expense-amount-view.jsx";
 import ExpenseManager from "../../helpers/expense-manager.js";
 import {faPlus} from "@fortawesome/free-solid-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -67,7 +67,7 @@ export default function ExpenseTable() {
             title: 'Amount',
             dataIndex: 'amount',
             key: 'amount',
-            render: (amount) => <PriceView amount={String(amount)}/>
+            render: (amount) => <ExpenseAmountView amount={String(amount)}/>
         },
         {
             title: 'Type',
