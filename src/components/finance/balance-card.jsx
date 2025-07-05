@@ -48,10 +48,11 @@ export default function BalanceCard() {
 
                     }
                 </div>
-                <div className={"flex"}>
-                    <div className={"bg-pink-100 p-2 rounded mr-2"}>Earn: 0 uah</div>
-                    <div className={"bg-fuchsia-100 p-2 rounded"}>Revenue: 0 uah</div>
-                </div>
+                {/* TODO */}
+                {/*<div className={"flex"}>*/}
+                {/*    <div className={"bg-pink-100 p-2 rounded mr-2"}>Earn: 0 uah</div>*/}
+                {/*    <div className={"bg-fuchsia-100 p-2 rounded"}>Revenue: 0 uah</div>*/}
+                {/*</div>*/}
             </div>
 
         </Card>

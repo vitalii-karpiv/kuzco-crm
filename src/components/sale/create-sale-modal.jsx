@@ -1,4 +1,4 @@
-import {Modal, Form, Input, Select, Alert, InputNumber} from 'antd';
+import {Modal, Form, Input, Select, InputNumber, message} from 'antd';
 import {useEffect, useState} from "react";
 import PropTypes from 'prop-types';
 import SaleManager from "../../helpers/sale-manager.js";
@@ -6,11 +6,9 @@ import LaptopService from "../../api/services/laptop-service.js";
 import LaptopManager from "../../helpers/laptop-manager.js";
 import SaleService from "../../api/services/sale-service.js";
 
-export default function CreateSaleModal({createModalOpen, onClose, handleReload}) {
+export default function CreateSaleModal({createModalOpen, onClose}) {
 
     const [form] = Form.useForm();
-
-    const [showErrorAlert, setShowErrorAlert] = useState(false);
     const [laptops, setLaptops] = useState([]);
 
     useEffect(() => {
@@ -20,10 +18,11 @@ export default function CreateSaleModal({createModalOpen, onClose, handleReload}
     const onCreate = async (values) => {
         try {
             await SaleService.create(values);
-            await handleReload();
-            onClose();
         } catch (e) {
-            setShowErrorAlert(true);
+            message.error("Failed to create a sale!");
+            console.error(e);
+        } finally {
+            onClose();
         }
     };
 
@@ -57,7 +56,6 @@ export default function CreateSaleModal({createModalOpen, onClose, handleReload}
                        {dom}
                    </Form>
                )}>
-            {showErrorAlert && <> <Alert message="Failed to create order!" type="error" showIcon closable onClose={() => setShowErrorAlert(false)}/> <br/> </>}
             <Form.Item
                 name="laptopId"
                 label="Laptop"
@@ -120,5 +118,4 @@ export default function CreateSaleModal({createModalOpen, onClose, handleReload}
 CreateSaleModal.propTypes = {
     createModalOpen: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
-    handleReload: PropTypes.func.isRequired
 }

@@ -1,6 +1,7 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import PropTypes from "prop-types";
 import UserService from "../api/services/user-service.js";
+import Loading from "./loading.jsx";
 
 const UserContext = createContext();
 
@@ -37,7 +38,7 @@ export const UserProvider = ({ children }) => {
     };
 
     if (loading) {
-        return <h1>Loading users...</h1>;
+        return <Loading/>
     }
 
     return (
