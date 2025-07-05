@@ -16,11 +16,14 @@ import ExpenseDetailModal from "./expense-detail-modal.jsx";
 const ONE_DAY = 86400000
 
 const FOOTER = () => <div></div>
+const LIMIT = 100;
 
 export default function ExpenseTable() {
     const [expenses, setExpenses] = useState([]);
+    const [page, setPage] = useState(0);
+    const [hasMore, setHasMore] = useState(true);
     const [orders, setOrders] = useState([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
     const [openCreateModal, setOpenCreateModal] = useState(false);
     const [openDetailModal, setOpenDetailModal] = useState(false);
     const [expenseDetail, setExpenseDetail] = useState(null);
@@ -37,8 +40,21 @@ export default function ExpenseTable() {
     }
 
     async function loadExpenses() {
-        const expensesDtoOut = await ExpenseService.list({deleted: false});
-        setExpenses(expensesDtoOut.itemList);
+        if (isLoading || !hasMore) return; /// hasMore
+        setIsLoading(true);
+
+        try {
+            const result = await ExpenseService.list({deleted: false, index: page, limit: 20});
+
+            if (result.itemList.length < LIMIT) {
+                setHasMore(false); // No more data
+            }
+
+            setExpenses((prev) => [...prev, ...result.itemList]);
+            setPage(page + 1);
+        } finally {
+            setIsLoading(false);
+        }
     }
 
     async function loadOrders() {
@@ -101,8 +117,11 @@ export default function ExpenseTable() {
             pagination={false}
             virtual={true}
             scroll={{y: 500}}
-            onScroll={() => {
-                // TODO: load more data when scrolled to bottom
+            onScroll={(e) => {
+                const { scrollTop, scrollHeight, clientHeight } = e.target;
+                if (scrollTop + clientHeight >= scrollHeight - 10) {
+                    loadExpenses(); // loads next page
+                }
             }}
             loading={isLoading}
             rowClassName={(record) => {
