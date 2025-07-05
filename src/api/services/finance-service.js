@@ -25,4 +25,10 @@ export default class FinanceService {
         const result = await $api.post(`/finance/balance/sync`, dto);
         return result.data;
     }
+
+    // Investments
+    static async createInvestment(dto) {
+        const result = await $api.post(`/finance/investment`, dto);
+        return result.data;
+    }
 }
