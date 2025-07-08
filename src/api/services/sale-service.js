@@ -25,4 +25,8 @@ export default class SaleService {
         const result = await $api.delete(`/sale/${id}`);
         return result.data;
     }
+    static async updateAssignee(id, assignee) {
+        const result = await $api.post(`/sale/setAssignee`, { id, assignee });
+        return result.data;
+    }
 }
