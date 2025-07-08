@@ -31,4 +31,9 @@ export default class FinanceService {
         const result = await $api.post(`/finance/investment`, dto);
         return result.data;
     }
+
+    static async getRevenueAndEarnings(dto) {
+        const result = await $api.post(`/finance/revenueAndEarnings`, dto);
+        return result.data;
+    }
 }
