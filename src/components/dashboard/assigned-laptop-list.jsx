@@ -5,7 +5,7 @@ import {Link} from "react-router-dom";
 
 export default function AssignedLaptopList({laptops}) {
     return (
-        <Card className={"w-2/4 ml-1"}>
+        <Card className={"w-2/4 ml-2"}>
             <Typography.Title level={4}>Assigned on you</Typography.Title>
             <ol className={"list-disc list-inside space-y-2"}>
                 {laptops.map((laptop) => (<li key={laptop.code}>

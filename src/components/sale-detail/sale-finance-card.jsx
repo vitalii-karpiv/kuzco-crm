@@ -4,6 +4,7 @@ import FinanceService from "../../api/services/finance-service.js";
 import {useEffect, useState} from "react";
 import LaptopService from "../../api/services/laptop-service.js";
 import ExpenseAmountView from "../expense-amount-view.jsx";
+import {prettifyNumber} from "../../helpers/finance-manager.js";
 
 export default function SaleFinanceCard({sale}) {
 
@@ -28,6 +29,9 @@ export default function SaleFinanceCard({sale}) {
 
     return (
         <Card bordered={false} hoverable={true} className={"mb-2 h-1/2"}>
+            <div className={"mb-2"}>
+                Price: <Typography.Text code strong>{prettifyNumber(sale.price)} грн</Typography.Text>
+            </div>
             <div className={"mb-2"}>
                 Собівартість: <ExpenseAmountView amount={laptopCostPrice}/>
             </div>

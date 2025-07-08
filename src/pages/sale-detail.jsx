@@ -2,13 +2,14 @@ import {useEffect, useState} from "react";
 import Loading from "../components/loading.jsx";
 import SaleService from "../api/services/sale-service.js";
 import {useParams} from "react-router-dom";
-import {Alert, Button, Typography} from "antd";
+import {Alert, Button, Typography, Select, message, Spin} from "antd";
 import LaptopService from "../api/services/laptop-service.js";
 import CustomerDetailCard from "../components/sale-detail/customer-detail-card.jsx";
 import SaleDetailCard from "../components/sale-detail/sale-detail-card.jsx";
 import SaleFinanceCard from "../components/sale-detail/sale-finance-card.jsx";
 import SalesTableByCustomer from "../components/sale-detail/sales-table-by-customer.jsx";
 import LaptopDetail from "../components/sale-detail/laptop-detail.jsx";
+import {useUserContext} from "../components/user-context.jsx";
 
 export default function SaleDetail() {
     let {id} = useParams();
@@ -16,6 +17,7 @@ export default function SaleDetail() {
     const [sale, setSale] = useState();
     const [laptop, setLaptop] = useState();
     const [showErrorAlert, setShowErrorAlert] = useState(false);
+    const [assigneeLoading, setAssigneeLoading] = useState(false);
 
     useEffect(() => {
         loadSale();
@@ -47,6 +49,21 @@ export default function SaleDetail() {
         }
     }
 
+    const { users: userList } = useUserContext();
+
+    async function handleSetAssignee(userId) {
+        try {
+            setAssigneeLoading(true);
+            const updated = await SaleService.updateAssignee(sale._id, userId);
+            setSale(updated);
+        } catch (e) {
+            console.error(e);
+            message.error("Failed to update assignee!");
+        } finally {
+            setAssigneeLoading(false);
+        }
+    }
+
 
     if (!sale) {
         return <Loading/>;
@@ -54,9 +71,27 @@ export default function SaleDetail() {
 
     return (
         <div className={"block w-full mx-5"}>
-            <header className={"flex justify-between align-middle"}>
-                <Typography.Title level={3}><Typography.Text code>{sale.code}</Typography.Text> {laptop?.name}</Typography.Title>
-                <div className={"flex"}>
+            <header className={"flex justify-between align-middle items-center"}>
+                <Typography.Title level={3} className={"mr-4"}><Typography.Text code>{sale.code}</Typography.Text> {laptop?.name}</Typography.Title>
+                <div className={"flex items-center"}>
+                    {userList && <div className={"flex items-center mr-4"}>
+                        <span className={"text-xs text-gray-700 mr-1"}>Assignee:</span>
+                        <Select
+                            defaultValue={sale.assignee}
+                            value={sale.assignee}
+                            placement={"bottomRight"}
+                            suffixIcon={assigneeLoading ? <Spin size="small" /> : null}
+                            popupClassName={"min-w-44"}
+                            onChange={handleSetAssignee}
+                            variant="filled"
+                            className={"ml-0"}
+                            disabled={assigneeLoading}
+                        >
+                            {userList.map(user => <Select.Option key={user._id} value={user._id}>
+                                {user.name} {user.surname}
+                            </Select.Option>)}
+                        </Select>
+                    </div>}
                     {sale.state === "new" && <Button className={"bg-amber-200 mr-3"}
                                                      onClick={() => setSaleState("delivering")}>Set delivering</Button>}
                     {sale.state === "delivering" && <div className={"flex justify-between align-middle"}>
