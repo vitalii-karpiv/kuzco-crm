@@ -21,7 +21,7 @@ export default function LoginForm() {
     };
 
     return (
-        <Card title="Login" className={"drop-shadow-lg m-auto w-2/3"}>
+        <Card title="Login" className={"drop-shadow-lg m-auto w-2/3 max-w-2xl"}>
             { showError &&
                 <Space
                     direction="vertical"
@@ -34,7 +34,7 @@ export default function LoginForm() {
                 name="basic"
                 className={"w-full"}
                 labelCol={{
-                    span: 8,
+                    span: 6,
                 }}
                 wrapperCol={{
                     span: 16,

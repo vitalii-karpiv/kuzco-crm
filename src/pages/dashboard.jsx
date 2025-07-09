@@ -10,19 +10,12 @@ import AssignedSaleList from "../components/dashboard/assigned-sale-list.jsx";
 
 export default function Dashboard() {
     document.title = "Dashboard";
-    const [laptopsToBuy, setLaptopsToBuy] = useState();
     const [assignedLaptops, setAssignedLaptops] = useState();
     const { me } = useUserContext();
 
     useEffect(() => {
-        getToBuyItems()
         getAssignedLaptops()
     }, [])
-
-    async function getToBuyItems() {
-        const listDtoOut = await LaptopService.list({state: LaptopManager.getActiveStates(), toBuy: true})
-        setLaptopsToBuy(listDtoOut.itemList)
-    }
 
     async function getAssignedLaptops() {
         const listDtoOut = await LaptopService.list({state: LaptopManager.getActiveStates(), assignee: me._id})
@@ -32,9 +25,7 @@ export default function Dashboard() {
     return (
         <div className={"flex flex-col w-full"}>
             <div className={"w-full flex"}>
-                {   laptopsToBuy &&
-                    <ToBuy laptops={laptopsToBuy}/>
-                }
+                <ToBuy />
                 {
                     assignedLaptops &&
                     <AssignedLaptopList laptops={assignedLaptops} />

@@ -44,7 +44,7 @@ export default function AssignedSaleList() {
     return (
         <Card className={"w-2/4 ml-2 mt-1"} loading={isLoading}>
             <Typography.Title level={4}>Assigned Sales</Typography.Title>
-            <ul className={"list-disc list-inside space-y-2"}>
+            <ul className={"list-disc list-inside space-y-2 overflow-y-auto max-h-[310px]"}>
                 {sales.map((sale) => (
                     <li key={sale.code}>
                         <Link to={`/sales/saleDetail/${sale._id}`} className={"bg-green-50 rounded p-1"}>
