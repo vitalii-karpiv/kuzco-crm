@@ -4,14 +4,14 @@ import BalanceCard from "../components/finance/balance-card.jsx";
 import RevenueEarnCard from "../components/finance/revenue-earn-card.jsx";
 
 export default function Finances() {
-    document.title = "Finances";
+  document.title = "Finances";
 
-    return (
-        <div className={"w-full mx-2"}>
-            <RevenueEarnCard/>
-            <BalanceCard/>
-            <ExpenseTable/>
-            <InvestmentTable/>
-        </div>
-    )
+  return (
+    <div className={"w-full mx-2"}>
+      <RevenueEarnCard />
+      <BalanceCard />
+      <ExpenseTable />
+      <InvestmentTable />
+    </div>
+  );
 }
