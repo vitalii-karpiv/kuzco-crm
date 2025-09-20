@@ -1,13 +1,14 @@
 {
   "name": "kuzco-crm",
   "private": true,
-  "version": "1.7.0",
+  "version": "1.8.0-dev",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "format": "prettier --write \"src/**/*.jsx\" \"src/**/*.js\""
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.5.2",

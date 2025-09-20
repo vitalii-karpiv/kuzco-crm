@@ -1,5 +1,5 @@
-import {Navigate} from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 export default function Root() {
-    return <Navigate to="/dashboard"/>
+  return <Navigate to="/dashboard" />;
 }
