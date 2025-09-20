@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, message, Popconfirm, Table, Select } from "antd";
+import { Button, message, Popconfirm, Table, Select, Typography } from "antd";
 import LaptopService from "../api/services/laptop-service.js";
 import Loading from "../components/loading.jsx";
 import { DeleteOutlined, SearchOutlined } from "@ant-design/icons";
@@ -80,17 +80,33 @@ export default function Laptops() {
         title: "Code",
         dataIndex: "code",
         key: "code",
-        // render: code => <Typography.Text code>{code}</Typography.Text>
+        width: 100,
+        render: (code, record) => {
+          return (
+            <div className={"flex flex-col text-xs"}>
+              <Typography.Text code className={"text-xs"}>
+                {code}
+              </Typography.Text>
+              <Typography.Text underline className={"text-xs"}>
+                # {record.serviceTag ?? "N/A"}
+              </Typography.Text>
+            </div>
+          );
+        },
       },
       {
         title: "Title",
         dataIndex: "name",
         key: "name",
+        render: (name) => {
+          return <div className={"flex flex-col text-xs"}>{name ?? "-"}</div>;
+        },
       },
       {
         title: "State",
         dataIndex: "state",
         key: "state",
+        width: 160,
         render: (state, record) => (
           <Select
             defaultValue={state}
@@ -109,14 +125,42 @@ export default function Laptops() {
         ),
       },
       {
-        title: "Limit Price",
-        dataIndex: "limitPrice",
-        key: "limitPrice",
+        title: "Marketplaces",
+        dataIndex: "marketplaces",
+        key: "marketplaces",
+        width: 120,
+        render: (marketplaces) => {
+          return marketplaces.map((marketplace) => {
+            const color = marketplace.published ? "bg-green-50" : "bg-rose-50";
+            return (
+              <div key={marketplace} className={`flex flex-col text-xs ${color}`}>
+                {marketplace.name}
+              </div>
+            );
+          });
+        },
       },
       {
-        title: "Sell Price",
-        dataIndex: "sellPrice",
-        key: "sellPrice",
+        title: "Note",
+        dataIndex: "note",
+        key: "note",
+        render: (note) => {
+          return <div className={"flex flex-col text-xs"}>{note ?? "-"}</div>;
+        },
+      },
+      {
+        title: "Pricing",
+        dataIndex: "limitPrice",
+        key: "limitPrice",
+        width: 100,
+        render: (limitPrice, record) => {
+          return (
+            <div className={"flex flex-col text-xs"}>
+              <div>Limit: {limitPrice ?? "-"}</div>
+              <div>Sell: {record.sellPrice ?? "-"}</div>
+            </div>
+          );
+        },
       },
       {
         title: "Action",
@@ -164,6 +208,7 @@ export default function Laptops() {
           // TODO: load more data when scrolled to bottom
         }}
         key={"_id"}
+        footer={() => <div className={"text-xs"}>Total laptops: {laptops.length}</div>}
         expandable={{
           expandedRowRender: (laptop) => (
             <div className={"bg-amber-50 m-0"}>
