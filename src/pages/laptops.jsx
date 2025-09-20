@@ -71,7 +71,7 @@ export default function Laptops() {
     const resolution = laptop.characteristics?.resolution;
     const panelType = laptop.characteristics?.panelType;
 
-    return `${name} | ${processor || "not specified"} | ${videocard ? `${videocard} GB` : "not specified"} | ${ssd ? `${ssd} GB` : "not specified"} | ${ram ? `${ram} GB` : "not specified"} | ${screenSize ? `${screenSize}"` : "not specified"} ${resolution || "not specified"} ${panelType || "not specified"}`;
+    return `${name} | ${processor || "not specified"} | ${videocard ? `${videocard}` : "not specified"} | ${ssd ? `${ssd} GB` : "not specified"} | ${ram ? `${ram} GB` : "not specified"} | ${screenSize ? `${screenSize}"` : "not specified"} ${resolution || "not specified"} ${panelType || "not specified"}`;
   }
 
   const getColumns = () => {
