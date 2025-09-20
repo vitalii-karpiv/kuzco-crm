@@ -23,7 +23,7 @@ export default function CounterpartyOrderList() {
   }
 
   return (
-    <Card className={"w-2/4 ml-2 mt-1"} loading={isLoading}>
+    <Card className={"w-2/4 ml-2 mt-1 min-h-60"} loading={isLoading}>
       <Typography.Title level={4}>Counterparty for orders</Typography.Title>
       <ol className={"list-disc list-inside space-y-2 overflow-y-auto max-h-[310px]"}>
         {orders.map((order) => (

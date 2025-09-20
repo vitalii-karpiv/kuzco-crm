@@ -94,12 +94,13 @@ export default function ToBuy() {
             <li key={laptop.id}>
               <Link to={`/laptops/laptopDetail/${laptop._id}`}>
                 <Typography.Text>
-                  <Typography.Text code>{laptop.code}</Typography.Text> {laptop.name}
+                  <Typography.Text code>{laptop.code}</Typography.Text> {laptop.name}{" "}
+                  {laptop.serviceTag && <Typography.Text code>{laptop.serviceTag}</Typography.Text>}
                 </Typography.Text>
               </Link>
               <ul className={"list-decimal list-inside space-y-2 ml-8 mt-2"}>
                 {laptop.toBuy.map((toBuy, idx) => (
-                  <li key={toBuy + idx} className="flex items-center bg-rose-100 w-auto px-1 py-0.5 rounded">
+                  <li key={toBuy + idx} className="flex items-center bg-slate-200 w-auto px-1 py-0.5 rounded">
                     {editing[laptop._id]?.[idx] !== undefined ? (
                       <>
                         <Input
