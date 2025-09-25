@@ -203,7 +203,7 @@ export default function Laptops() {
       <FilterBar filters={filters} setFilters={setFilters} />
       <Table
         className={"ml-3"}
-        dataSource={laptops.map((laptop, index) => ({ ...laptop, key: index }))}
+        dataSource={laptops.map((laptop) => ({ ...laptop, key: laptop._id }))}
         size={"small"}
         columns={getColumns()}
         pagination={false}
