@@ -3,7 +3,7 @@ import { Button, message, Popconfirm, Table, Select, Typography } from "antd";
 import LaptopService from "../api/services/laptop-service.js";
 import Loading from "../components/loading.jsx";
 import { DeleteOutlined, SearchOutlined } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import LaptopsTableHeader from "../components/laptop/laptops-table-header.jsx";
 import CreateLaptopModal from "../components/laptop/create-laptop-modal.jsx";
 import SorterBar from "../components/laptop-detail/sorter-bar.jsx";
@@ -16,7 +16,7 @@ import LaptopStateTag from "../components/common/laptop-state-tag.jsx";
 export default function Laptops() {
   document.title = "Laptops";
   const [laptops, setLaptops] = useState();
-  const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState({});
   const [sorters, setSorters] = useState({});
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -30,8 +30,10 @@ export default function Laptops() {
   };
 
   async function loadLaptops() {
+    setIsLoading(true);
     const ordersDto = await LaptopService.list({ ...filters, sorters });
     setLaptops(ordersDto.itemList);
+    setIsLoading(false);
   }
 
   const handleDelete = async (id) => {
@@ -71,7 +73,7 @@ export default function Laptops() {
     const resolution = laptop.characteristics?.resolution;
     const panelType = laptop.characteristics?.panelType;
 
-    return `${name} | ${processor || "not specified"} | ${videocard ? `${videocard} GB` : "not specified"} | ${ssd ? `${ssd} GB` : "not specified"} | ${ram ? `${ram} GB` : "not specified"} | ${screenSize ? `${screenSize}"` : "not specified"} ${resolution || "not specified"} ${panelType || "not specified"}`;
+    return `${name} | ${processor || "not specified"} | ${videocard ? `${videocard}` : "not specified"} | ${ssd ? `${ssd} GB` : "not specified"} | ${ram ? `${ram} GB` : "not specified"} | ${screenSize ? `${screenSize}"` : "not specified"} ${resolution || "not specified"} ${panelType || "not specified"}`;
   }
 
   const getColumns = () => {
@@ -170,7 +172,9 @@ export default function Laptops() {
         render: (record) => {
           return (
             <div className={"w-full flex justify-evenly"}>
-              <Button onClick={() => navigate(`laptopDetail/${record._id}`)} shape="circle" icon={<SearchOutlined />} />
+              <Link to={`/laptops/laptopDetail/${record._id}`}>
+                <Button shape="circle" icon={<SearchOutlined />} />
+              </Link>
               <Popconfirm
                 title={"Are you sure you want to delete this laptop?"}
                 onConfirm={() => handleDelete(record._id)}
@@ -208,6 +212,7 @@ export default function Laptops() {
           // TODO: load more data when scrolled to bottom
         }}
         key={"_id"}
+        loading={isLoading}
         footer={() => <div className={"text-xs"}>Total laptops: {laptops.length}</div>}
         expandable={{
           expandedRowRender: (laptop) => (
