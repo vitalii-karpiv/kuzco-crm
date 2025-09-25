@@ -16,6 +16,7 @@ import LaptopStateTag from "../components/common/laptop-state-tag.jsx";
 export default function Laptops() {
   document.title = "Laptops";
   const [laptops, setLaptops] = useState();
+  const [isLoading, setIsLoading] = useState(true);
   const [filters, setFilters] = useState({});
   const [sorters, setSorters] = useState({});
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -29,8 +30,10 @@ export default function Laptops() {
   };
 
   async function loadLaptops() {
+    setIsLoading(true);
     const ordersDto = await LaptopService.list({ ...filters, sorters });
     setLaptops(ordersDto.itemList);
+    setIsLoading(false);
   }
 
   const handleDelete = async (id) => {
@@ -209,6 +212,7 @@ export default function Laptops() {
           // TODO: load more data when scrolled to bottom
         }}
         key={"_id"}
+        loading={isLoading}
         footer={() => <div className={"text-xs"}>Total laptops: {laptops.length}</div>}
         expandable={{
           expandedRowRender: (laptop) => (
