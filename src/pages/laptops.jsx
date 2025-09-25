@@ -3,7 +3,7 @@ import { Button, message, Popconfirm, Table, Select, Typography } from "antd";
 import LaptopService from "../api/services/laptop-service.js";
 import Loading from "../components/loading.jsx";
 import { DeleteOutlined, SearchOutlined } from "@ant-design/icons";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import LaptopsTableHeader from "../components/laptop/laptops-table-header.jsx";
 import CreateLaptopModal from "../components/laptop/create-laptop-modal.jsx";
 import SorterBar from "../components/laptop-detail/sorter-bar.jsx";
@@ -16,7 +16,6 @@ import LaptopStateTag from "../components/common/laptop-state-tag.jsx";
 export default function Laptops() {
   document.title = "Laptops";
   const [laptops, setLaptops] = useState();
-  const navigate = useNavigate();
   const [filters, setFilters] = useState({});
   const [sorters, setSorters] = useState({});
   const [createModalOpen, setCreateModalOpen] = useState(false);
@@ -170,7 +169,9 @@ export default function Laptops() {
         render: (record) => {
           return (
             <div className={"w-full flex justify-evenly"}>
-              <Button onClick={() => navigate(`laptopDetail/${record._id}`)} shape="circle" icon={<SearchOutlined />} />
+              <Link to={`/laptops/laptopDetail/${record._id}`}>
+                <Button shape="circle" icon={<SearchOutlined />} />
+              </Link>
               <Popconfirm
                 title={"Are you sure you want to delete this laptop?"}
                 onConfirm={() => handleDelete(record._id)}
