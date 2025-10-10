@@ -142,11 +142,14 @@ export default function LaptopDetail() {
           </div>
           <Button
             onClick={() => setSaleCreateOpen(true)}
-            className={"bg-green-100"}
+            type="primary"
+            className={
+              "bg-teal-500 hover:bg-teal-600 border-teal-500 hover:border-teal-600 text-white font-medium px-3 py-1 h-8 rounded-md shadow-sm hover:shadow-md transition-all duration-200"
+            }
             size={"small"}
             disabled={LaptopManager.getFinalStates().includes(laptop.state)}
           >
-            Продано!
+            <span className="flex items-center gap-1.5 text-sm">Create Sale</span>
           </Button>
         </div>
       </header>
