@@ -30,6 +30,7 @@ export default function LaptopDetail() {
 
   const [saleCreateOpen, setSaleCreateOpen] = useState(false);
   const [assigneeLoading, setAssigneeLoading] = useState(false);
+  const [stateLoading, setStateLoading] = useState(false);
 
   useEffect(() => {
     loadLaptop();
@@ -43,8 +44,17 @@ export default function LaptopDetail() {
   };
 
   const handleSetState = async (state) => {
-    const updated = await LaptopService.setState({ id, state });
-    setLaptop(updated);
+    try {
+      setStateLoading(true);
+      const updated = await LaptopService.setState({ id, state });
+      setLaptop(updated);
+      message.success(`State updated to ${LaptopManager.getLaptopStateLabel(state)}`);
+    } catch (e) {
+      console.error(e);
+      message.error("Failed to update state!");
+    } finally {
+      setStateLoading(false);
+    }
   };
 
   const handleSetAssignee = async (userId) => {
@@ -52,6 +62,7 @@ export default function LaptopDetail() {
       setAssigneeLoading(true);
       const updated = await LaptopService.update({ id, assignee: userId });
       setLaptop(updated);
+      message.success(`Assignee updated!`);
     } catch (e) {
       message.error("Failed to update assignee!");
       console.error(e);
@@ -109,20 +120,26 @@ export default function LaptopDetail() {
               </Select>
             </div>
           )}
-          <Select
-            defaultValue={laptop.state}
-            variant={"borderless"}
-            placement={"bottomRight"}
-            suffixIcon={null}
-            popupClassName={"min-w-44"}
-            onChange={(state) => handleSetState(state)}
-          >
-            {LaptopManager.getLaptopStateList().map((state) => (
-              <Select.Option key={state} value={state}>
-                <LaptopStateTag state={state} />
-              </Select.Option>
-            ))}
-          </Select>
+          <div className={"flex items-center mr-4"}>
+            <span className={"text-xs text-gray-700 mr-1"}>State:</span>
+            <Select
+              defaultValue={laptop.state}
+              value={laptop.state}
+              variant={"filled"}
+              placement={"bottomRight"}
+              suffixIcon={stateLoading ? <Spin size="small" /> : null}
+              popupClassName={"min-w-48"}
+              onChange={handleSetState}
+              className={"ml-0"}
+              disabled={stateLoading}
+            >
+              {LaptopManager.getLaptopStateList().map((state) => (
+                <Select.Option key={state} value={state}>
+                  <LaptopStateTag state={state} />
+                </Select.Option>
+              ))}
+            </Select>
+          </div>
           <Button
             onClick={() => setSaleCreateOpen(true)}
             className={"bg-green-100"}
