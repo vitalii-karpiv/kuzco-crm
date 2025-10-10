@@ -17,7 +17,9 @@ export default function Laptops() {
   document.title = "Laptops";
   const [laptops, setLaptops] = useState();
   const [isLoading, setIsLoading] = useState(true);
-  const [filters, setFilters] = useState({});
+  const [filters, setFilters] = useState({
+    stateList: LaptopManager.getActiveStates(),
+  });
   const [sorters, setSorters] = useState({});
   const [createModalOpen, setCreateModalOpen] = useState(false);
 
