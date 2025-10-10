@@ -2,6 +2,7 @@ import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Loading from "../components/loading.jsx";
 import LaptopService from "../api/services/laptop-service.js";
+import SaleService from "../api/services/sale-service.js";
 import { Button, Select, Typography, Spin, message } from "antd";
 import UpdateCharacteristicsModal from "../components/laptop-detail/update-characteristics-modal.jsx";
 import BuyStockModal from "../components/laptop-detail/buy-stock-modal.jsx";
@@ -31,10 +32,12 @@ export default function LaptopDetail() {
   const [saleCreateOpen, setSaleCreateOpen] = useState(false);
   const [assigneeLoading, setAssigneeLoading] = useState(false);
   const [stateLoading, setStateLoading] = useState(false);
+  const [relatedSale, setRelatedSale] = useState(null);
 
   useEffect(() => {
     loadLaptop();
     loadStock();
+    loadRelatedSale();
   }, [id]);
 
   const loadLaptop = async () => {
@@ -76,6 +79,17 @@ export default function LaptopDetail() {
     setStockList(stockListDto.itemList);
   };
 
+  const loadRelatedSale = async () => {
+    try {
+      const salesDto = await SaleService.list({ laptopIdList: [id] });
+      if (salesDto.itemList && salesDto.itemList.length > 0) {
+        setRelatedSale(salesDto.itemList[0]); // Get the first (most recent) sale
+      }
+    } catch (e) {
+      message.error("Failed to load related sale");
+    }
+  };
+
   const onBuyStockReload = async () => {
     await loadStock();
     await loadLaptop();
@@ -95,9 +109,26 @@ export default function LaptopDetail() {
           {laptop.name}
         </Typography.Title>
         <div className={"flex justify-between items-center"}>
-          <Link target={"_blank"} to={`/orders/orderDetail/${laptop.orderId}`} className={"mr-2"}>
-            <FontAwesomeIcon icon={faSquareUpRight} /> Order
-          </Link>
+          <div className={"flex items-center gap-3 mr-3"}>
+            <Link
+              target={"_blank"}
+              to={`/orders/orderDetail/${laptop.orderId}`}
+              className={"flex items-center gap-1 text-blue-700 hover:text-blue-900 transition-colors"}
+            >
+              <FontAwesomeIcon icon={faSquareUpRight} />
+              Order
+            </Link>
+            {relatedSale && (
+              <Link
+                target={"_blank"}
+                to={`/sales/saleDetail/${relatedSale._id}`}
+                className={"flex items-center gap-1 text-green-700 hover:text-green-900 transition-colors"}
+              >
+                <FontAwesomeIcon icon={faSquareUpRight} />
+                Sale
+              </Link>
+            )}
+          </div>
           {userList && (
             <div className={"flex items-center mr-4"}>
               <span className={"text-xs text-gray-700 mr-1"}>Assignee:</span>
