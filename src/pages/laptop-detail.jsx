@@ -2,7 +2,7 @@ import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Loading from "../components/loading.jsx";
 import LaptopService from "../api/services/laptop-service.js";
-import { Button, Select, Typography } from "antd";
+import { Button, Select, Typography, Spin, message } from "antd";
 import UpdateCharacteristicsModal from "../components/laptop-detail/update-characteristics-modal.jsx";
 import BuyStockModal from "../components/laptop-detail/buy-stock-modal.jsx";
 import StockService from "../api/services/stock-service.js";
@@ -29,6 +29,7 @@ export default function LaptopDetail() {
   const { users: userList } = useUserContext();
 
   const [saleCreateOpen, setSaleCreateOpen] = useState(false);
+  const [assigneeLoading, setAssigneeLoading] = useState(false);
 
   useEffect(() => {
     loadLaptop();
@@ -47,8 +48,16 @@ export default function LaptopDetail() {
   };
 
   const handleSetAssignee = async (userId) => {
-    const updated = await LaptopService.update({ id, assignee: userId });
-    setLaptop(updated);
+    try {
+      setAssigneeLoading(true);
+      const updated = await LaptopService.update({ id, assignee: userId });
+      setLaptop(updated);
+    } catch (e) {
+      message.error("Failed to update assignee!");
+      console.error(e);
+    } finally {
+      setAssigneeLoading(false);
+    }
   };
 
   const loadStock = async () => {
@@ -79,19 +88,26 @@ export default function LaptopDetail() {
             <FontAwesomeIcon icon={faSquareUpRight} /> Order
           </Link>
           {userList && (
-            <Select
-              defaultValue={laptop.assignee}
-              placement={"bottomRight"}
-              suffixIcon={null}
-              popupClassName={"min-w-44"}
-              onChange={(userId) => handleSetAssignee(userId)}
-            >
-              {userList.map((user) => (
-                <Select.Option key={user._id} value={user._id}>
-                  {user.name} {user.surname}
-                </Select.Option>
-              ))}
-            </Select>
+            <div className={"flex items-center mr-4"}>
+              <span className={"text-xs text-gray-700 mr-1"}>Assignee:</span>
+              <Select
+                defaultValue={laptop.assignee}
+                value={laptop.assignee}
+                placement={"bottomRight"}
+                suffixIcon={assigneeLoading ? <Spin size="small" /> : null}
+                popupClassName={"min-w-44"}
+                onChange={handleSetAssignee}
+                variant="filled"
+                className={"ml-0"}
+                disabled={assigneeLoading}
+              >
+                {userList.map((user) => (
+                  <Select.Option key={user._id} value={user._id}>
+                    {user.name} {user.surname}
+                  </Select.Option>
+                ))}
+              </Select>
+            </div>
           )}
           <Select
             defaultValue={laptop.state}
