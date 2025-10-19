@@ -11,7 +11,7 @@ export default function FilterBar({ filters, setFilters }) {
       <div className={"flex justify-between"}>
         <div className={"w-1/4"}>
           <FilterWrapper label={"State"}>
-            <Select onChange={(e) => setFilters({ ...filters, state: e })} className={"w-full"} mode="multiple">
+            <Select onChange={(e) => setFilters({ ...filters, stateList: e })} className={"w-full"} mode="multiple">
               {LaptopManager.getLaptopStateList().map((state) => {
                 return (
                   <Select.Option value={state} key={state}>

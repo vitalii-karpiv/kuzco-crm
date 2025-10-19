@@ -2,7 +2,8 @@ import { Link, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Loading from "../components/loading.jsx";
 import LaptopService from "../api/services/laptop-service.js";
-import { Button, Select, Typography } from "antd";
+import SaleService from "../api/services/sale-service.js";
+import { Button, Select, Typography, Spin, message } from "antd";
 import UpdateCharacteristicsModal from "../components/laptop-detail/update-characteristics-modal.jsx";
 import BuyStockModal from "../components/laptop-detail/buy-stock-modal.jsx";
 import StockService from "../api/services/stock-service.js";
@@ -29,10 +30,14 @@ export default function LaptopDetail() {
   const { users: userList } = useUserContext();
 
   const [saleCreateOpen, setSaleCreateOpen] = useState(false);
+  const [assigneeLoading, setAssigneeLoading] = useState(false);
+  const [stateLoading, setStateLoading] = useState(false);
+  const [relatedSale, setRelatedSale] = useState(null);
 
   useEffect(() => {
     loadLaptop();
     loadStock();
+    loadRelatedSale();
   }, [id]);
 
   const loadLaptop = async () => {
@@ -42,18 +47,47 @@ export default function LaptopDetail() {
   };
 
   const handleSetState = async (state) => {
-    const updated = await LaptopService.setState({ id, state });
-    setLaptop(updated);
+    try {
+      setStateLoading(true);
+      const updated = await LaptopService.setState({ id, state });
+      setLaptop(updated);
+      message.success(`State updated to ${LaptopManager.getLaptopStateLabel(state)}`);
+    } catch (e) {
+      console.error(e);
+      message.error("Failed to update state!");
+    } finally {
+      setStateLoading(false);
+    }
   };
 
   const handleSetAssignee = async (userId) => {
-    const updated = await LaptopService.update({ id, assignee: userId });
-    setLaptop(updated);
+    try {
+      setAssigneeLoading(true);
+      const updated = await LaptopService.update({ id, assignee: userId });
+      setLaptop(updated);
+      message.success(`Assignee updated!`);
+    } catch (e) {
+      message.error("Failed to update assignee!");
+      console.error(e);
+    } finally {
+      setAssigneeLoading(false);
+    }
   };
 
   const loadStock = async () => {
     const stockListDto = await StockService.list({ laptopId: id });
     setStockList(stockListDto.itemList);
+  };
+
+  const loadRelatedSale = async () => {
+    try {
+      const salesDto = await SaleService.list({ laptopIdList: [id] });
+      if (salesDto.itemList && salesDto.itemList.length > 0) {
+        setRelatedSale(salesDto.itemList[0]); // Get the first (most recent) sale
+      }
+    } catch (e) {
+      message.error("Failed to load related sale");
+    }
   };
 
   const onBuyStockReload = async () => {
@@ -75,45 +109,78 @@ export default function LaptopDetail() {
           {laptop.name}
         </Typography.Title>
         <div className={"flex justify-between items-center"}>
-          <Link target={"_blank"} to={`/orders/orderDetail/${laptop.orderId}`} className={"mr-2"}>
-            <FontAwesomeIcon icon={faSquareUpRight} /> Order
-          </Link>
-          {userList && (
-            <Select
-              defaultValue={laptop.assignee}
-              placement={"bottomRight"}
-              suffixIcon={null}
-              popupClassName={"min-w-44"}
-              onChange={(userId) => handleSetAssignee(userId)}
+          <div className={"flex items-center gap-3 mr-3"}>
+            <Link
+              target={"_blank"}
+              to={`/orders/orderDetail/${laptop.orderId}`}
+              className={"flex items-center gap-1 text-blue-700 hover:text-blue-900 transition-colors"}
             >
-              {userList.map((user) => (
-                <Select.Option key={user._id} value={user._id}>
-                  {user.name} {user.surname}
+              <FontAwesomeIcon icon={faSquareUpRight} />
+              Order
+            </Link>
+            {relatedSale && (
+              <Link
+                target={"_blank"}
+                to={`/sales/saleDetail/${relatedSale._id}`}
+                className={"flex items-center gap-1 text-green-700 hover:text-green-900 transition-colors"}
+              >
+                <FontAwesomeIcon icon={faSquareUpRight} />
+                Sale
+              </Link>
+            )}
+          </div>
+          {userList && (
+            <div className={"flex items-center mr-4"}>
+              <span className={"text-xs text-gray-700 mr-1"}>Assignee:</span>
+              <Select
+                defaultValue={laptop.assignee}
+                value={laptop.assignee}
+                placement={"bottomRight"}
+                suffixIcon={assigneeLoading ? <Spin size="small" /> : null}
+                popupClassName={"min-w-44"}
+                onChange={handleSetAssignee}
+                variant="filled"
+                className={"ml-0"}
+                disabled={assigneeLoading}
+              >
+                {userList.map((user) => (
+                  <Select.Option key={user._id} value={user._id}>
+                    {user.name} {user.surname}
+                  </Select.Option>
+                ))}
+              </Select>
+            </div>
+          )}
+          <div className={"flex items-center mr-4"}>
+            <span className={"text-xs text-gray-700 mr-1"}>State:</span>
+            <Select
+              defaultValue={laptop.state}
+              value={laptop.state}
+              variant={"filled"}
+              placement={"bottomRight"}
+              suffixIcon={stateLoading ? <Spin size="small" /> : null}
+              popupClassName={"min-w-48"}
+              onChange={handleSetState}
+              className={"ml-0"}
+              disabled={stateLoading}
+            >
+              {LaptopManager.getLaptopStateList().map((state) => (
+                <Select.Option key={state} value={state}>
+                  <LaptopStateTag state={state} />
                 </Select.Option>
               ))}
             </Select>
-          )}
-          <Select
-            defaultValue={laptop.state}
-            variant={"borderless"}
-            placement={"bottomRight"}
-            suffixIcon={null}
-            popupClassName={"min-w-44"}
-            onChange={(state) => handleSetState(state)}
-          >
-            {LaptopManager.getLaptopStateList().map((state) => (
-              <Select.Option key={state} value={state}>
-                <LaptopStateTag state={state} />
-              </Select.Option>
-            ))}
-          </Select>
+          </div>
           <Button
             onClick={() => setSaleCreateOpen(true)}
-            className={"bg-green-100"}
+            type="primary"
+            className={
+              "bg-teal-500 hover:bg-teal-600 border-teal-500 hover:border-teal-600 text-white font-medium px-3 py-1 h-8 rounded-md shadow-sm hover:shadow-md transition-all duration-200"
+            }
             size={"small"}
             disabled={LaptopManager.getFinalStates().includes(laptop.state)}
           >
-            Продано!
+            <span className="flex items-center gap-1.5 text-sm">Create Sale</span>
           </Button>
         </div>
       </header>

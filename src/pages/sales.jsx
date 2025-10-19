@@ -160,6 +160,7 @@ export default function Sales() {
           pagination={false}
           columns={getColumns()}
           title={() => <SalesTableHeader onClick={() => setCreateModalOpen(true)} />}
+          footer={() => <div className={"text-xs"}>Total sales: {sales.length}</div>}
         />
       )}
       {createModalOpen && <CreateSaleModal createModalOpen={createModalOpen} onClose={handleCloseCreateModal} />}

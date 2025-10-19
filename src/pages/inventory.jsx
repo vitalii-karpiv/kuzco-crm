@@ -111,6 +111,7 @@ export default function Inventory() {
         loading={isLoading}
         columns={getColumns()}
         title={() => <InventoryTableHeader onClick={() => setOpenCreateModal(true)} />}
+        footer={() => <div className={"text-xs"}>Total stocks: {stocks.length}</div>}
         onRow={(record) => {
           return {
             onClick: () => {
