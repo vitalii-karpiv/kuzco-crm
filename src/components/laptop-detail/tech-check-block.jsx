@@ -27,7 +27,7 @@ export default function TechCheckBlock({ laptop, setLaptop }) {
   }
 
   return (
-    <Card bordered={false} hoverable={true} className={"h-2/4 mb-2"}>
+    <Card bordered={false} hoverable={true} className={"w-2/4"}>
       {contextHolder}
       <div className={"flex justify-between align-middle"}>
         <Tooltip placement="topLeft" title={"Вєталь Глухан не навтикай"}>
