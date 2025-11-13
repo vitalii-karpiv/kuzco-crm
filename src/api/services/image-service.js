@@ -1,6 +1,6 @@
 import $api from "../http";
 
-export default class OrderService {
+export default class ImageService {
   static async upload(dto) {
     const result = await $api.post("/image/upload", dto, {
       headers: {

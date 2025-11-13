@@ -13,7 +13,7 @@ export default function DefectsBlock({ laptop, setLaptop }) {
   }
 
   return (
-    <Card bordered={false} hoverable={true} className={"h-fit mb-2"}>
+    <Card bordered={false} hoverable={true} className={"w-2/4"}>
       <div className={"flex justify-between align-middle"}>
         <Typography.Title level={4}>Defects</Typography.Title>
         <Button size={"small"} onClick={() => setLaptop({ ...laptop, defects: [...laptop.defects, ""] })}>

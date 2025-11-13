@@ -15,6 +15,7 @@ import FinanceBlock from "../components/laptop-detail/finance-block.jsx";
 import MarketplaceBlock from "../components/laptop-detail/marketplace-block.jsx";
 import DefectsBlock from "../components/laptop-detail/defects-block.jsx";
 import TechCheckBlock from "../components/laptop-detail/tech-check-block.jsx";
+import ImagesBlock from "../components/laptop-detail/images-block.jsx";
 import LaptopStateTag from "../components/common/laptop-state-tag.jsx";
 import SaleCreateModal from "../components/laptop-detail/sale-create-modal.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -184,12 +185,13 @@ export default function LaptopDetail() {
           </Button>
         </div>
       </header>
-      <div className={"flex mb-1 items-start"}>
+      <div className={"flex mb-3"}>
         <CharacteristicsBlock laptop={laptop} setLaptop={setLaptop} />
-        <div className={"w-2/4 flex-col"}>
-          <TechCheckBlock laptop={laptop} setLaptop={setLaptop} />
-          <DefectsBlock laptop={laptop} setLaptop={setLaptop} />
-        </div>
+        <TechCheckBlock laptop={laptop} setLaptop={setLaptop} />
+      </div>
+      <div className={"flex mb-3"}>
+        <ImagesBlock laptopId={laptop._id} laptop={laptop} setLaptop={setLaptop} />
+        <DefectsBlock laptop={laptop} setLaptop={setLaptop} />
       </div>
       <div className={"flex mb-3"}>
         <ComplectationBlock stockList={stockList} setStockList={setStockList} laptopId={laptop?._id} />
