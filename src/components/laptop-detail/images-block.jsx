@@ -1,17 +1,19 @@
-import { Card, Typography, Upload, message, Image, Spin, Progress } from "antd";
-import { UploadOutlined, EyeOutlined } from "@ant-design/icons";
+import { Card, Typography, Upload, message, Image, Spin, Progress, Button, Tooltip } from "antd";
+import { UploadOutlined, EyeOutlined, StarOutlined } from "@ant-design/icons";
 import PropTypes from "prop-types";
 import { useState, useEffect, useRef } from "react";
 import ImageService from "../../api/services/image-service.js";
+import LaptopService from "../../api/services/laptop-service.js";
 
 const { Dragger } = Upload;
 
-export default function ImagesBlock({ laptopId }) {
+export default function ImagesBlock({ laptopId, laptop, setLaptop }) {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [uploadingFiles, setUploadingFiles] = useState([]);
+  const [settingMainImage, setSettingMainImage] = useState(false);
   const uploadInProgress = useRef(false);
   const lastUploadTime = useRef(0);
   const processedFiles = useRef(new Set());
@@ -21,6 +23,12 @@ export default function ImagesBlock({ laptopId }) {
     // Clear processed files when laptop changes
     processedFiles.current.clear();
   }, [laptopId]);
+
+  // Re-check main image when laptop data changes
+  useEffect(() => {
+    // This ensures the main image indicator updates when laptop data is loaded
+    // The isMainImage function will be called during render
+  }, [laptop?.photoUri]);
 
   const loadImages = async () => {
     try {
@@ -98,6 +106,72 @@ export default function ImagesBlock({ laptopId }) {
       setUploadingFiles([]);
       uploadInProgress.current = false;
     }
+  };
+
+  const handleSetMainImage = async (imageUrl) => {
+    if (!laptop || !setLaptop) {
+      message.warning("Laptop data not available");
+      return;
+    }
+
+    try {
+      setSettingMainImage(true);
+      const updated = await LaptopService.update({
+        id: laptop._id,
+        photoUri: imageUrl,
+      });
+      setLaptop(updated);
+      message.success("Main image updated successfully");
+    } catch (error) {
+      message.error("Failed to set main image");
+    } finally {
+      setSettingMainImage(false);
+    }
+  };
+
+  // Extract a stable identifier from URL for comparison
+  // This handles both signed URLs and permanent URLs by extracting the path/key
+  const getImageIdentifier = (url) => {
+    if (!url) return null;
+    try {
+      const urlObj = new URL(url);
+      // Extract the pathname (this is the stable part, query params change for signed URLs)
+      const path = urlObj.pathname;
+      return path;
+    } catch (e) {
+      // If URL parsing fails (relative URL), extract the path part before query params
+      const pathPart = url.split("?")[0].split("#")[0];
+      return pathPart;
+    }
+  };
+
+  const isMainImage = (imageUrl, imageId) => {
+    if (!laptop?.photoUri || !imageUrl) return false;
+
+    // Try exact match first (works if URLs haven't changed)
+    if (laptop.photoUri === imageUrl) return true;
+
+    // Try comparing stable path identifiers (handles signed URLs with different query params)
+    const mainImagePath = getImageIdentifier(laptop.photoUri);
+    const currentImagePath = getImageIdentifier(imageUrl);
+
+    if (mainImagePath && currentImagePath && mainImagePath === currentImagePath) {
+      return true;
+    }
+
+    // Fallback: check if the URLs share the same base (without query params)
+    const mainBase = laptop.photoUri.split("?")[0].split("#")[0];
+    const currentBase = imageUrl.split("?")[0].split("#")[0];
+    if (mainBase === currentBase && mainBase) {
+      return true;
+    }
+
+    // Additional check: if photoUri contains the image ID, use that
+    if (imageId && laptop.photoUri.includes(imageId)) {
+      return true;
+    }
+
+    return false;
   };
 
   const uploadProps = {
@@ -194,6 +268,34 @@ export default function ImagesBlock({ laptopId }) {
                     }}
                   />
                 </div>
+                {/* Main image indicator and set button */}
+                <div className="absolute top-1 right-1 flex gap-1">
+                  {isMainImage(image.signedUrl, image.id) ? (
+                    <Tooltip title="Main image">
+                      <Button
+                        type="primary"
+                        size="small"
+                        icon={<StarOutlined />}
+                        className="bg-yellow-400 border-yellow-400 text-white shadow-md"
+                      />
+                    </Tooltip>
+                  ) : (
+                    <Tooltip title="Set as main image">
+                      <Button
+                        type="primary"
+                        size="small"
+                        icon={<StarOutlined />}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity bg-white hover:bg-yellow-400 border-white hover:border-yellow-400 text-gray-600 hover:text-white shadow-md"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSetMainImage(image.signedUrl);
+                        }}
+                        disabled={settingMainImage}
+                        loading={settingMainImage}
+                      />
+                    </Tooltip>
+                  )}
+                </div>
               </div>
             ))}
           </Image.PreviewGroup>
@@ -205,4 +307,6 @@ export default function ImagesBlock({ laptopId }) {
 
 ImagesBlock.propTypes = {
   laptopId: PropTypes.string.isRequired,
+  laptop: PropTypes.object,
+  setLaptop: PropTypes.func,
 };

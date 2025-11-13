@@ -190,7 +190,7 @@ export default function LaptopDetail() {
         <TechCheckBlock laptop={laptop} setLaptop={setLaptop} />
       </div>
       <div className={"flex mb-3"}>
-        <ImagesBlock laptopId={laptop._id} />
+        <ImagesBlock laptopId={laptop._id} laptop={laptop} setLaptop={setLaptop} />
         <DefectsBlock laptop={laptop} setLaptop={setLaptop} />
       </div>
       <div className={"flex mb-3"}>
