@@ -8,6 +8,7 @@ import {
   faShoppingCart,
   faMoneyBill,
   faWarehouse,
+  faLayerGroup,
 } from "@fortawesome/free-solid-svg-icons";
 
 export default function MainMenu() {
@@ -26,6 +27,11 @@ export default function MainMenu() {
       key: "laptops",
       label: <Link to={"laptops"}>Laptops</Link>,
       icon: <FontAwesomeIcon icon={faLaptop} />,
+    },
+    {
+      key: "laptopGroups",
+      label: <Link to={"laptopGroups"}>Laptop Groups</Link>,
+      icon: <FontAwesomeIcon icon={faLayerGroup} />,
     },
     {
       key: "sales",
