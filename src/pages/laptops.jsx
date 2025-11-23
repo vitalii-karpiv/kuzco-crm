@@ -12,6 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCopy } from "@fortawesome/free-solid-svg-icons";
 import LaptopManager from "../helpers/laptop-manager.js";
 import LaptopStateTag from "../components/common/laptop-state-tag.jsx";
+import LaptopExportHelper from "../helpers/laptop-export-helper.js";
 
 export default function Laptops() {
   document.title = "Laptops";
@@ -71,12 +72,27 @@ export default function Laptops() {
     const videocard = laptop.characteristics?.videocard;
     const ssd = laptop.characteristics?.ssd;
     const ram = laptop.characteristics?.ram;
-    const screenSize = laptop.characteristics?.screenSize;
-    const resolution = laptop.characteristics?.resolution;
-    const panelType = laptop.characteristics?.panelType;
+    const displayInfo = LaptopExportHelper.buildDisplayInfo(laptop.characteristics);
+    const batteryInfo = LaptopExportHelper.getBatteryInfo(laptop.characteristics);
 
-    return `${name} | ${processor || "not specified"} | ${videocard ? `${videocard}` : "not specified"} | ${ssd ? `${ssd} GB` : "not specified"} | ${ram ? `${ram} GB` : "not specified"} | ${screenSize ? `${screenSize}"` : "not specified"} ${resolution || "not specified"} ${panelType || "not specified"}`;
+    return `${name} | ${processor || "not specified"} | ${videocard ? `${videocard}` : "not specified"} | ${ssd ? `${ssd} GB` : "not specified"} | ${ram ? `${ram} GB` : "not specified"} | ${displayInfo} | Battery ${batteryInfo}`;
   }
+
+  const handleExportExcel = () => {
+    if (!laptops || laptops.length === 0) {
+      message.info("No laptops to export.");
+      return;
+    }
+
+    try {
+      const exported = LaptopExportHelper.exportToExcel(laptops);
+      if (exported) {
+        message.success("Export ready!");
+      }
+    } catch (error) {
+      message.error("Failed to export laptops.");
+    }
+  };
 
   const getColumns = () => {
     return [
@@ -113,16 +129,16 @@ export default function Laptops() {
         width: 160,
         render: (state, record) => (
           <Select
-            defaultValue={state}
+            value={state}
             variant={"borderless"}
             placement={"bottomRight"}
             suffixIcon={null}
             popupClassName={"min-w-44"}
             onChange={(newState) => handleSetState(record._id, newState)}
           >
-            {LaptopManager.getLaptopStateList().map((state) => (
-              <Select.Option key={state} value={state}>
-                <LaptopStateTag state={state} />
+            {LaptopManager.getLaptopStateList().map((stateKey) => (
+              <Select.Option key={stateKey} value={stateKey} label={LaptopManager.getLaptopStateLabel(stateKey)}>
+                <LaptopStateTag state={stateKey} />
               </Select.Option>
             ))}
           </Select>
@@ -234,7 +250,7 @@ export default function Laptops() {
           ),
           rowExpandable: (laptop) => laptop.characteristics,
         }}
-        title={() => <LaptopsTableHeader onClick={() => setCreateModalOpen(true)} />}
+        title={() => <LaptopsTableHeader onClick={() => setCreateModalOpen(true)} onExport={handleExportExcel} />}
       />
       {createModalOpen && (
         <CreateLaptopModal createModalOpen={createModalOpen} onClose={closeCreateModal} onReload={loadLaptops} />
