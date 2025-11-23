@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Button, message, Popconfirm, Table, Select, Typography } from "antd";
 import LaptopService from "../api/services/laptop-service.js";
+import LaptopGroupService from "../api/services/laptop-group-service.js";
 import Loading from "../components/loading.jsx";
-import { DeleteOutlined, SearchOutlined } from "@ant-design/icons";
+import { DeleteOutlined, MinusOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import LaptopsTableHeader from "../components/laptop/laptops-table-header.jsx";
 import CreateLaptopModal from "../components/laptop/create-laptop-modal.jsx";
@@ -23,6 +24,7 @@ export default function Laptops() {
   });
   const [sorters, setSorters] = useState({});
   const [createModalOpen, setCreateModalOpen] = useState(false);
+  const [addingLaptopId, setAddingLaptopId] = useState(null);
 
   useEffect(() => {
     loadLaptops();
@@ -53,6 +55,36 @@ export default function Laptops() {
     const updatedLaptop = await LaptopService.setState({ id: laptopId, state: newState });
 
     setLaptops((prev) => prev.map((laptop) => (laptop._id === updatedLaptop._id ? updatedLaptop : laptop)));
+  };
+
+  const handleAddToGroup = async (laptopId) => {
+    try {
+      setAddingLaptopId(laptopId);
+      await LaptopGroupService.addLaptop({ laptopId });
+      message.success("Laptop added to group!");
+      await loadLaptops();
+    } catch (error) {
+      console.error("Failed to add laptop to group:", error);
+      const errorMessage = error?.response?.data?.message ?? "Failed to add laptop to group!";
+      message.error(errorMessage);
+    } finally {
+      setAddingLaptopId(null);
+    }
+  };
+
+  const handleRemoveFromGroup = async (laptopId, groupId) => {
+    try {
+      setAddingLaptopId(laptopId);
+      await LaptopGroupService.removeLaptop({ laptopId, groupId });
+      message.success("Laptop removed from group!");
+      await loadLaptops();
+    } catch (error) {
+      console.error("Failed to remove laptop from group:", error);
+      const errorMessage = error?.response?.data?.message ?? "Failed to remove laptop from group!";
+      message.error(errorMessage);
+    } finally {
+      setAddingLaptopId(null);
+    }
   };
 
   function handleCopy(laptop) {
@@ -186,10 +218,34 @@ export default function Laptops() {
         title: "Action",
         key: "operation",
         fixed: "right",
-        width: 100,
+        width: 120,
         render: (record) => {
           return (
-            <div className={"w-full flex justify-evenly"}>
+            <div className={"w-full flex justify-evenly items-center gap-2"}>
+              {!record.laptopGroupId ? (
+                <Button
+                  shape="circle"
+                  icon={<PlusOutlined />}
+                  onClick={() => handleAddToGroup(record._id)}
+                  loading={addingLaptopId === record._id}
+                  title="Add to group"
+                />
+              ) : (
+                <Popconfirm
+                  title={"Remove laptop from the current group?"}
+                  onConfirm={() => handleRemoveFromGroup(record._id, record.laptopGroupId)}
+                  okText={"Yes"}
+                  cancelText="No"
+                >
+                  <Button
+                    shape="circle"
+                    icon={<MinusOutlined />}
+                    loading={addingLaptopId === record._id}
+                    title="Remove from group"
+                    danger
+                  />
+                </Popconfirm>
+              )}
               <Link to={`/laptops/laptopDetail/${record._id}`}>
                 <Button shape="circle" icon={<SearchOutlined />} />
               </Link>

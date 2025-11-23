@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { Card, Table, Typography, Tag, Space, Descriptions, Divider, Input, Select, message } from "antd";
+import { Card, Table, Typography, Tag, Space, Input, message, Button, InputNumber, Popconfirm } from "antd";
 import LaptopGroupService from "../api/services/laptop-group-service.js";
 import LaptopService from "../api/services/laptop-service.js";
 import Loading from "../components/loading.jsx";
 import LaptopManager from "../helpers/laptop-manager.js";
 import LaptopStateTag from "../components/common/laptop-state-tag.jsx";
 import { ArrowLeftOutlined } from "@ant-design/icons";
-import { Button } from "antd";
 import TextArea from "antd/es/input/TextArea";
 
 export default function LaptopGroupDetail() {
@@ -16,6 +15,16 @@ export default function LaptopGroupDetail() {
   const [laptopGroup, setLaptopGroup] = useState();
   const [laptops, setLaptops] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isEditingBasicInfo, setIsEditingBasicInfo] = useState(false);
+  const [basicInfoDraft, setBasicInfoDraft] = useState({
+    title: "",
+    groupDescription: "",
+    note: "",
+  });
+  const [editingVariantIndex, setEditingVariantIndex] = useState(null);
+  const [variantPriceDraft, setVariantPriceDraft] = useState(null);
+  const [savingVariantIndex, setSavingVariantIndex] = useState(null);
+  const [isDeletingGroup, setIsDeletingGroup] = useState(false);
 
   useEffect(() => {
     loadLaptopGroup();
@@ -26,6 +35,16 @@ export default function LaptopGroupDetail() {
       loadLaptops();
     }
   }, [laptopGroup]);
+
+  useEffect(() => {
+    if (laptopGroup && !isEditingBasicInfo) {
+      setBasicInfoDraft({
+        title: laptopGroup.title || "",
+        groupDescription: laptopGroup.groupDescription || "",
+        note: laptopGroup.note || "",
+      });
+    }
+  }, [laptopGroup, isEditingBasicInfo]);
 
   async function loadLaptopGroup() {
     setIsLoading(true);
@@ -91,6 +110,105 @@ export default function LaptopGroupDetail() {
     }
   }
 
+  function startEditingBasicInfo() {
+    setBasicInfoDraft({
+      title: laptopGroup.title || "",
+      groupDescription: laptopGroup.groupDescription || "",
+      note: laptopGroup.note || "",
+    });
+    setIsEditingBasicInfo(true);
+  }
+
+  function cancelEditingBasicInfo() {
+    setBasicInfoDraft({
+      title: laptopGroup.title || "",
+      groupDescription: laptopGroup.groupDescription || "",
+      note: laptopGroup.note || "",
+    });
+    setIsEditingBasicInfo(false);
+  }
+
+  async function saveBasicInfo() {
+    const updates = [];
+    if (basicInfoDraft.title !== (laptopGroup.title || "")) {
+      updates.push(handleSaveProperty("title", basicInfoDraft.title));
+    }
+    if (basicInfoDraft.groupDescription !== (laptopGroup.groupDescription || "")) {
+      updates.push(handleSaveProperty("groupDescription", basicInfoDraft.groupDescription));
+    }
+    if ((basicInfoDraft.note || "") !== (laptopGroup.note || "")) {
+      updates.push(handleSaveProperty("note", basicInfoDraft.note));
+    }
+    if (updates.length === 0) {
+      message.info("No changes to save");
+      setIsEditingBasicInfo(false);
+      return;
+    }
+    await Promise.all(updates);
+    setIsEditingBasicInfo(false);
+  }
+
+  async function handleDeleteGroup() {
+    if (!laptopGroup?._id) {
+      return;
+    }
+    try {
+      setIsDeletingGroup(true);
+      await LaptopGroupService.delete(laptopGroup._id);
+      message.success("Laptop group deleted successfully!");
+      navigate("/laptopGroups");
+    } catch (error) {
+      console.error("Failed to delete laptop group:", error);
+      message.error("Failed to delete laptop group");
+    } finally {
+      setIsDeletingGroup(false);
+    }
+  }
+
+  function startEditingVariantPrice(index, currentPrice) {
+    setEditingVariantIndex(index);
+    setVariantPriceDraft(currentPrice ?? null);
+  }
+
+  function cancelEditingVariantPrice() {
+    setEditingVariantIndex(null);
+    setVariantPriceDraft(null);
+  }
+
+  async function saveVariantPrice(index) {
+    if (variantPriceDraft === null || variantPriceDraft === undefined) {
+      message.warning("Please enter a price before saving");
+      return;
+    }
+    if (!laptopGroup?.variants?.length) {
+      return;
+    }
+    const currentPrice = laptopGroup.variants[index]?.price ?? null;
+    if (currentPrice === variantPriceDraft) {
+      message.info("Variant price is unchanged");
+      cancelEditingVariantPrice();
+      return;
+    }
+    setSavingVariantIndex(index);
+    try {
+      const updatedVariants = laptopGroup.variants.map((variant, variantIndex) =>
+        variantIndex === index ? { ...variant, price: variantPriceDraft } : variant
+      );
+      const updated = await LaptopGroupService.update({
+        id: laptopGroup._id,
+        variants: updatedVariants,
+      });
+      setLaptopGroup(updated);
+      message.success("Variant price updated successfully!");
+      cancelEditingVariantPrice();
+    } catch (error) {
+      console.error("Failed to update variant price:", error);
+      message.error("Failed to update variant price");
+    } finally {
+      setSavingVariantIndex(null);
+    }
+  }
+
   const getResolutionLabel = (resolution) => {
     if (!resolution) return "-";
     const resolutionMap = {
@@ -129,35 +247,6 @@ export default function LaptopGroupDetail() {
       return foundOption.label;
     }
     return panelType.toUpperCase();
-  };
-
-  // Convert API resolution format to Select value
-  const getResolutionSelectValue = (resolution) => {
-    if (!resolution) return undefined;
-    const resolutionMap = {
-      "1280x720": "hd",
-      "1920x1080": "fhd",
-      "2560x1440": "qhd",
-      "3840x2160": "uhd",
-    };
-    // Check if it's already a key like "fhd"
-    const resolutionOptions = LaptopManager.getResolutionListOptions();
-    const foundOption = resolutionOptions.find((opt) => opt.value === resolution.toLowerCase());
-    if (foundOption) {
-      return foundOption.value;
-    }
-    // Check if it's in the format "1920x1080"
-    return resolutionMap[resolution] || resolution;
-  };
-
-  // Convert API refresh rate format to Select value
-  const getRefreshRateSelectValue = (refreshRate) => {
-    if (!refreshRate) return undefined;
-    const numMatch = refreshRate.toString().match(/\d+/);
-    if (numMatch) {
-      return numMatch[0]; // Return just the number as string
-    }
-    return refreshRate;
   };
 
   if (isLoading || !laptopGroup) {
@@ -204,10 +293,66 @@ export default function LaptopGroupDetail() {
       ),
     },
     {
+      title: "Battery Wear",
+      dataIndex: "battery",
+      key: "battery",
+      render: (battery) => (
+        <span>{battery !== undefined && battery !== null ? `${battery}%` : "-"}</span>
+      ),
+    },
+    {
       title: "Price",
       dataIndex: "price",
       key: "price",
-      render: (price) => <span>{price ? `₴${price.toLocaleString()}` : "-"}</span>,
+      render: (price, _record, index) => {
+        const isEditingPrice = editingVariantIndex === index;
+        if (isEditingPrice) {
+          return (
+            <Space size={"small"}>
+              <InputNumber
+                min={0}
+                className={"w-32"}
+                value={variantPriceDraft}
+                onChange={(value) => setVariantPriceDraft(value)}
+                formatter={(value) =>
+                  value !== undefined && value !== null
+                    ? `₴ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                    : ""
+                }
+                parser={(value) => (value ? value.replace(/[₴\s,]/g, "") : "")}
+              />
+              <Button
+                type="primary"
+                size={"small"}
+                onClick={() => saveVariantPrice(index)}
+                loading={savingVariantIndex === index}
+              >
+                Save
+              </Button>
+              <Button
+                size={"small"}
+                onClick={cancelEditingVariantPrice}
+                disabled={savingVariantIndex === index}
+              >
+                Cancel
+              </Button>
+            </Space>
+          );
+        }
+        return (
+          <Space size={"small"}>
+            <span>{price ? `₴${price.toLocaleString()}` : "-"}</span>
+            <Button
+              size={"small"}
+              type="link"
+              onClick={() => startEditingVariantPrice(index, price)}
+              disabled={editingVariantIndex !== null}
+            >
+              Edit
+            </Button>
+          </Space>
+        );
+      },
     },
   ];
 
@@ -216,17 +361,41 @@ export default function LaptopGroupDetail() {
       title: "Code",
       dataIndex: "code",
       key: "code",
-      render: (code) => (
-        <Typography.Text code className={"text-xs"}>
-          {code || "-"}
-        </Typography.Text>
-      ),
+      render: (code, record) => {
+        const codeLabel = code || "-";
+        const identifier = record?._id ? `#${record._id}` : "";
+        return (
+          <div className={"flex flex-col text-xs"}>
+            <Typography.Text code className={"text-xs"}>
+              {record?._id ? (
+                <Link to={`/laptops/laptopDetail/${record._id}`} target="_blank" rel="noopener noreferrer">
+                  {codeLabel}
+                </Link>
+              ) : (
+                codeLabel
+              )}
+            </Typography.Text>
+            {identifier && (
+              <Typography.Text type="secondary" className={"text-[10px]"}>
+                {identifier}
+              </Typography.Text>
+            )}
+          </div>
+        );
+      },
     },
     {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      render: (name) => <span>{name || "-"}</span>,
+      render: (name, record) =>
+        record?._id ? (
+          <Link to={`/laptops/laptopDetail/${record._id}`} target="_blank" rel="noopener noreferrer">
+            {name || record.code || "-"}
+          </Link>
+        ) : (
+          <span>{name || "-"}</span>
+        ),
     },
     {
       title: "State",
@@ -275,42 +444,98 @@ export default function LaptopGroupDetail() {
         hoverable={true}
         className={"w-full mb-4"}
         title={<Typography.Title level={4} style={{ margin: 0 }}>Basic Information</Typography.Title>}
+        extra={
+          <Space size={"small"}>
+            {isEditingBasicInfo ? (
+              <>
+                <Button size={"small"} onClick={cancelEditingBasicInfo}>
+                  Cancel
+                </Button>
+                <Button type="primary" size={"small"} onClick={saveBasicInfo}>
+                  Save
+                </Button>
+              </>
+            ) : (
+              <Button size={"small"} onClick={startEditingBasicInfo}>
+                Edit
+              </Button>
+            )}
+            <Popconfirm
+              title="Delete this laptop group?"
+              okText="Delete"
+              okButtonProps={{ danger: true }}
+              cancelText="Cancel"
+              placement="left"
+              onConfirm={handleDeleteGroup}
+              disabled={isDeletingGroup}
+            >
+              <Button danger size={"small"} loading={isDeletingGroup}>
+                Delete
+              </Button>
+            </Popconfirm>
+          </Space>
+        }
       >
         <div className={"block"}>
           <div className={"flex mb-3"}>
-            <p className={"w-1/4"}>Group Name: </p>
-            <Input
-              className={"w-2/3 ml-2"}
-              onBlur={(e) => {
-                if (e.target.value !== laptopGroup.groupName) {
-                  handleSaveProperty("groupName", e.target.value);
+            <p className={"w-1/4"}>Title: </p>
+            {isEditingBasicInfo ? (
+              <Input
+                className={"w-2/3 ml-2"}
+                value={basicInfoDraft.title}
+                onChange={(e) =>
+                  setBasicInfoDraft((prev) => ({ ...prev, title: e.target.value }))
                 }
-              }}
-              defaultValue={laptopGroup.groupName}
-              size={"small"}
-              placeholder="Enter group name"
-            />
-          </div>
-          <div className={"flex mb-3"}>
-            <p className={"w-1/4"}>Group Identifier: </p>
-            <Typography.Text code className={"w-2/3 ml-2"}>
-              {laptopGroup.groupIdentifier || "-"}
-            </Typography.Text>
+                size={"small"}
+                placeholder="Enter title"
+              />
+            ) : (
+              <span className={"w-2/3 ml-2"}>
+                {laptopGroup.title && laptopGroup.title.trim().length > 0
+                  ? laptopGroup.title
+                  : "-"}
+              </span>
+            )}
           </div>
           <div className={"flex mb-3"}>
             <p className={"w-1/4"}>Description: </p>
-            <TextArea
-              rows={3}
-              className={"w-2/3 ml-2"}
-              onBlur={(e) => {
-                if (e.target.value !== laptopGroup.groupDescription) {
-                  handleSaveProperty("groupDescription", e.target.value);
+            {isEditingBasicInfo ? (
+              <TextArea
+                rows={3}
+                className={"w-2/3 ml-2"}
+                value={basicInfoDraft.groupDescription}
+                onChange={(e) =>
+                  setBasicInfoDraft((prev) => ({ ...prev, groupDescription: e.target.value }))
                 }
-              }}
-              defaultValue={laptopGroup.groupDescription}
-              size={"small"}
-              placeholder="Enter description"
-            />
+                size={"small"}
+                placeholder="Enter description"
+              />
+            ) : (
+              <span className={"w-2/3 ml-2"}>
+                {laptopGroup.groupDescription && laptopGroup.groupDescription.trim().length > 0
+                  ? laptopGroup.groupDescription
+                  : "-"}
+              </span>
+            )}
+          </div>
+          <div className={"flex mb-3"}>
+            <p className={"w-1/4"}>Note: </p>
+            {isEditingBasicInfo ? (
+              <TextArea
+                rows={2}
+                className={"w-2/3 ml-2"}
+                value={basicInfoDraft.note}
+                onChange={(e) =>
+                  setBasicInfoDraft((prev) => ({ ...prev, note: e.target.value }))
+                }
+                size={"small"}
+                placeholder="Enter note"
+              />
+            ) : (
+              <span className={"w-2/3 ml-2"}>
+                {laptopGroup.note && laptopGroup.note.trim().length > 0 ? laptopGroup.note : "-"}
+              </span>
+            )}
           </div>
           <div className={"flex mb-3"}>
             <p className={"w-1/4"}>Processor: </p>
@@ -329,61 +554,22 @@ export default function LaptopGroupDetail() {
           </div>
           <div className={"flex mb-3"}>
             <p className={"w-1/4"}>Screen Size: </p>
-            <Input
-              type="number"
-              step="0.1"
-              className={"w-2/3 ml-2"}
-              onBlur={(e) => {
-                const value = e.target.value ? parseFloat(e.target.value) : null;
-                if (value !== laptopGroup.screenSize) {
-                  handleSaveProperty("screenSize", value);
-                }
-              }}
-              defaultValue={laptopGroup.screenSize}
-              size={"small"}
-              placeholder="Enter screen size"
-              suffix='"'
-            />
+            <span className={"w-2/3 ml-2"}>
+              {laptopGroup.screenSize ? `${laptopGroup.screenSize}"` : "-"}
+            </span>
           </div>
           <div className={"flex mb-3"}>
             <p className={"w-1/4"}>Resolution: </p>
-            <Select
-              className={"w-2/3 ml-2"}
-              value={getResolutionSelectValue(laptopGroup.resolution)}
-              onChange={(value) => handleSaveProperty("resolution", value)}
-              options={LaptopManager.getResolutionListOptions()}
-              size={"small"}
-              allowClear
-            />
+            <span className={"w-2/3 ml-2"}>{getResolutionLabel(laptopGroup.resolution)}</span>
           </div>
           <div className={"flex mb-3"}>
             <p className={"w-1/4"}>Panel Type: </p>
-            <Select
-              className={"w-2/3 ml-2"}
-              value={laptopGroup.panelType ? laptopGroup.panelType.toLowerCase() : undefined}
-              onChange={(value) => handleSaveProperty("panelType", value)}
-              options={LaptopManager.getPanelTypeListOptions()}
-              size={"small"}
-              allowClear
-            />
+            <span className={"w-2/3 ml-2"}>{getPanelTypeLabel(laptopGroup.panelType)}</span>
           </div>
           <div className={"flex mb-3"}>
             <p className={"w-1/4"}>Refresh Rate: </p>
-            <Select
-              className={"w-2/3 ml-2"}
-              value={getRefreshRateSelectValue(laptopGroup.refreshRate)}
-              onChange={(value) => handleSaveProperty("refreshRate", value)}
-              options={LaptopManager.getRefreshRateListOptions()}
-              size={"small"}
-              allowClear
-            />
+            <span className={"w-2/3 ml-2"}>{getRefreshRateLabel(laptopGroup.refreshRate)}</span>
           </div>
-          {laptopGroup.note && (
-            <div className={"flex mb-3"}>
-              <p className={"w-1/4"}>Note: </p>
-              <span className={"w-2/3 ml-2"}>{laptopGroup.note}</span>
-            </div>
-          )}
         </div>
       </Card>
 
@@ -427,12 +613,6 @@ export default function LaptopGroupDetail() {
             pagination={false}
             size="small"
             scroll={{ x: true }}
-            onRow={(record) => {
-              return {
-                onClick: () => navigate(`/laptops/laptopDetail/${record._id}`),
-                style: { cursor: "pointer" },
-              };
-            }}
           />
         ) : (
           <Typography.Text type="secondary">No laptops in this group</Typography.Text>

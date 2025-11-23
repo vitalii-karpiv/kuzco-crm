@@ -28,9 +28,9 @@ The referenced laptop must already exist and have the core characteristics fille
 2. Generates the target `groupIdentifier` from the laptop specs.
 3. If a matching group exists:
    - Adds the laptop ID to `itemList` (if not present).
-   - Adds or updates the matching variant (RAM/SSD/touch/keyLight/price snapshot).
+   - Adds or updates the matching variant (RAM/SSD/touch/keyLight/battery/price snapshot).
    - Ensures the laptop document has `laptopGroupId` set.
-4. Otherwise, a new group is created and seeded from the laptop, and the laptop is linked to it.
+4. Otherwise, a new group is created and seeded from the laptop (its `groupName` and `title` mirror the laptop name), and the laptop is linked to it.
 
 ## Response
 

@@ -25,5 +25,9 @@ export default class LaptopGroupService {
     const result = await $api.post("/laptopGroup/addLaptop", dto);
     return result.data;
   }
+  static async removeLaptop(dto) {
+    const result = await $api.post("/laptopGroup/removeLaptop", dto);
+    return result.data;
+  }
 }
 

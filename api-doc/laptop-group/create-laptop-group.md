@@ -17,6 +17,7 @@ Required – caller must send a valid JWT.
 ```json
 {
   "groupName": "string",
+  "title": "string",
   "groupDescription": "string",
   "mainImageId": "string",
   "processor": "string",
@@ -33,6 +34,7 @@ Required – caller must send a valid JWT.
       "ssd": 512,
       "touch": false,
       "keyLight": true,
+      "battery": 82,
       "price": 28000
     }
   ],
@@ -44,7 +46,8 @@ Required – caller must send a valid JWT.
 ### Notes
 
 - `groupName`, `processor`, `videocard`, `screenSize`, `resolution`, and `panelType` are required to generate a unique `groupIdentifier`.
-- `variants` lets you describe pre-configured RAM/SSD/touch combos for laptops already in inventory.
+- `title` defaults to the provided `groupName` but can be overridden later via the update endpoint.
+- `variants` lets you describe pre-configured RAM/SSD/touch/keyLight/battery combos (plus price) for laptops already in inventory.
 - `itemList` contains laptop IDs that should be immediately associated with the group.
 
 ## Response
@@ -56,6 +59,7 @@ Required – caller must send a valid JWT.
   "_id": "string",
   "groupIdentifier": "dell-xps-9520-i7-rtx3050-15.6-1920x1080-ips",
   "groupName": "Dell XPS 15 9520",
+  "title": "Dell XPS 15 9520",
   "groupDescription": "Creator lineup",
   "mainImageId": "string",
   "processor": "Intel Core i7-12700H",
@@ -72,6 +76,7 @@ Required – caller must send a valid JWT.
       "ssd": 512,
       "touch": false,
       "keyLight": true,
+      "battery": 82,
       "price": 28000
     }
   ],
