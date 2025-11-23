@@ -128,10 +128,24 @@ class LaptopManager {
     return TECH_CHECK_LABELS[techCheck];
   }
 
+  getResolutionLabel(resolution) {
+    if (!resolution) {
+      return undefined;
+    }
+    return RESOLUTION_LABEL_MAP[resolution] ?? resolution;
+  }
+
+  getPanelTypeLabel(panelType) {
+    if (!panelType) {
+      return undefined;
+    }
+    return panelType.toUpperCase();
+  }
+
   getResolutionListOptions() {
     return RESOLUTION_LIST.map((resolution) => {
       return {
-        label: RESOLUTION_LABEL_MAP[resolution],
+        label: this.getResolutionLabel(resolution),
         value: resolution,
       };
     });
@@ -149,7 +163,7 @@ class LaptopManager {
   getPanelTypeListOptions() {
     return PANEL_TYPE_LIST.map((panelType) => {
       return {
-        label: panelType.toUpperCase(),
+        label: this.getPanelTypeLabel(panelType),
         value: panelType,
       };
     });
