@@ -19,7 +19,7 @@ Required – valid JWT.
   "id": "string",
   "title": "string",
   "groupDescription": "string",
-  "mainImageId": "string",
+  "imageUrl": "string",
   "processor": "string",
   "videocard": "string",
   "discrete": true,

@@ -26,7 +26,7 @@ Required – valid JWT.
   "groupIdentifier": "string",
   "groupName": "string",
   "groupDescription": "string",
-  "mainImageId": "string",
+  "imageUrl": "string",
   "processor": "string",
   "videocard": "string",
   "discrete": true,

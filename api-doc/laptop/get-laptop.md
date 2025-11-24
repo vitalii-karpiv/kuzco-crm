@@ -23,12 +23,33 @@ Required - User must be authenticated with a valid JWT token.
 ```json
 {
   "id": "string",
+  "code": "string",
+  "name": "string",
   "brand": "string",
   "model": "string",
-  "specifications": "object",
-  "price": "number",
+  "submodel": "string",
+  "sellPrice": "number",
   "state": "string",
-  "images": []
+  "imageUrl": "string",
+  "characteristics": {
+    "processor": "string",
+    "videocard": "string",
+    "discrete": true,
+    "ssd": 1024,
+    "ram": 32,
+    "ports": ["USB-C", "Thunderbolt"],
+    "screenSize": 15.6,
+    "resolution": "3840x2400",
+    "panelType": "IPS",
+    "refreshRate": "60Hz",
+    "touch": true,
+    "keyLight": true,
+    "battery": 85
+  },
+  "defects": [],
+  "marketplaces": [
+    { "name": "Amazon" }
+  ]
 }
 ```
 
@@ -37,16 +58,33 @@ Required - User must be authenticated with a valid JWT token.
 ```json
 {
   "id": "507f1f77bcf86cd799439011",
+  "code": "LPT-001",
+  "name": "Dell XPS 15",
   "brand": "Dell",
   "model": "XPS 15",
-  "specifications": {
-    "processor": "Intel Core i7",
-    "ram": "16GB",
-    "storage": "512GB SSD"
+  "submodel": "9520",
+  "sellPrice": 1299.99,
+  "state": "SELLING",
+  "imageUrl": "https://kuzco-images.s3.amazonaws.com/laptops/development/507f1f77bcf86cd799439011/1732448771677.jpg",
+  "characteristics": {
+    "processor": "Intel Core i7-12700H",
+    "videocard": "NVIDIA RTX 3050 Ti",
+    "discrete": true,
+    "ssd": 1024,
+    "ram": 32,
+    "ports": ["USB-C", "Thunderbolt"],
+    "screenSize": 15.6,
+    "resolution": "3840x2400",
+    "panelType": "IPS",
+    "refreshRate": "60Hz",
+    "touch": true,
+    "keyLight": true,
+    "battery": 85
   },
-  "price": 1299.99,
-  "state": "available",
-  "images": ["image-id-1", "image-id-2"]
+  "defects": [],
+  "marketplaces": [
+    { "name": "Amazon" }
+  ]
 }
 ```
 

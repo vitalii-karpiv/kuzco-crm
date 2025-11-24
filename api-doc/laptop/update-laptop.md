@@ -17,11 +17,30 @@ Required - User must be authenticated with a valid JWT token.
 ```json
 {
   "id": "string",
-  "brand": "string (optional)",
-  "model": "string (optional)",
-  "specifications": "object (optional)",
-  "price": "number (optional)",
-  "state": "string (optional)"
+  "serviceTag": "string (optional)",
+  "limitPrice": 700,
+  "assignee": "656a3cb10c3e3f0022225555",
+  "laptopGroupId": "656a3cb10c3e3f0022225556",
+  "sellPrice": 1100,
+  "toBuy": ["charger"],
+  "bought": [],
+  "defects": ["scratch"],
+  "complectation": ["charger", "bag"],
+  "note": "Ready to publish",
+  "imageUrl": "https://kuzco-images.s3.amazonaws.com/laptops/development/507f1f77bcf86cd799439011/1732448771777.jpg",
+  "techCheck": {
+    "status": "PASSED",
+    "comments": "All good"
+  },
+  "characteristics": {
+    "processor": "Intel Core i7-12700H",
+    "videocard": "NVIDIA RTX 3050 Ti",
+    "ssd": 1024,
+    "ram": 32
+  },
+  "marketplaces": [
+    { "name": "Amazon", "url": "https://amazon.com/..." }
+  ]
 }
 ```
 
@@ -34,11 +53,21 @@ All fields except `id` are optional. Only include fields you want to update.
 ```json
 {
   "id": "string",
+  "code": "string",
+  "name": "string",
   "brand": "string",
   "model": "string",
-  "specifications": "object",
-  "price": "number",
-  "state": "string"
+  "submodel": "string",
+  "sellPrice": 1100,
+  "state": "SELLING",
+  "imageUrl": "https://kuzco-images.s3.amazonaws.com/laptops/development/507f1f77bcf86cd799439011/1732448771777.jpg",
+  "characteristics": {
+    "processor": "Intel Core i7-12700H",
+    "videocard": "NVIDIA RTX 3050 Ti",
+    "discrete": true,
+    "ssd": 1024,
+    "ram": 32
+  }
 }
 ```
 
@@ -47,15 +76,27 @@ All fields except `id` are optional. Only include fields you want to update.
 ```json
 {
   "id": "507f1f77bcf86cd799439011",
+  "code": "LPT-001",
+  "name": "Dell XPS 15",
   "brand": "Dell",
   "model": "XPS 15 (Updated)",
-  "specifications": {
-    "processor": "Intel Core i7",
-    "ram": "32GB",
-    "storage": "1TB SSD"
+  "submodel": "9520",
+  "sellPrice": 1499.99,
+  "state": "SELLING",
+  "imageUrl": "https://kuzco-images.s3.amazonaws.com/laptops/development/507f1f77bcf86cd799439011/1732448771777.jpg",
+  "characteristics": {
+    "processor": "Intel Core i7-12700H",
+    "videocard": "NVIDIA RTX 3050 Ti",
+    "discrete": true,
+    "ssd": 1024,
+    "ram": 32,
+    "ports": ["USB-C", "Thunderbolt"],
+    "screenSize": 15.6
   },
-  "price": 1499.99,
-  "state": "available"
+  "defects": ["scratch"],
+  "marketplaces": [
+    { "name": "Amazon" }
+  ]
 }
 ```
 

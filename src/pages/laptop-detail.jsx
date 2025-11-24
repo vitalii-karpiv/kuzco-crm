@@ -15,7 +15,7 @@ import FinanceBlock from "../components/laptop-detail/finance-block.jsx";
 import MarketplaceBlock from "../components/laptop-detail/marketplace-block.jsx";
 import DefectsBlock from "../components/laptop-detail/defects-block.jsx";
 import TechCheckBlock from "../components/laptop-detail/tech-check-block.jsx";
-import ImagesBlock from "../components/laptop-detail/images-block.jsx";
+import ImageManager from "../components/common/image-manager.jsx";
 import LaptopStateTag from "../components/common/laptop-state-tag.jsx";
 import SaleCreateModal from "../components/laptop-detail/sale-create-modal.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -129,6 +129,17 @@ export default function LaptopDetail() {
                 Sale
               </Link>
             )}
+            {laptop.laptopGroupId && (
+              <Link
+                target={"_blank"}
+                to={`/laptopGroups/groupDetail/${laptop.laptopGroupId}`}
+                className={"flex items-center gap-1 text-purple-700 hover:text-purple-900 transition-colors"}
+                rel="noopener noreferrer"
+              >
+                <FontAwesomeIcon icon={faSquareUpRight} />
+                Group
+              </Link>
+            )}
           </div>
           {userList && (
             <div className={"flex items-center mr-4"}>
@@ -190,7 +201,13 @@ export default function LaptopDetail() {
         <TechCheckBlock laptop={laptop} setLaptop={setLaptop} />
       </div>
       <div className={"flex mb-3"}>
-        <ImagesBlock laptopId={laptop._id} laptop={laptop} setLaptop={setLaptop} />
+        <ImageManager
+          entityType="laptop"
+          entityId={laptop._id}
+          entity={laptop}
+          setEntity={setLaptop}
+          cardClassName={"w-2/4 mr-3"}
+        />
         <DefectsBlock laptop={laptop} setLaptop={setLaptop} />
       </div>
       <div className={"flex mb-3"}>

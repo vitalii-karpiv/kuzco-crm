@@ -8,6 +8,7 @@ import LaptopManager from "../helpers/laptop-manager.js";
 import LaptopStateTag from "../components/common/laptop-state-tag.jsx";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import TextArea from "antd/es/input/TextArea";
+import ImageManager from "../components/common/image-manager.jsx";
 
 export default function LaptopGroupDetail() {
   const { id } = useParams();
@@ -70,40 +71,13 @@ export default function LaptopGroupDetail() {
 
   async function handleSaveProperty(property, value) {
     try {
-      let valueToSave = value;
-      
-      // Convert Select values to API format if needed
-      if (property === "resolution" && value) {
-        // If it's a short code like "fhd", convert to full format
-        const resolutionMap = {
-          "hd": "1280x720",
-          "fhd": "1920x1080",
-          "qhd": "2560x1440",
-          "uhd": "3840x2160",
-        };
-        // If it's already in "1920x1080" format, keep it; otherwise convert
-        if (resolutionMap[value]) {
-          valueToSave = resolutionMap[value];
-        }
-      }
-      
-      if (property === "refreshRate" && value) {
-        // Convert to "144Hz" format if it's just a number
-        if (typeof value === "string" && /^\d+$/.test(value)) {
-          valueToSave = `${value}Hz`;
-        }
-      }
-      
-      if (property === "panelType" && value) {
-        // Ensure uppercase for consistency
-        valueToSave = value.toUpperCase();
-      }
-      
-      const updateData = { id: laptopGroup._id, [property]: valueToSave };
+      const updateData = { id: laptopGroup._id, [property]: value };
       const updated = await LaptopGroupService.update(updateData);
       setLaptopGroup(updated);
       document.title = updated.groupName || "Laptop Group";
-      message.success(`${property === "groupName" ? "Group name" : property === "groupDescription" ? "Description" : property} updated successfully!`);
+      message.success(
+        `${property === "groupName" ? "Group name" : property === "groupDescription" ? "Description" : property} updated successfully!`,
+      );
     } catch (error) {
       console.error("Failed to update:", error);
       message.error(`Failed to update ${property}!`);
@@ -192,7 +166,7 @@ export default function LaptopGroupDetail() {
     setSavingVariantIndex(index);
     try {
       const updatedVariants = laptopGroup.variants.map((variant, variantIndex) =>
-        variantIndex === index ? { ...variant, price: variantPriceDraft } : variant
+        variantIndex === index ? { ...variant, price: variantPriceDraft } : variant,
       );
       const updated = await LaptopGroupService.update({
         id: laptopGroup._id,
@@ -280,25 +254,19 @@ export default function LaptopGroupDetail() {
       title: "Touch",
       dataIndex: "touch",
       key: "touch",
-      render: (touch) => (
-        <Tag color={touch ? "green" : "default"}>{touch ? "Yes" : "No"}</Tag>
-      ),
+      render: (touch) => <Tag color={touch ? "green" : "default"}>{touch ? "Yes" : "No"}</Tag>,
     },
     {
       title: "Keyboard Light",
       dataIndex: "keyLight",
       key: "keyLight",
-      render: (keyLight) => (
-        <Tag color={keyLight ? "blue" : "default"}>{keyLight ? "Yes" : "No"}</Tag>
-      ),
+      render: (keyLight) => <Tag color={keyLight ? "blue" : "default"}>{keyLight ? "Yes" : "No"}</Tag>,
     },
     {
       title: "Battery Wear",
       dataIndex: "battery",
       key: "battery",
-      render: (battery) => (
-        <span>{battery !== undefined && battery !== null ? `${battery}%` : "-"}</span>
-      ),
+      render: (battery) => <span>{battery !== undefined && battery !== null ? `${battery}%` : "-"}</span>,
     },
     {
       title: "Price",
@@ -315,9 +283,7 @@ export default function LaptopGroupDetail() {
                 value={variantPriceDraft}
                 onChange={(value) => setVariantPriceDraft(value)}
                 formatter={(value) =>
-                  value !== undefined && value !== null
-                    ? `₴ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-                    : ""
+                  value !== undefined && value !== null ? `₴ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",") : ""
                 }
                 parser={(value) => (value ? value.replace(/[₴\s,]/g, "") : "")}
               />
@@ -329,11 +295,7 @@ export default function LaptopGroupDetail() {
               >
                 Save
               </Button>
-              <Button
-                size={"small"}
-                onClick={cancelEditingVariantPrice}
-                disabled={savingVariantIndex === index}
-              >
+              <Button size={"small"} onClick={cancelEditingVariantPrice} disabled={savingVariantIndex === index}>
                 Cancel
               </Button>
             </Space>
@@ -443,7 +405,11 @@ export default function LaptopGroupDetail() {
         bordered={false}
         hoverable={true}
         className={"w-full mb-4"}
-        title={<Typography.Title level={4} style={{ margin: 0 }}>Basic Information</Typography.Title>}
+        title={
+          <Typography.Title level={4} style={{ margin: 0 }}>
+            Basic Information
+          </Typography.Title>
+        }
         extra={
           <Space size={"small"}>
             {isEditingBasicInfo ? (
@@ -483,17 +449,13 @@ export default function LaptopGroupDetail() {
               <Input
                 className={"w-2/3 ml-2"}
                 value={basicInfoDraft.title}
-                onChange={(e) =>
-                  setBasicInfoDraft((prev) => ({ ...prev, title: e.target.value }))
-                }
+                onChange={(e) => setBasicInfoDraft((prev) => ({ ...prev, title: e.target.value }))}
                 size={"small"}
                 placeholder="Enter title"
               />
             ) : (
               <span className={"w-2/3 ml-2"}>
-                {laptopGroup.title && laptopGroup.title.trim().length > 0
-                  ? laptopGroup.title
-                  : "-"}
+                {laptopGroup.title && laptopGroup.title.trim().length > 0 ? laptopGroup.title : "-"}
               </span>
             )}
           </div>
@@ -504,9 +466,7 @@ export default function LaptopGroupDetail() {
                 rows={3}
                 className={"w-2/3 ml-2"}
                 value={basicInfoDraft.groupDescription}
-                onChange={(e) =>
-                  setBasicInfoDraft((prev) => ({ ...prev, groupDescription: e.target.value }))
-                }
+                onChange={(e) => setBasicInfoDraft((prev) => ({ ...prev, groupDescription: e.target.value }))}
                 size={"small"}
                 placeholder="Enter description"
               />
@@ -525,9 +485,7 @@ export default function LaptopGroupDetail() {
                 rows={2}
                 className={"w-2/3 ml-2"}
                 value={basicInfoDraft.note}
-                onChange={(e) =>
-                  setBasicInfoDraft((prev) => ({ ...prev, note: e.target.value }))
-                }
+                onChange={(e) => setBasicInfoDraft((prev) => ({ ...prev, note: e.target.value }))}
                 size={"small"}
                 placeholder="Enter note"
               />
@@ -554,9 +512,7 @@ export default function LaptopGroupDetail() {
           </div>
           <div className={"flex mb-3"}>
             <p className={"w-1/4"}>Screen Size: </p>
-            <span className={"w-2/3 ml-2"}>
-              {laptopGroup.screenSize ? `${laptopGroup.screenSize}"` : "-"}
-            </span>
+            <span className={"w-2/3 ml-2"}>{laptopGroup.screenSize ? `${laptopGroup.screenSize}"` : "-"}</span>
           </div>
           <div className={"flex mb-3"}>
             <p className={"w-1/4"}>Resolution: </p>
@@ -572,6 +528,29 @@ export default function LaptopGroupDetail() {
           </div>
         </div>
       </Card>
+
+      <div className={"flex mb-4"}>
+        <ImageManager
+          entityType="laptopGroup"
+          entityId={laptopGroup._id}
+          entity={laptopGroup}
+          setEntity={setLaptopGroup}
+          cardTitle="Photos"
+          cardClassName={"w-1/2 mr-1"}
+        />
+        <Card
+          bordered={false}
+          hoverable={true}
+          className={"w-1/2 ml-1"}
+          title={
+            <Typography.Title level={4} style={{ margin: 0 }}>
+              Marketplace
+            </Typography.Title>
+          }
+        >
+          <Typography.Text type="secondary">Marketplace data will appear here.</Typography.Text>
+        </Card>
+      </div>
 
       {/* Variants Block */}
       {laptopGroup.variants && laptopGroup.variants.length > 0 && (

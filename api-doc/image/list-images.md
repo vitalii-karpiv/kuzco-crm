@@ -1,6 +1,6 @@
 # List Images
 
-Retrieves a list of images based on filter criteria.
+Retrieves a list of images for a specific laptop or laptop group. At least one identifier should be provided to limit the result set.
 
 ## Endpoint
 
@@ -16,35 +16,39 @@ Required - User must be authenticated with a valid JWT token.
 
 ```json
 {
-  "filters": "object (optional)",
-  "entityId": "string (optional)",
-  "entityType": "string (optional)"
+  "laptopId": "string (optional)",
+  "groupId": "string (optional)"
 }
 ```
+
+- `laptopId` – Mongo ObjectId of the laptop whose images should be returned.
+- `groupId` – Mongo ObjectId of the laptop group whose images should be returned.
+
+If both fields are provided, the images must match both identifiers.
 
 ## Response
 
 **Status Code:** `200 OK`
 
+Array of image objects with permanent, public URLs.
+
 ```json
-{
-  "items": []
-}
+[
+  {
+    "id": "674379893df8a7c6d175ab42",
+    "s3Url": "https://kuzco-images.s3.amazonaws.com/laptops/development/656a3cb10c3e3f0022225555/1732448771677.jpg"
+  }
+]
 ```
 
 ## Example Response
 
 ```json
-{
-  "items": [
-    {
-      "id": "507f1f77bcf86cd799439011",
-      "url": "https://s3.amazonaws.com/...",
-      "filename": "laptop-image.jpg",
-      "entityId": "507f1f77bcf86cd799439012",
-      "entityType": "laptop"
-    }
-  ]
-}
+[
+  {
+    "id": "674379893df8a7c6d175ab42",
+    "s3Url": "https://kuzco-images.s3.amazonaws.com/group/development/65aa2bc83df8a7c6d111aa00/1732448771677.jpg"
+  }
+]
 ```
 

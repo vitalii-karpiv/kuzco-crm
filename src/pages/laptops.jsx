@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { Button, message, Popconfirm, Table, Select, Typography } from "antd";
+import { Button, Image, message, Popconfirm, Table, Select, Typography } from "antd";
 import LaptopService from "../api/services/laptop-service.js";
 import LaptopGroupService from "../api/services/laptop-group-service.js";
 import Loading from "../components/loading.jsx";
-import { DeleteOutlined, MinusOutlined, PlusOutlined, SearchOutlined } from "@ant-design/icons";
+import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import LaptopsTableHeader from "../components/laptop/laptops-table-header.jsx";
 import CreateLaptopModal from "../components/laptop/create-laptop-modal.jsx";
@@ -40,16 +40,6 @@ export default function Laptops() {
     setLaptops(ordersDto.itemList);
     setIsLoading(false);
   }
-
-  const handleDelete = async (id) => {
-    try {
-      await LaptopService.delete(id);
-      message.success("Laptop deleted!");
-      await loadLaptops();
-    } catch (error) {
-      message.error("Failed to delete laptop!");
-    }
-  };
 
   const handleSetState = async (laptopId, newState) => {
     const updatedLaptop = await LaptopService.setState({ id: laptopId, state: newState });
@@ -150,9 +140,27 @@ export default function Laptops() {
         title: "Title",
         dataIndex: "name",
         key: "name",
-        render: (name) => {
-          return <div className={"flex flex-col text-xs"}>{name ?? "-"}</div>;
-        },
+        render: (name, record) => (
+          <div className="flex items-center gap-2">
+            {record.imageUrl && (
+              <div className="w-8 h-8 rounded-md overflow-hidden border border-gray-200 bg-gray-100 flex-shrink-0">
+                <Image
+                  src={record.imageUrl}
+                  alt={name || record.code || "Laptop image"}
+                  width={32}
+                  height={32}
+                  className="!w-full !h-full object-cover"
+                  preview={{
+                    mask: <span className="text-xs text-white">View</span>,
+                  }}
+                />
+              </div>
+            )}
+            <Link to={`/laptops/laptopDetail/${record._id}`} className="text-xs">
+              {name ?? record.code ?? "-"}
+            </Link>
+          </div>
+        ),
       },
       {
         title: "State",
@@ -215,52 +223,51 @@ export default function Laptops() {
         },
       },
       {
-        title: "Action",
-        key: "operation",
+        title: "Group",
+        key: "group",
+        width: 180,
         fixed: "right",
-        width: 120,
         render: (record) => {
+          const hasGroup = Boolean(record.laptopGroupId);
           return (
-            <div className={"w-full flex justify-evenly items-center gap-2"}>
-              {!record.laptopGroupId ? (
-                <Button
-                  shape="circle"
-                  icon={<PlusOutlined />}
-                  onClick={() => handleAddToGroup(record._id)}
-                  loading={addingLaptopId === record._id}
-                  title="Add to group"
-                />
+            <div className="flex gap-2 text-xs">
+              {hasGroup ? (
+                <Link to={`/laptopGroups/groupDetail/${record.laptopGroupId}`} className="text-xs">
+                  View group
+                </Link>
               ) : (
-                <Popconfirm
-                  title={"Remove laptop from the current group?"}
-                  onConfirm={() => handleRemoveFromGroup(record._id, record.laptopGroupId)}
-                  okText={"Yes"}
-                  cancelText="No"
-                >
+                <Typography.Text type="secondary" className="text-xs">
+                  Not grouped
+                </Typography.Text>
+              )}
+              <div className="flex gap-2">
+                {!hasGroup ? (
                   <Button
                     shape="circle"
-                    icon={<MinusOutlined />}
+                    icon={<PlusOutlined />}
+                    onClick={() => handleAddToGroup(record._id)}
                     loading={addingLaptopId === record._id}
-                    title="Remove from group"
-                    danger
+                    title="Add to group"
+                    size={"small"}
                   />
-                </Popconfirm>
-              )}
-              <Link to={`/laptops/laptopDetail/${record._id}`}>
-                <Button shape="circle" icon={<SearchOutlined />} />
-              </Link>
-              <Popconfirm
-                title={"Are you sure you want to delete this laptop?"}
-                onConfirm={() => handleDelete(record._id)}
-                okText={"Yes"}
-                cancelText="No"
-              >
-                <Button
-                  shape="circle"
-                  icon={<DeleteOutlined />}
-                  className={"hover:!text-red-600  hover:!border-red-700"}
-                />
-              </Popconfirm>
+                ) : (
+                  <Popconfirm
+                    title={"Remove laptop from the current group?"}
+                    onConfirm={() => handleRemoveFromGroup(record._id, record.laptopGroupId)}
+                    okText={"Yes"}
+                    cancelText="No"
+                  >
+                    <Button
+                      shape="circle"
+                      icon={<MinusOutlined />}
+                      loading={addingLaptopId === record._id}
+                      title="Remove from group"
+                      danger
+                      size={"small"}
+                    />
+                  </Popconfirm>
+                )}
+              </div>
             </div>
           );
         },

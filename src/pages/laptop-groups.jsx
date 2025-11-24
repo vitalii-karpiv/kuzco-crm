@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import { Button, message, Popconfirm, Table, Typography } from "antd";
+import { Image, message, Table } from "antd";
 import LaptopGroupService from "../api/services/laptop-group-service.js";
 import Loading from "../components/loading.jsx";
-import { DeleteOutlined, SearchOutlined } from "@ant-design/icons";
 import { Link } from "react-router-dom";
 import LaptopManager from "../helpers/laptop-manager.js";
 
@@ -28,16 +27,6 @@ export default function LaptopGroups() {
       setIsLoading(false);
     }
   }
-
-  const handleDelete = async (id) => {
-    try {
-      await LaptopGroupService.delete(id);
-      message.success("Laptop group deleted!");
-      await loadLaptopGroups();
-    } catch (error) {
-      message.error("Failed to delete laptop group!");
-    }
-  };
 
   const getResolutionLabel = (resolution) => {
     if (!resolution) return "";
@@ -86,19 +75,32 @@ export default function LaptopGroups() {
   const getColumns = () => {
     return [
       {
-        title: "Group Name / Identifier",
+        title: "Group Name",
         key: "groupNameIdentifier",
         width: 300,
-        render: (record) => {
-          return (
-            <div className={"flex flex-col text-xs"}>
-              <Typography.Text code className={"text-xs"}>
-                {record.groupIdentifier ?? "-"}
-              </Typography.Text>
-              <div className={"mb-1 ml-1"}>{record.groupName ?? "-"}</div>
+        render: (record) => (
+          <div className={"text-xs"}>
+            <div className={"mb-1 ml-1 flex items-center gap-2"}>
+              {record.imageUrl && (
+                <div className="w-8 h-8 rounded-md overflow-hidden border border-gray-200 bg-gray-100 flex-shrink-0">
+                  <Image
+                    src={record.imageUrl}
+                    alt={record.title || "Group image"}
+                    width={32}
+                    height={32}
+                    className="!w-full !h-full object-cover"
+                    preview={{
+                      mask: <span className="text-xs text-white">View</span>,
+                    }}
+                  />
+                </div>
+              )}
+              <Link to={`/laptopGroups/groupDetail/${record._id}`} className="">
+                {record.title ?? "-"}
+              </Link>
             </div>
-          );
-        },
+          </div>
+        ),
       },
       {
         title: "Processor",
@@ -148,33 +150,6 @@ export default function LaptopGroups() {
         key: "note",
         render: (note) => {
           return <div className={"flex flex-col text-xs"}>{note ?? "-"}</div>;
-        },
-      },
-      {
-        title: "Action",
-        key: "operation",
-        fixed: "right",
-        width: 100,
-        render: (record) => {
-          return (
-            <div className={"w-full flex justify-evenly"}>
-              <Link to={`/laptopGroups/groupDetail/${record._id}`}>
-                <Button shape="circle" icon={<SearchOutlined />} />
-              </Link>
-              <Popconfirm
-                title={"Are you sure you want to delete this laptop group?"}
-                onConfirm={() => handleDelete(record._id)}
-                okText={"Yes"}
-                cancelText="No"
-              >
-                <Button
-                  shape="circle"
-                  icon={<DeleteOutlined />}
-                  className={"hover:!text-red-600  hover:!border-red-700"}
-                />
-              </Popconfirm>
-            </div>
-          );
         },
       },
     ];

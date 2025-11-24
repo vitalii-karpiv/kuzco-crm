@@ -1,6 +1,6 @@
 import { Button, Card, Checkbox, Input, message, Select, Typography } from "antd";
 import PropTypes from "prop-types";
-import { faSquareUpRight, faSquarePen } from "@fortawesome/free-solid-svg-icons";
+import { faSquarePen } from "@fortawesome/free-solid-svg-icons";
 import LaptopService from "../../api/services/laptop-service.js";
 import LaptopManager from "../../helpers/laptop-manager.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -15,7 +15,7 @@ export default function CharacteristicsBlock({ laptop = {}, setLaptop }) {
     try {
       updated = await LaptopService.update({
         id: laptop._id,
-        photoUri: laptop.photoUri,
+        imageUrl: laptop.imageUrl,
         serviceTag: laptop.serviceTag,
         note: laptop.note,
         characteristics: { ...laptop.characteristics },
@@ -48,24 +48,6 @@ export default function CharacteristicsBlock({ laptop = {}, setLaptop }) {
         </Button>
       </div>
       <div className={""}>
-        <div className={"flex mb-2"}>
-          <p className={"w-1/4"}>📷 Photos: </p>
-          <div className={"w-2/3 flex justify-between"}>
-            {isEditing ? (
-              <Input
-                onChange={(e) => (laptop.photoUri = e.target.value)}
-                defaultValue={laptop.photoUri}
-                size={"small"}
-              />
-            ) : (
-              <Button size={"small"} disabled={!laptop.photoUri}>
-                <a href={laptop.photoUri} target={"_blank"}>
-                  <FontAwesomeIcon icon={faSquareUpRight} />
-                </a>
-              </Button>
-            )}
-          </div>
-        </div>
         <div className={"flex mb-2"}>
           <p className={"w-1/4"}>🏷️ Service Tag: </p>
           {isEditing ? (
