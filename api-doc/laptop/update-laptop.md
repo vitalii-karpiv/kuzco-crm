@@ -35,8 +35,12 @@ Required - User must be authenticated with a valid JWT token.
   "characteristics": {
     "processor": "Intel Core i7-12700H",
     "videocard": "NVIDIA RTX 3050 Ti",
+    "discrete": true,
     "ssd": 1024,
-    "ram": 32
+    "ram": 32,
+    "battery": 85,
+    "isTransformer": false,
+    "condition": "A+"
   },
   "marketplaces": [
     { "name": "Amazon", "url": "https://amazon.com/..." }

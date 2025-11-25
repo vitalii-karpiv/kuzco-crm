@@ -9,8 +9,8 @@ export default function LaptopGroups() {
   document.title = "Laptop Groups";
   const [laptopGroups, setLaptopGroups] = useState();
   const [isLoading, setIsLoading] = useState(true);
-  const [filters, setFilters] = useState({});
-  const [sorters, setSorters] = useState({});
+  const [filters] = useState({});
+  const [sorters] = useState({});
 
   useEffect(() => {
     loadLaptopGroups();
@@ -137,11 +137,18 @@ export default function LaptopGroups() {
       },
       {
         title: "Laptops",
-        dataIndex: "itemList",
-        key: "itemList",
+        key: "laptopsCount",
         width: 100,
-        render: (itemList) => {
-          return <div className={"flex flex-col text-xs"}>{itemList?.length ?? 0}</div>;
+        render: (_value, record) => {
+          const totalFromGroup = Array.isArray(record.itemList) ? record.itemList.length : 0;
+          const totalFromVariants = Array.isArray(record.variants)
+            ? record.variants.reduce((sum, variant) => {
+                const variantCount = Array.isArray(variant.itemList) ? variant.itemList.length : 0;
+                return sum + variantCount;
+              }, 0)
+            : 0;
+          const total = totalFromVariants || totalFromGroup;
+          return <div className={"flex flex-col text-xs"}>{total}</div>;
         },
       },
       {
@@ -155,7 +162,7 @@ export default function LaptopGroups() {
     ];
   };
 
-  if (!laptopGroups) {
+  if (isLoading && !laptopGroups) {
     return <Loading />;
   }
 

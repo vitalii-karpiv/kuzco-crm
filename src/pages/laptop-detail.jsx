@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import Loading from "../components/loading.jsx";
 import LaptopService from "../api/services/laptop-service.js";
 import SaleService from "../api/services/sale-service.js";
-import { Button, Select, Typography, Spin, message } from "antd";
+import LaptopGroupService from "../api/services/laptop-group-service.js";
+import { Button, Popconfirm, Select, Spin, Typography, message } from "antd";
 import UpdateCharacteristicsModal from "../components/laptop-detail/update-characteristics-modal.jsx";
 import BuyStockModal from "../components/laptop-detail/buy-stock-modal.jsx";
 import StockService from "../api/services/stock-service.js";
@@ -20,6 +21,7 @@ import LaptopStateTag from "../components/common/laptop-state-tag.jsx";
 import SaleCreateModal from "../components/laptop-detail/sale-create-modal.jsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSquareUpRight } from "@fortawesome/free-solid-svg-icons";
+import { MinusOutlined, PlusOutlined } from "@ant-design/icons";
 import { useUserContext } from "../components/user-context.jsx";
 
 export default function LaptopDetail() {
@@ -34,6 +36,7 @@ export default function LaptopDetail() {
   const [assigneeLoading, setAssigneeLoading] = useState(false);
   const [stateLoading, setStateLoading] = useState(false);
   const [relatedSale, setRelatedSale] = useState(null);
+  const [groupLoading, setGroupLoading] = useState(false);
 
   useEffect(() => {
     loadLaptop();
@@ -96,6 +99,39 @@ export default function LaptopDetail() {
     await loadLaptop();
   };
 
+  const handleAddToGroup = async () => {
+    try {
+      setGroupLoading(true);
+      await LaptopGroupService.addLaptop({ laptopId: id });
+      message.success("Laptop added to group!");
+      await loadLaptop();
+    } catch (error) {
+      console.error("Failed to add laptop to group:", error);
+      const errorMessage = error?.response?.data?.message ?? "Failed to add laptop to group!";
+      message.error(errorMessage);
+    } finally {
+      setGroupLoading(false);
+    }
+  };
+
+  const handleRemoveFromGroup = async () => {
+    if (!laptop?.laptopGroupId) {
+      return;
+    }
+    try {
+      setGroupLoading(true);
+      await LaptopGroupService.removeLaptop({ laptopId: id, groupId: laptop.laptopGroupId });
+      message.success("Laptop removed from group!");
+      await loadLaptop();
+    } catch (error) {
+      console.error("Failed to remove laptop from group:", error);
+      const errorMessage = error?.response?.data?.message ?? "Failed to remove laptop from group!";
+      message.error(errorMessage);
+    } finally {
+      setGroupLoading(false);
+    }
+  };
+
   if (!laptop) {
     return <Loading />;
   }
@@ -129,17 +165,54 @@ export default function LaptopDetail() {
                 Sale
               </Link>
             )}
-            {laptop.laptopGroupId && (
-              <Link
-                target={"_blank"}
-                to={`/laptopGroups/groupDetail/${laptop.laptopGroupId}`}
-                className={"flex items-center gap-1 text-purple-700 hover:text-purple-900 transition-colors"}
-                rel="noopener noreferrer"
-              >
-                <FontAwesomeIcon icon={faSquareUpRight} />
-                Group
-              </Link>
-            )}
+            <div className={"flex items-center gap-2"}>
+              {laptop.laptopGroupId && (
+                <Link
+                  target={"_blank"}
+                  to={`/laptopGroups/groupDetail/${laptop.laptopGroupId}`}
+                  className={"flex items-center gap-1 text-purple-700 hover:text-purple-900 transition-colors"}
+                  rel="noopener noreferrer"
+                >
+                  <FontAwesomeIcon icon={faSquareUpRight} />
+                  Group
+                </Link>
+              )}
+              {laptop.laptopGroupId ? (
+                <Popconfirm
+                  title={"Remove laptop from the current group?"}
+                  onConfirm={handleRemoveFromGroup}
+                  okText={"Yes"}
+                  cancelText="No"
+                >
+                  <Button
+                    icon={<MinusOutlined />}
+                    loading={groupLoading}
+                    title="Remove from group"
+                    size={"small"}
+                    type="default"
+                    className={
+                      "flex items-center gap-1 text-xs rounded-full px-2 py-0.5 bg-rose-50 text-rose-600 border border-rose-200 hover:bg-rose-100"
+                    }
+                  >
+                    Group
+                  </Button>
+                </Popconfirm>
+              ) : (
+                <Button
+                  icon={<PlusOutlined />}
+                  onClick={handleAddToGroup}
+                  loading={groupLoading}
+                  title="Add to group"
+                  size={"small"}
+                  type="default"
+                  className={
+                    "flex items-center gap-1 text-xs rounded-full px-2 py-0.5 bg-purple-50 text-purple-700 border border-purple-200 hover:bg-purple-100"
+                  }
+                >
+                  Group
+                </Button>
+              )}
+            </div>
           </div>
           {userList && (
             <div className={"flex items-center mr-4"}>

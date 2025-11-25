@@ -1,4 +1,4 @@
-import { Button, Card, Checkbox, Input, message, Select, Typography } from "antd";
+import { Button, Card, Checkbox, Input, message, Select, Tag, Typography } from "antd";
 import PropTypes from "prop-types";
 import { faSquarePen } from "@fortawesome/free-solid-svg-icons";
 import LaptopService from "../../api/services/laptop-service.js";
@@ -60,6 +60,43 @@ export default function CharacteristicsBlock({ laptop = {}, setLaptop }) {
           ) : (
             <p>{laptop.serviceTag}</p>
           )}
+        </div>
+        <div className={"flex mb-2"}>
+          <p className={"w-1/4"}>✅ Condition: </p>
+          {isEditing ? (
+            <Select
+              className={"w-2/3"}
+              defaultValue={laptop.characteristics?.condition}
+              onChange={(value) => (laptop.characteristics.condition = value)}
+              options={LaptopManager.getLaptopConditionListOptions()}
+              size={"small"}
+              allowClear
+              placeholder="Select condition"
+            />
+          ) : (
+            <div className={"w-2/3"}>
+              {laptop.characteristics?.condition ? (
+                <Tag color={LaptopManager.getLaptopConditionColor(laptop.characteristics?.condition)}>
+                  {LaptopManager.getLaptopConditionLabel(laptop.characteristics?.condition)}
+                </Tag>
+              ) : (
+                <span>-</span>
+              )}
+            </div>
+          )}
+        </div>
+        <div className={"flex mb-2"}>
+          <p className={"w-1/4"}>🔁 Transformer: </p>
+          <div className={"flex flex-col w-2/3"}>
+            <Checkbox
+              className={""}
+              defaultChecked={laptop.characteristics?.isTransformer}
+              disabled={!isEditing}
+              onChange={(e) => (laptop.characteristics.isTransformer = e.target.checked)}
+            >
+              Is transformer (2-in-1)
+            </Checkbox>
+          </div>
         </div>
         <div className={"flex mb-2"}>
           <p className={"w-1/4"}>⚙️ Processor: </p>

@@ -37,7 +37,9 @@ Required - User must be authenticated with a valid JWT token.
     "refreshRate": "60Hz",
     "touch": true,
     "keyLight": true,
-    "battery": 85
+    "battery": 85,
+    "isTransformer": false,
+    "condition": "A+"
   }
 }
 ```
@@ -70,7 +72,9 @@ Required - User must be authenticated with a valid JWT token.
     "refreshRate": "60Hz",
     "touch": true,
     "keyLight": true,
-    "battery": 85
+    "battery": 85,
+    "isTransformer": false,
+    "condition": "A+"
   }
 }
 ```
@@ -101,7 +105,9 @@ Required - User must be authenticated with a valid JWT token.
     "refreshRate": "60Hz",
     "touch": true,
     "keyLight": true,
-    "battery": 85
+    "battery": 85,
+    "isTransformer": false,
+    "condition": "A+"
   }
 }
 ```

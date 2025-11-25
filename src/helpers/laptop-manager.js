@@ -1,3 +1,40 @@
+const BATTERY_WEAR_LIST = ["excellent", "good", "fair", "poor"];
+
+const BATTERY_WEAR_LABEL_MAP = {
+  excellent: "Excellent",
+  good: "Good",
+  fair: "Fair",
+  poor: "Poor",
+};
+
+const BATTERY_WEAR_COLOR_MAP = {
+  excellent: "green",
+  good: "blue",
+  fair: "orange",
+  poor: "red",
+};
+
+const LAPTOP_CONDITION_LIST = {
+  A_PLUS: "a+",
+  A: "a",
+  B: "b",
+  C: "c",
+};
+
+const LAPTOP_CONDITION_LABEL_MAP = {
+  "a+": "A+",
+  a: "A",
+  b: "B",
+  c: "C",
+};
+
+const LAPTOP_CONDITION_COLOR_MAP = {
+  "a+": "green",
+  a: "blue",
+  b: "orange",
+  c: "red",
+};
+
 const LAPTOP_STATE_LIST = [
   "new",
   "toService",
@@ -176,6 +213,48 @@ class LaptopManager {
         value: port,
       };
     });
+  }
+
+  getLaptopConditionLabel(condition) {
+    if (!condition) {
+      return undefined;
+    }
+    return LAPTOP_CONDITION_LABEL_MAP[condition] ?? condition;
+  }
+
+  getLaptopConditionListOptions() {
+    return Object.values(LAPTOP_CONDITION_LIST).map((condition) => ({
+      label: this.getLaptopConditionLabel(condition),
+      value: condition,
+    }));
+  }
+
+  getLaptopConditionColor(condition) {
+    if (!condition) {
+      return undefined;
+    }
+    return LAPTOP_CONDITION_COLOR_MAP[condition] ?? "default";
+  }
+
+  getBatteryWearLabel(level) {
+    if (!level) {
+      return undefined;
+    }
+    return BATTERY_WEAR_LABEL_MAP[level] ?? level;
+  }
+
+  getBatteryWearColor(level) {
+    if (!level) {
+      return undefined;
+    }
+    return BATTERY_WEAR_COLOR_MAP[level] ?? "default";
+  }
+
+  getBatteryWearListOptions() {
+    return BATTERY_WEAR_LIST.map((level) => ({
+      label: this.getBatteryWearLabel(level),
+      value: level,
+    }));
   }
 }
 

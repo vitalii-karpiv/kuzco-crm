@@ -32,8 +32,23 @@ export default function LaptopGroupDetail() {
   }, [id]);
 
   useEffect(() => {
-    if (laptopGroup?.itemList && laptopGroup.itemList.length > 0) {
-      loadLaptops();
+    if (!laptopGroup) {
+      setLaptops([]);
+      return;
+    }
+
+    // Collect laptop IDs from both legacy group.itemList and new variant.itemList structure
+    const groupItemIds = Array.isArray(laptopGroup.itemList) ? laptopGroup.itemList : [];
+    const variantItemIds = Array.isArray(laptopGroup.variants)
+      ? laptopGroup.variants.flatMap((variant) => (Array.isArray(variant.itemList) ? variant.itemList : []))
+      : [];
+
+    const idList = Array.from(new Set([...groupItemIds, ...variantItemIds].filter(Boolean)));
+
+    if (idList.length > 0) {
+      loadLaptops(idList);
+    } else {
+      setLaptops([]);
     }
   }, [laptopGroup]);
 
@@ -51,18 +66,19 @@ export default function LaptopGroupDetail() {
     setIsLoading(true);
     try {
       const group = await LaptopGroupService.get(id);
-      document.title = group.groupName || "Laptop Group";
+      document.title = group.title || group.groupName || "Laptop Group";
       setLaptopGroup(group);
     } catch (error) {
       console.error("Failed to load laptop group:", error);
+      message.error("Failed to load laptop group");
     } finally {
       setIsLoading(false);
     }
   }
 
-  async function loadLaptops() {
+  async function loadLaptops(idList) {
     try {
-      const laptopsDto = await LaptopService.list({ idList: laptopGroup.itemList });
+      const laptopsDto = await LaptopService.list({ idList });
       setLaptops(laptopsDto.itemList || []);
     } catch (error) {
       console.error("Failed to load laptops:", error);
@@ -74,9 +90,9 @@ export default function LaptopGroupDetail() {
       const updateData = { id: laptopGroup._id, [property]: value };
       const updated = await LaptopGroupService.update(updateData);
       setLaptopGroup(updated);
-      document.title = updated.groupName || "Laptop Group";
+      document.title = updated.title || updated.groupName || "Laptop Group";
       message.success(
-        `${property === "groupName" ? "Group name" : property === "groupDescription" ? "Description" : property} updated successfully!`,
+        `${property === "title" ? "Title" : property === "groupDescription" ? "Description" : property === "note" ? "Note" : property} updated successfully!`,
       );
     } catch (error) {
       console.error("Failed to update:", error);
@@ -229,16 +245,6 @@ export default function LaptopGroupDetail() {
 
   const variantColumns = [
     {
-      title: "Laptop ID",
-      dataIndex: "laptopId",
-      key: "laptopId",
-      render: (laptopId) => (
-        <Typography.Text code className={"text-xs"}>
-          {laptopId || "-"}
-        </Typography.Text>
-      ),
-    },
-    {
       title: "RAM",
       dataIndex: "ram",
       key: "ram",
@@ -257,16 +263,40 @@ export default function LaptopGroupDetail() {
       render: (touch) => <Tag color={touch ? "green" : "default"}>{touch ? "Yes" : "No"}</Tag>,
     },
     {
-      title: "Keyboard Light",
-      dataIndex: "keyLight",
-      key: "keyLight",
-      render: (keyLight) => <Tag color={keyLight ? "blue" : "default"}>{keyLight ? "Yes" : "No"}</Tag>,
-    },
-    {
       title: "Battery Wear",
       dataIndex: "battery",
       key: "battery",
-      render: (battery) => <span>{battery !== undefined && battery !== null ? `${battery}%` : "-"}</span>,
+      render: (batteryWear) => {
+        if (!batteryWear) {
+          return <Tag>-</Tag>;
+        }
+
+        const color = LaptopManager.getBatteryWearColor(batteryWear);
+        const label = LaptopManager.getBatteryWearLabel(batteryWear);
+
+        return <Tag color={color}>{label}</Tag>;
+      },
+    },
+    {
+      title: "Condition",
+      dataIndex: "condition",
+      key: "condition",
+      render: (condition) => {
+        if (!condition) {
+          return <Tag>-</Tag>;
+        }
+
+        const color = LaptopManager.getLaptopConditionColor(condition);
+        const label = LaptopManager.getLaptopConditionLabel(condition);
+
+        return <Tag color={color}>{label}</Tag>;
+      },
+    },
+    {
+      title: "Laptops",
+      dataIndex: "itemList",
+      key: "itemList",
+      render: (itemList) => <span>{Array.isArray(itemList) ? itemList.length : 0}</span>,
     },
     {
       title: "Price",
@@ -511,6 +541,12 @@ export default function LaptopGroupDetail() {
             </Space>
           </div>
           <div className={"flex mb-3"}>
+            <p className={"w-1/4"}>Transformer: </p>
+            <span className={"w-2/3 ml-2"}>
+              {laptopGroup.isTransformer ? <Tag color="green">Yes</Tag> : <Tag color="purple">No</Tag>}
+            </span>
+          </div>
+          <div className={"flex mb-3"}>
             <p className={"w-1/4"}>Screen Size: </p>
             <span className={"w-2/3 ml-2"}>{laptopGroup.screenSize ? `${laptopGroup.screenSize}"` : "-"}</span>
           </div>
@@ -570,33 +606,34 @@ export default function LaptopGroupDetail() {
             pagination={false}
             size="small"
             scroll={{ x: true }}
+            expandable={{
+              expandedRowRender: (variant) => {
+                const variantItemIds = Array.isArray(variant.itemList) ? variant.itemList : [];
+                const variantLaptops = laptops.filter((laptop) => variantItemIds.includes(laptop._id));
+
+                if (!variantLaptops.length) {
+                  return (
+                    <Typography.Text type="secondary" className={"text-xs"}>
+                      No laptops in this variant
+                    </Typography.Text>
+                  );
+                }
+
+                return (
+                  <Table
+                    dataSource={variantLaptops.map((laptop) => ({ ...laptop, key: laptop._id }))}
+                    columns={laptopColumns}
+                    pagination={false}
+                    size="small"
+                    scroll={{ x: true }}
+                  />
+                );
+              },
+              rowExpandable: (variant) => Array.isArray(variant.itemList) && variant.itemList.length > 0,
+            }}
           />
         </Card>
       )}
-
-      {/* Laptops Table */}
-      <Card
-        bordered={false}
-        hoverable={true}
-        className={"w-full mb-4"}
-        title={
-          <Typography.Title level={4} style={{ margin: 0 }}>
-            Laptops in Group ({laptops.length})
-          </Typography.Title>
-        }
-      >
-        {laptops.length > 0 ? (
-          <Table
-            dataSource={laptops.map((laptop) => ({ ...laptop, key: laptop._id }))}
-            columns={laptopColumns}
-            pagination={false}
-            size="small"
-            scroll={{ x: true }}
-          />
-        ) : (
-          <Typography.Text type="secondary">No laptops in this group</Typography.Text>
-        )}
-      </Card>
     </div>
   );
 }

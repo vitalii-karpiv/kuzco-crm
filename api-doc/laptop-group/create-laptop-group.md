@@ -23,22 +23,23 @@ Required – caller must send a valid JWT.
   "processor": "string",
   "videocard": "string",
   "discrete": true,
+  "isTransformer": false,
   "screenSize": 15.6,
   "resolution": "1920x1080",
   "panelType": "IPS",
   "refreshRate": "144Hz",
   "variants": [
     {
-      "laptopId": "string",
+      "identifier": "string",
       "ram": 16,
       "ssd": 512,
       "touch": false,
-      "keyLight": true,
-      "battery": 82,
-      "price": 28000
+      "battery": "excellent",
+      "condition": "A+",
+      "price": 28000,
+      "itemList": ["string"]
     }
   ],
-  "itemList": ["string"],
   "note": "string"
 }
 ```
@@ -47,8 +48,9 @@ Required – caller must send a valid JWT.
 
 - `groupName`, `processor`, `videocard`, `screenSize`, `resolution`, and `panelType` are required to generate a unique `groupIdentifier`.
 - `title` defaults to the provided `groupName` but can be overridden later via the update endpoint.
-- `variants` lets you describe pre-configured RAM/SSD/touch/keyLight/battery combos (plus price) for laptops already in inventory.
-- `itemList` contains laptop IDs that should be immediately associated with the group.
+- `isTransformer` indicates whether the group represents 2-in-1 / convertible devices and is part of the grouping key.
+- `variants` lets you describe pre-configured RAM/SSD/touch/battery-condition/condition combos (plus price) for laptops already in inventory.
+- Each variant's `itemList` contains laptop IDs that should be immediately associated with that variant and group.
 
 ## Response
 
@@ -65,25 +67,26 @@ Required – caller must send a valid JWT.
   "processor": "Intel Core i7-12700H",
   "videocard": "RTX 3050 Ti",
   "discrete": true,
+  "isTransformer": false,
   "screenSize": 15.6,
   "resolution": "1920x1080",
   "panelType": "IPS",
   "refreshRate": "144Hz",
   "variants": [
     {
-      "laptopId": "string",
+      "identifier": "string",
       "ram": 16,
       "ssd": 512,
       "touch": false,
-      "keyLight": true,
-      "battery": 82,
-      "price": 28000
+      "battery": "excellent",
+      "condition": "A+",
+      "price": 28000,
+      "itemList": ["string"]
     }
   ],
-  "itemList": ["string"],
   "note": "string"
 }
 ```
 
-The API returns the newly created MongoDB document. Each laptop listed in `itemList` automatically receives the `laptopGroupId` reference.
+The API returns the newly created MongoDB document. Each laptop listed in any variant's `itemList` automatically receives the `laptopGroupId` reference.
 

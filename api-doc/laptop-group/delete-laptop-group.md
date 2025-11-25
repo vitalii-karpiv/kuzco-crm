@@ -22,5 +22,5 @@ Required – valid JWT.
 
 Empty body. A `404` error is returned if the group does not exist.
 
-> **Note:** Removing a group does not yet clear `laptopGroupId` from member laptops. Handle that manually if needed.
+> **Note:** Removing a group automatically clears `laptopGroupId` from all member laptops and deletes all images associated with that group.
 

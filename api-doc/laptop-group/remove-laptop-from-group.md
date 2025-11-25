@@ -1,6 +1,6 @@
 # Remove Laptop from Group
 
-Detaches a laptop from its current group, deletes the associated variant entry, and clears the `laptopGroupId` on the laptop document.
+Detaches a laptop from its current group, removes it from the associated variant, and clears the `laptopGroupId` on the laptop document. If the variant becomes empty, it is deleted.
 
 ## Endpoint
 
@@ -26,8 +26,8 @@ Both IDs must be valid Mongo ObjectIds. The laptop has to belong to the specifie
 ## Behavior
 
 1. Loads the target group by `groupId`.
-2. Removes the `laptopId` from the group's `itemList`.
-3. Removes the variant whose `laptopId` matches.
+2. Finds the variant whose `itemList` contains the `laptopId` and removes the ID from that list.
+3. If the variant's `itemList` becomes empty, removes the variant from the group.
 4. Saves the modified group.
 5. Updates the laptop record, setting `laptopGroupId` to `null`.
 
