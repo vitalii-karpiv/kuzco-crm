@@ -1,6 +1,6 @@
-import { Button, Card, Checkbox, Input, message, Select, Typography } from "antd";
+import { Button, Card, Checkbox, Input, message, Select, Tag, Typography } from "antd";
 import PropTypes from "prop-types";
-import { faSquareUpRight, faSquarePen } from "@fortawesome/free-solid-svg-icons";
+import { faSquarePen } from "@fortawesome/free-solid-svg-icons";
 import LaptopService from "../../api/services/laptop-service.js";
 import LaptopManager from "../../helpers/laptop-manager.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -15,7 +15,7 @@ export default function CharacteristicsBlock({ laptop = {}, setLaptop }) {
     try {
       updated = await LaptopService.update({
         id: laptop._id,
-        photoUri: laptop.photoUri,
+        imageUrl: laptop.imageUrl,
         serviceTag: laptop.serviceTag,
         note: laptop.note,
         characteristics: { ...laptop.characteristics },
@@ -49,24 +49,6 @@ export default function CharacteristicsBlock({ laptop = {}, setLaptop }) {
       </div>
       <div className={""}>
         <div className={"flex mb-2"}>
-          <p className={"w-1/4"}>📷 Photos: </p>
-          <div className={"w-2/3 flex justify-between"}>
-            {isEditing ? (
-              <Input
-                onChange={(e) => (laptop.photoUri = e.target.value)}
-                defaultValue={laptop.photoUri}
-                size={"small"}
-              />
-            ) : (
-              <Button size={"small"} disabled={!laptop.photoUri}>
-                <a href={laptop.photoUri} target={"_blank"}>
-                  <FontAwesomeIcon icon={faSquareUpRight} />
-                </a>
-              </Button>
-            )}
-          </div>
-        </div>
-        <div className={"flex mb-2"}>
           <p className={"w-1/4"}>🏷️ Service Tag: </p>
           {isEditing ? (
             <Input
@@ -78,6 +60,43 @@ export default function CharacteristicsBlock({ laptop = {}, setLaptop }) {
           ) : (
             <p>{laptop.serviceTag}</p>
           )}
+        </div>
+        <div className={"flex mb-2"}>
+          <p className={"w-1/4"}>✅ Condition: </p>
+          {isEditing ? (
+            <Select
+              className={"w-2/3"}
+              defaultValue={laptop.characteristics?.condition}
+              onChange={(value) => (laptop.characteristics.condition = value)}
+              options={LaptopManager.getLaptopConditionListOptions()}
+              size={"small"}
+              allowClear
+              placeholder="Select condition"
+            />
+          ) : (
+            <div className={"w-2/3"}>
+              {laptop.characteristics?.condition ? (
+                <Tag color={LaptopManager.getLaptopConditionColor(laptop.characteristics?.condition)}>
+                  {LaptopManager.getLaptopConditionLabel(laptop.characteristics?.condition)}
+                </Tag>
+              ) : (
+                <span>-</span>
+              )}
+            </div>
+          )}
+        </div>
+        <div className={"flex mb-2"}>
+          <p className={"w-1/4"}>🔁 Transformer: </p>
+          <div className={"flex flex-col w-2/3"}>
+            <Checkbox
+              className={""}
+              defaultChecked={laptop.characteristics?.isTransformer}
+              disabled={!isEditing}
+              onChange={(e) => (laptop.characteristics.isTransformer = e.target.checked)}
+            >
+              Is transformer (2-in-1)
+            </Checkbox>
+          </div>
         </div>
         <div className={"flex mb-2"}>
           <p className={"w-1/4"}>⚙️ Processor: </p>

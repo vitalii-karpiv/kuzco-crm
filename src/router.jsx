@@ -14,6 +14,8 @@ import Finances from "./pages/finances.jsx";
 import Inventory from "./pages/inventory.jsx";
 import StockDetail from "./pages/stock-detail.jsx";
 import Root from "./pages/root.jsx";
+import LaptopGroups from "./pages/laptop-groups.jsx";
+import LaptopGroupDetail from "./pages/laptop-group-detail.jsx";
 
 const { Header, Content, Footer, Sider } = Layout;
 
@@ -60,6 +62,8 @@ const Router = () => {
                 <Route element={<Finances />} path={"/finances"} exact />
                 <Route element={<Inventory />} path={"/inventory"} exact />
                 <Route element={<StockDetail />} path={"/inventory/stock/:id"} exact />
+                <Route element={<LaptopGroups />} path={"/laptopGroups"} exact />
+                <Route element={<LaptopGroupDetail />} path={"/laptopGroups/groupDetail/:id"} exact />
               </Route>
             </Routes>
             {/* --- Actual content --- */}

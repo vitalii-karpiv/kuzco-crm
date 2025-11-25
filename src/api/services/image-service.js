@@ -19,4 +19,9 @@ export default class ImageService {
     const result = await $api.post(`/image/list`, dto);
     return result.data;
   }
+
+  static async delete(id) {
+    const result = await $api.delete(`/image/${id}`);
+    return result.data;
+  }
 }
