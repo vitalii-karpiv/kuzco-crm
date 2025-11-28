@@ -5,15 +5,14 @@ import StockService from "../api/services/stock-service.js";
 import LaptopService from "../api/services/laptop-service.js";
 import InventoryTableHeader from "../components/inventory/inventory-table-header.jsx";
 import CreateStockModal from "../components/inventory/create-stock-modal.jsx";
-import { useNavigate } from "react-router-dom";
 import StockManager from "../helpers/stock-manager.js";
 import FilterBar from "../components/inventory/filter-bar.jsx";
 import StockStateTag from "../components/common/stock-state-tag.jsx";
 import SorterBar from "../components/inventory/sorter-bar.jsx";
+import { Link } from "react-router-dom";
 
 export default function Inventory() {
   document.title = "Inventory";
-  const navigate = useNavigate();
   const [stocks, setStocks] = useState([]);
   const [filters, setFilters] = useState({});
   const [sorters, setSorters] = useState({});
@@ -60,11 +59,20 @@ export default function Inventory() {
         title: "Code",
         dataIndex: "code",
         key: "code",
+        render: (code) => <Typography.Text code>{code || "-"}</Typography.Text>,
       },
       {
         title: "Title",
         dataIndex: "name",
         key: "name",
+        render: (name, record) => {
+          const label = name || record.code || "-";
+          return (
+            <Typography.Text>
+              <Link to={`/inventory/stock/${record._id}`}>{label}</Link>
+            </Typography.Text>
+          );
+        },
       },
       {
         title: "Price",
@@ -95,7 +103,7 @@ export default function Inventory() {
     return <Loading />;
   }
   return (
-    <div className={"flex-col w-full mr-2"}>
+    <div className={"flex-col w-full"}>
       <SorterBar sorters={sorters} setSorters={setSorters} />
       <FilterBar filters={filters} setFilters={setFilters} />
       <Table
@@ -105,20 +113,10 @@ export default function Inventory() {
         size={"small"}
         pagination={false}
         scroll={{ y: 470 }}
-        onScroll={() => {
-          // TODO: load more data when scrolled to bottom
-        }}
         loading={isLoading}
         columns={getColumns()}
         title={() => <InventoryTableHeader onClick={() => setOpenCreateModal(true)} />}
         footer={() => <div className={"text-xs"}>Total stocks: {stocks.length}</div>}
-        onRow={(record) => {
-          return {
-            onClick: () => {
-              navigate(`stock/${record._id}`);
-            },
-          };
-        }}
       />
 
       {/* MODALS */}

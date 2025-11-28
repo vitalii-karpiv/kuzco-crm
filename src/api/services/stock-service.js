@@ -18,7 +18,6 @@ export default class StockService {
     return result.data;
   }
   static async delete(id) {
-    const result = await $api.get(`/stock/${id}`);
-    return result.data;
+    await $api.delete(`/stock/${id}`);
   }
 }
