@@ -1,14 +1,17 @@
-import { Button, Card, Checkbox, Input, message, Select, Tag, Typography } from "antd";
+import { Button, Card, Checkbox, Input, message, Popconfirm, Select, Tag, Typography } from "antd";
 import PropTypes from "prop-types";
 import { faSquarePen } from "@fortawesome/free-solid-svg-icons";
 import LaptopService from "../../api/services/laptop-service.js";
 import LaptopManager from "../../helpers/laptop-manager.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function CharacteristicsBlock({ laptop = {}, setLaptop }) {
   const [messageApi, contextHolder] = message.useMessage();
   const [isEditing, setIsEditing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const navigate = useNavigate();
 
   async function handleUpdate() {
     let updated;
@@ -32,20 +35,56 @@ export default function CharacteristicsBlock({ laptop = {}, setLaptop }) {
     setIsEditing(false);
   }
 
+  async function handleDelete() {
+    if (!laptop?._id) {
+      return;
+    }
+    try {
+      setIsDeleting(true);
+      await LaptopService.delete(laptop._id);
+      message.success("Laptop deleted successfully!");
+      navigate("/laptops");
+    } catch (e) {
+      messageApi.open({
+        duration: 3,
+        type: "error",
+        content: "Laptop delete failed. Please try again.",
+      });
+      console.log(e);
+    } finally {
+      setIsDeleting(false);
+    }
+  }
+
   return (
     <Card bordered={false} hoverable={true} className={"w-2/4 mr-3"} loading={false}>
       {contextHolder}
-      <div className={"flex justify-between"}>
+      <div className={"flex justify-between items-center"}>
         <Typography.Title level={4}>Characteristics</Typography.Title>
-        <Button
-          size={"small"}
-          icon={<FontAwesomeIcon icon={faSquarePen} />}
-          onClick={() => {
-            isEditing ? handleUpdate() : setIsEditing(true);
-          }}
-        >
-          {isEditing ? "Save" : "Edit"}
-        </Button>
+        <div className={"flex items-center gap-2"}>
+          <Button
+            size={"small"}
+            icon={<FontAwesomeIcon icon={faSquarePen} />}
+            onClick={() => {
+              isEditing ? handleUpdate() : setIsEditing(true);
+            }}
+          >
+            {isEditing ? "Save" : "Edit"}
+          </Button>
+          <Popconfirm
+            title="Delete this laptop?"
+            okText="Delete"
+            okButtonProps={{ danger: true }}
+            cancelText="Cancel"
+            placement="left"
+            onConfirm={handleDelete}
+            disabled={isDeleting}
+          >
+            <Button danger size={"small"} loading={isDeleting}>
+              Delete
+            </Button>
+          </Popconfirm>
+        </div>
       </div>
       <div className={""}>
         <div className={"flex mb-2"}>
@@ -196,7 +235,7 @@ export default function CharacteristicsBlock({ laptop = {}, setLaptop }) {
                 size={"small"}
               />
             ) : (
-              <p>{laptop.characteristics?.screenSize} '</p>
+              <p>{laptop.characteristics?.screenSize}'</p>
             )}
 
             <Checkbox
