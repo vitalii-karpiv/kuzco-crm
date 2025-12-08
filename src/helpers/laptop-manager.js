@@ -42,6 +42,7 @@ const LAPTOP_STATE_LIST = [
   "toPhotoSession",
   "toPublish",
   "selling",
+  "waitingForApproval",
   "waitingForDelivery",
   "delivering",
   "done",
@@ -91,6 +92,7 @@ const LAPTOP_STATE_LABEL_MAP = {
   toPhotoSession: "To photo session",
   toPublish: "To publish",
   selling: "Selling",
+  waitingForApproval: "Waiting for approval",
   waitingForDelivery: "Waiting for delivery",
   delivering: "Delivering",
   done: "Done",
@@ -103,6 +105,7 @@ const LAPTOP_STATE_COLOR_MAP = {
   toPhotoSession: "orange",
   toPublish: "gold",
   selling: "lime",
+  waitingForApproval: "red",
   waitingForDelivery: "cyan",
   delivering: "blue",
   done: "green",
@@ -115,12 +118,22 @@ const LAPTOP_STATE_MAP = {
   TO_PHOTO_SESSION: "toPhotoSession",
   TO_PUBLISH: "toPublish",
   SELLING: "selling",
+  WAITING_FOR_APPROVAL: "waitingForApproval",
   WAITING_FOR_DELIVERY: "waitingForDelivery",
   DELIVERING: "delivering",
   DONE: "done",
 };
 
-const ACTIVE_STATES = ["new", "toService", "toTest", "toPhotoSession", "toPublish", "selling"];
+const ACTIVE_STATES = [
+  "new",
+  "toService",
+  "toTest",
+  "toPhotoSession",
+  "toPublish",
+  "selling",
+  "waitingForApproval",
+  "waitingForDelivery",
+];
 
 const TECH_CHECK_LABELS = {
   keyboard: "Keyboard",
