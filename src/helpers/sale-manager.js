@@ -1,9 +1,10 @@
-const SALE_STATE_LIST = ["new", "delivering", "done", "rejected"];
+const SALE_STATE_LIST = ["new", "toApprove", "delivering", "done", "rejected"];
 const DELIVERY_LIST = ["novapost", "ukrpost", "meest", "pickUp"];
 const SOURCE_LIST = ["olx", "inst", "telegram", "tiktok", "prom", "website"];
 
 const STATE_LABELS = {
   new: "New",
+  toApprove: "To Approve",
   delivering: "Delivering",
   done: "Done",
   rejected: "Rejected",
@@ -14,6 +15,15 @@ const STATE_COLORS = {
   delivering: "cyan",
   done: "green",
   rejected: "red",
+  toApprove: "purple",
+};
+
+const STATE_MAP = {
+  NEW: "new",
+  TO_APPROVE: "toApprove",
+  DELIVERING: "delivering",
+  DONE: "done",
+  REJECTED: "rejected",
 };
 
 const DELIVERY_LABELS = {
@@ -33,6 +43,10 @@ const SOURCE_LABELS = {
 };
 
 class SaleManager {
+  getSaleStateMap() {
+    return STATE_MAP;
+  }
+
   getSaleStateList() {
     return SALE_STATE_LIST;
   }

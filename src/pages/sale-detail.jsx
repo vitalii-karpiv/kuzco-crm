@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import Loading from "../components/loading.jsx";
 import SaleService from "../api/services/sale-service.js";
 import { useParams } from "react-router-dom";
-import { Alert, Button, Typography, Select, message, Spin } from "antd";
+import { Alert, Typography, Select, message, Spin } from "antd";
 import LaptopService from "../api/services/laptop-service.js";
 import CustomerDetailCard from "../components/sale-detail/customer-detail-card.jsx";
 import SaleDetailCard from "../components/sale-detail/sale-detail-card.jsx";
@@ -10,6 +10,8 @@ import SaleFinanceCard from "../components/sale-detail/sale-finance-card.jsx";
 import SalesTableByCustomer from "../components/sale-detail/sales-table-by-customer.jsx";
 import LaptopDetail from "../components/sale-detail/laptop-detail.jsx";
 import { useUserContext } from "../components/user-context.jsx";
+import SaleManager from "../helpers/sale-manager.js";
+import SaleStateTag from "../components/common/sale-state-tag.jsx";
 
 export default function SaleDetail() {
   let { id } = useParams();
@@ -18,6 +20,7 @@ export default function SaleDetail() {
   const [laptop, setLaptop] = useState();
   const [showErrorAlert, setShowErrorAlert] = useState(false);
   const [assigneeLoading, setAssigneeLoading] = useState(false);
+  const [stateLoading, setStateLoading] = useState(false);
 
   useEffect(() => {
     loadSale();
@@ -40,15 +43,6 @@ export default function SaleDetail() {
     setLaptop(laptopDtoOut);
   }
 
-  async function setSaleState(state) {
-    try {
-      const updated = await SaleService.setState({ id: sale._id, state });
-      setSale(updated);
-    } catch (e) {
-      setShowErrorAlert(true);
-    }
-  }
-
   const { users: userList } = useUserContext();
 
   async function handleSetAssignee(userId) {
@@ -64,6 +58,19 @@ export default function SaleDetail() {
     }
   }
 
+  async function handleSetState(state) {
+    try {
+      setStateLoading(true);
+      const updated = await SaleService.setState({ id: sale._id, state });
+      setSale(updated);
+    } catch (e) {
+      console.error(e);
+      message.error("Failed to update state!");
+    } finally {
+      setStateLoading(false);
+    }
+  }
+
   if (!sale) {
     return <Loading />;
   }
@@ -75,6 +82,28 @@ export default function SaleDetail() {
           <Typography.Text code>{sale.code}</Typography.Text> {laptop?.name}
         </Typography.Title>
         <div className={"flex items-center"}>
+          {
+            <div className={"flex items-center mr-4"}>
+              <span className={"text-xs text-gray-700 mr-1"}>State:</span>
+              <Select
+                defaultValue={sale.state}
+                value={sale.state}
+                variant={"filled"}
+                placement={"bottomRight"}
+                suffixIcon={stateLoading ? <Spin size="small" /> : null}
+                popupClassName={"min-w-48"}
+                onChange={handleSetState}
+                className={"ml-0"}
+                disabled={stateLoading}
+              >
+                {SaleManager.getSaleStateList().map((state) => (
+                  <Select.Option key={state} value={state}>
+                    <SaleStateTag state={state} />
+                  </Select.Option>
+                ))}
+              </Select>
+            </div>
+          }
           {userList && (
             <div className={"flex items-center mr-4"}>
               <span className={"text-xs text-gray-700 mr-1"}>Assignee:</span>
@@ -95,21 +124,6 @@ export default function SaleDetail() {
                   </Select.Option>
                 ))}
               </Select>
-            </div>
-          )}
-          {sale.state === "new" && (
-            <Button className={"bg-amber-200 mr-3"} onClick={() => setSaleState("delivering")}>
-              Set delivering
-            </Button>
-          )}
-          {sale.state === "delivering" && (
-            <div className={"flex justify-between align-middle"}>
-              <Button className={"bg-green-500 mr-3"} onClick={() => setSaleState("done")}>
-                Set done
-              </Button>
-              <Button className={"bg-red-500 mr-3"} onClick={() => setSaleState("rejected")}>
-                Set rejected
-              </Button>
             </div>
           )}
         </div>
