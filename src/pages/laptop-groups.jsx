@@ -4,6 +4,7 @@ import LaptopGroupService from "../api/services/laptop-group-service.js";
 import Loading from "../components/loading.jsx";
 import { Link } from "react-router-dom";
 import LaptopManager from "../helpers/laptop-manager.js";
+import LaptopGroupStateTag from "../components/common/laptop-group-state-tag.jsx";
 
 export default function LaptopGroups() {
   document.title = "Laptop Groups";
@@ -101,6 +102,15 @@ export default function LaptopGroups() {
             </div>
           </div>
         ),
+      },
+      {
+        title: "State",
+        dataIndex: "state",
+        key: "state",
+        width: 120,
+        render: (state) => {
+          return <LaptopGroupStateTag state={state} />;
+        },
       },
       {
         title: "Processor",
