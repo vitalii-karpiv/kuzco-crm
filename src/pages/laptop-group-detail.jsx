@@ -553,7 +553,7 @@ export default function LaptopGroupDetail() {
                 placeholder="Enter description"
               />
             ) : (
-              <span className={"w-2/3 ml-2"}>
+              <span className={"w-2/3 ml-2 whitespace-pre-line"}>
                 {laptopGroup.groupDescription && laptopGroup.groupDescription.trim().length > 0
                   ? laptopGroup.groupDescription
                   : "-"}
@@ -572,7 +572,7 @@ export default function LaptopGroupDetail() {
                 placeholder="Enter note"
               />
             ) : (
-              <span className={"w-2/3 ml-2"}>
+              <span className={"w-2/3 ml-2 whitespace-pre-line"}>
                 {laptopGroup.note && laptopGroup.note.trim().length > 0 ? laptopGroup.note : "-"}
               </span>
             )}
