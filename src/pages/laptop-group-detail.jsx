@@ -1,11 +1,26 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
-import { Card, Table, Typography, Tag, Space, Input, message, Button, InputNumber, Popconfirm } from "antd";
+import {
+  Card,
+  Table,
+  Typography,
+  Tag,
+  Space,
+  Input,
+  message,
+  Button,
+  InputNumber,
+  Popconfirm,
+  Select,
+  Spin,
+} from "antd";
 import LaptopGroupService from "../api/services/laptop-group-service.js";
 import LaptopService from "../api/services/laptop-service.js";
 import Loading from "../components/loading.jsx";
 import LaptopManager from "../helpers/laptop-manager.js";
+import LaptopGroupManager from "../helpers/laptop-group-manager.js";
 import LaptopStateTag from "../components/common/laptop-state-tag.jsx";
+import LaptopGroupStateTag from "../components/common/laptop-group-state-tag.jsx";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 import TextArea from "antd/es/input/TextArea";
 import ImageManager from "../components/common/image-manager.jsx";
@@ -26,6 +41,7 @@ export default function LaptopGroupDetail() {
   const [variantPriceDraft, setVariantPriceDraft] = useState(null);
   const [savingVariantIndex, setSavingVariantIndex] = useState(null);
   const [isDeletingGroup, setIsDeletingGroup] = useState(false);
+  const [stateLoading, setStateLoading] = useState(false);
 
   useEffect(() => {
     loadLaptopGroup();
@@ -152,6 +168,20 @@ export default function LaptopGroupDetail() {
       message.error("Failed to delete laptop group");
     } finally {
       setIsDeletingGroup(false);
+    }
+  }
+
+  async function handleSetState(state) {
+    try {
+      setStateLoading(true);
+      const updated = await LaptopGroupService.setState({ id: laptopGroup._id, state });
+      setLaptopGroup(updated);
+      message.success(`State updated to ${LaptopGroupManager.getLaptopGroupStateLabel(state)}`);
+    } catch (error) {
+      console.error("Failed to update state:", error);
+      message.error("Failed to update state!");
+    } finally {
+      setStateLoading(false);
     }
   }
 
@@ -428,6 +458,28 @@ export default function LaptopGroupDetail() {
             {laptopGroup.groupIdentifier}
           </Typography.Text>
         </div>
+        <div className={"flex items-center"}>
+          <div className={"flex items-center mr-4"}>
+            <span className={"text-xs text-gray-700 mr-1"}>State:</span>
+            <Select
+              defaultValue={laptopGroup.state}
+              value={laptopGroup.state}
+              variant={"filled"}
+              placement={"bottomRight"}
+              suffixIcon={stateLoading ? <Spin size="small" /> : null}
+              popupClassName={"min-w-48"}
+              onChange={handleSetState}
+              className={"ml-0"}
+              disabled={stateLoading}
+            >
+              {LaptopGroupManager.getLaptopGroupStateList().map((state) => (
+                <Select.Option key={state} value={state}>
+                  <LaptopGroupStateTag state={state} />
+                </Select.Option>
+              ))}
+            </Select>
+          </div>
+        </div>
       </header>
 
       {/* Basic Info Block */}
@@ -501,7 +553,7 @@ export default function LaptopGroupDetail() {
                 placeholder="Enter description"
               />
             ) : (
-              <span className={"w-2/3 ml-2"}>
+              <span className={"w-2/3 ml-2 whitespace-pre-line"}>
                 {laptopGroup.groupDescription && laptopGroup.groupDescription.trim().length > 0
                   ? laptopGroup.groupDescription
                   : "-"}
@@ -520,7 +572,7 @@ export default function LaptopGroupDetail() {
                 placeholder="Enter note"
               />
             ) : (
-              <span className={"w-2/3 ml-2"}>
+              <span className={"w-2/3 ml-2 whitespace-pre-line"}>
                 {laptopGroup.note && laptopGroup.note.trim().length > 0 ? laptopGroup.note : "-"}
               </span>
             )}
