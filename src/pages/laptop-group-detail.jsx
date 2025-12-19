@@ -13,15 +13,17 @@ import {
   Popconfirm,
   Select,
   Spin,
+  Image,
 } from "antd";
 import LaptopGroupService from "../api/services/laptop-group-service.js";
 import LaptopService from "../api/services/laptop-service.js";
+import ImageService from "../api/services/image-service.js";
 import Loading from "../components/loading.jsx";
 import LaptopManager from "../helpers/laptop-manager.js";
 import LaptopGroupManager from "../helpers/laptop-group-manager.js";
 import LaptopStateTag from "../components/common/laptop-state-tag.jsx";
 import LaptopGroupStateTag from "../components/common/laptop-group-state-tag.jsx";
-import { ArrowLeftOutlined } from "@ant-design/icons";
+import { ArrowLeftOutlined, LinkOutlined } from "@ant-design/icons";
 import TextArea from "antd/es/input/TextArea";
 import ImageManager from "../components/common/image-manager.jsx";
 
@@ -42,6 +44,8 @@ export default function LaptopGroupDetail() {
   const [savingVariantIndex, setSavingVariantIndex] = useState(null);
   const [isDeletingGroup, setIsDeletingGroup] = useState(false);
   const [stateLoading, setStateLoading] = useState(false);
+  const [linkingImages, setLinkingImages] = useState({});
+  const [imageManagerRefreshKey, setImageManagerRefreshKey] = useState(0);
 
   useEffect(() => {
     loadLaptopGroup();
@@ -229,6 +233,34 @@ export default function LaptopGroupDetail() {
     }
   }
 
+  async function handleLinkImages(laptopId) {
+    if (!laptopId || !laptopGroup?._id) {
+      message.error("Missing laptop or group information");
+      return;
+    }
+
+    setLinkingImages((prev) => ({ ...prev, [laptopId]: true }));
+    try {
+      const result = await ImageService.linkGroup({
+        laptopId,
+        groupId: laptopGroup._id,
+      });
+      const imageCount = result?.count || 0;
+      if (imageCount > 0) {
+        message.success(`Successfully linked ${imageCount} image${imageCount !== 1 ? "s" : ""} to the group`);
+        // Refresh ImageManager to show newly linked images
+        setImageManagerRefreshKey((prev) => prev + 1);
+      } else {
+        message.info("No images found for this laptop");
+      }
+    } catch (error) {
+      console.error("Failed to link images:", error);
+      message.error("Failed to link images to the group");
+    } finally {
+      setLinkingImages((prev) => ({ ...prev, [laptopId]: false }));
+    }
+  }
+
   const getResolutionLabel = (resolution) => {
     if (!resolution) return "-";
     const resolutionMap = {
@@ -410,14 +442,51 @@ export default function LaptopGroupDetail() {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      render: (name, record) =>
-        record?._id ? (
-          <Link to={`/laptops/laptopDetail/${record._id}`} target="_blank" rel="noopener noreferrer">
-            {name || record.code || "-"}
-          </Link>
-        ) : (
-          <span>{name || "-"}</span>
-        ),
+      render: (name, record) => (
+        <div className="flex items-center gap-2">
+          {record?.imageUrl && (
+            <div className="w-8 h-8 rounded-md overflow-hidden border border-gray-200 bg-gray-100 flex-shrink-0">
+              <Image
+                src={record.imageUrl}
+                alt={name || record.code || "Laptop image"}
+                width={32}
+                height={32}
+                className="!w-full !h-full object-cover"
+                preview={{
+                  mask: <span className="text-xs text-white">View</span>,
+                }}
+              />
+            </div>
+          )}
+          {record?._id ? (
+            <Link
+              to={`/laptops/laptopDetail/${record._id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs"
+            >
+              {name || record.code || "-"}
+            </Link>
+          ) : (
+            <span className="text-xs">{name || "-"}</span>
+          )}
+          {record?._id && (
+            <Button
+              type="link"
+              size="small"
+              icon={<LinkOutlined />}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleLinkImages(record._id);
+              }}
+              loading={linkingImages[record._id]}
+              disabled={linkingImages[record._id]}
+              title="Link laptop images to group"
+              className="flex-shrink-0"
+            />
+          )}
+        </div>
+      ),
     },
     {
       title: "State",
@@ -625,6 +694,7 @@ export default function LaptopGroupDetail() {
           setEntity={setLaptopGroup}
           cardTitle="Photos"
           cardClassName={"w-1/2 mr-1"}
+          refreshKey={imageManagerRefreshKey}
         />
         <Card
           bordered={false}

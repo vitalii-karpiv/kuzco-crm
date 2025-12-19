@@ -24,4 +24,9 @@ export default class ImageService {
     const result = await $api.delete(`/image/${id}`);
     return result.data;
   }
+
+  static async linkGroup(dto) {
+    const result = await $api.post("/image/linkGroup", dto);
+    return result.data;
+  }
 }

@@ -31,6 +31,7 @@ export default function ImageManager({
   setEntity,
   cardTitle = "Images",
   cardClassName = "",
+  refreshKey,
 }) {
   const [images, setImages] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -49,7 +50,7 @@ export default function ImageManager({
     }
     loadImages();
     processedFiles.current.clear();
-  }, [entityId, entityType]);
+  }, [entityId, entityType, refreshKey]);
 
   const loadImages = async () => {
     try {
@@ -414,5 +415,5 @@ ImageManager.propTypes = {
   setEntity: PropTypes.func,
   cardTitle: PropTypes.string,
   cardClassName: PropTypes.string,
+  refreshKey: PropTypes.any,
 };
-
