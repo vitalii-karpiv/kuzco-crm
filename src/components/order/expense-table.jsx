@@ -1,13 +1,15 @@
 import PropTypes from "prop-types";
-import { Card, Select, Table, Typography } from "antd";
+import { Button, Card, Select, Table, Typography } from "antd";
 import { useEffect, useState } from "react";
 import ExpenseService from "../../api/services/expense-service.js";
 import DateView from "../date-view.jsx";
 import ExpenseAmountView from "../expense-amount-view.jsx";
 import ExpenseManager from "../../helpers/expense-manager.js";
+import ExpenseCreateModal from "../finance/expense-create-modal.jsx";
 
 export default function ExpenseTable({ order = {} }) {
   const [expenseList, setExpenseList] = useState([]);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
 
   useEffect(() => {
     async function loadExpenses(order) {
@@ -22,6 +24,13 @@ export default function ExpenseTable({ order = {} }) {
 
   async function handleTypeUpdate(expenseId, type) {
     await ExpenseService.update({ id: expenseId, type });
+  }
+
+  async function handleReload() {
+    if (order?._id) {
+      const expenses = await ExpenseService.list({ orderId: order._id });
+      setExpenseList(expenses.itemList);
+    }
   }
 
   const getExpenseColumns = () => {
@@ -63,8 +72,15 @@ export default function ExpenseTable({ order = {} }) {
 
   return (
     <Card bordered={false} hoverable={true} className={"w-full my-3"}>
-      <div className={"flex justify-between"}>
+      <div className={"flex justify-between mb-3"}>
         <Typography.Title level={4}>Expenses</Typography.Title>
+        <Button
+          type="primary"
+          size={"small"}
+          onClick={() => setCreateModalOpen(true)}
+        >
+          Add Expense
+        </Button>
       </div>
       <Table
         pagination={false}
@@ -74,6 +90,13 @@ export default function ExpenseTable({ order = {} }) {
         size={"small"}
         showHeader={true}
       />
+      {createModalOpen && (
+        <ExpenseCreateModal
+          open={createModalOpen}
+          closeCreateModal={() => setCreateModalOpen(false)}
+          handleReload={handleReload}
+        />
+      )}
     </Card>
   );
 }
