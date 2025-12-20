@@ -1,29 +1,31 @@
-import { Button, Card, Checkbox, Input, message, Popconfirm, Select, Tag, Typography } from "antd";
+import { Button, Card, Checkbox, Input, message, Select, Tag, Typography } from "antd";
 import PropTypes from "prop-types";
 import { faSquarePen } from "@fortawesome/free-solid-svg-icons";
 import LaptopService from "../../api/services/laptop-service.js";
 import LaptopManager from "../../helpers/laptop-manager.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useRef } from "react";
 
 export default function CharacteristicsBlock({ laptop = {}, setLaptop }) {
   const [messageApi, contextHolder] = message.useMessage();
   const [isEditing, setIsEditing] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
-  const navigate = useNavigate();
+  const originalLaptopRef = useRef(null);
 
   async function handleUpdate() {
     let updated;
     try {
       updated = await LaptopService.update({
         id: laptop._id,
-        imageUrl: laptop.imageUrl,
         serviceTag: laptop.serviceTag,
         note: laptop.note,
-        characteristics: { ...laptop.characteristics },
+        characteristics: { ...(laptop.characteristics || {}) },
       });
       setLaptop(updated);
+      messageApi.open({
+        duration: 3,
+        type: "info",
+        content: "Laptop successfully updated.",
+      });
     } catch (e) {
       messageApi.open({
         duration: 3,
@@ -33,27 +35,22 @@ export default function CharacteristicsBlock({ laptop = {}, setLaptop }) {
       console.log(e);
     }
     setIsEditing(false);
+    originalLaptopRef.current = null;
   }
 
-  async function handleDelete() {
-    if (!laptop?._id) {
-      return;
+  function handleEdit() {
+    // Store the original laptop state when entering edit mode
+    originalLaptopRef.current = JSON.parse(JSON.stringify(laptop));
+    setIsEditing(true);
+  }
+
+  function handleCancel() {
+    // Restore the original laptop state
+    if (originalLaptopRef.current) {
+      setLaptop(originalLaptopRef.current);
     }
-    try {
-      setIsDeleting(true);
-      await LaptopService.delete(laptop._id);
-      message.success("Laptop deleted successfully!");
-      navigate("/laptops");
-    } catch (e) {
-      messageApi.open({
-        duration: 3,
-        type: "error",
-        content: "Laptop delete failed. Please try again.",
-      });
-      console.log(e);
-    } finally {
-      setIsDeleting(false);
-    }
+    setIsEditing(false);
+    originalLaptopRef.current = null;
   }
 
   return (
@@ -62,28 +59,20 @@ export default function CharacteristicsBlock({ laptop = {}, setLaptop }) {
       <div className={"flex justify-between items-center"}>
         <Typography.Title level={4}>Characteristics</Typography.Title>
         <div className={"flex items-center gap-2"}>
-          <Button
-            size={"small"}
-            icon={<FontAwesomeIcon icon={faSquarePen} />}
-            onClick={() => {
-              isEditing ? handleUpdate() : setIsEditing(true);
-            }}
-          >
-            {isEditing ? "Save" : "Edit"}
-          </Button>
-          <Popconfirm
-            title="Delete this laptop?"
-            okText="Delete"
-            okButtonProps={{ danger: true }}
-            cancelText="Cancel"
-            placement="left"
-            onConfirm={handleDelete}
-            disabled={isDeleting}
-          >
-            <Button danger size={"small"} loading={isDeleting}>
-              Delete
+          {isEditing ? (
+            <>
+              <Button size={"small"} onClick={handleCancel}>
+                Cancel
+              </Button>
+              <Button type={"primary"} size={"small"} onClick={handleUpdate}>
+                Save
+              </Button>
+            </>
+          ) : (
+            <Button size={"small"} icon={<FontAwesomeIcon icon={faSquarePen} />} onClick={handleEdit}>
+              Edit
             </Button>
-          </Popconfirm>
+          )}
         </div>
       </div>
       <div className={""}>
@@ -92,8 +81,10 @@ export default function CharacteristicsBlock({ laptop = {}, setLaptop }) {
           {isEditing ? (
             <Input
               className={"w-2/3"}
-              onChange={(e) => (laptop.serviceTag = e.target.value)}
-              defaultValue={laptop.serviceTag}
+              onChange={(e) => {
+                setLaptop({ ...laptop, serviceTag: e.target.value });
+              }}
+              value={laptop.serviceTag || ""}
               size={"small"}
             />
           ) : (
@@ -105,8 +96,13 @@ export default function CharacteristicsBlock({ laptop = {}, setLaptop }) {
           {isEditing ? (
             <Select
               className={"w-2/3"}
-              defaultValue={laptop.characteristics?.condition}
-              onChange={(value) => (laptop.characteristics.condition = value)}
+              value={laptop.characteristics?.condition}
+              onChange={(value) => {
+                setLaptop({
+                  ...laptop,
+                  characteristics: { ...(laptop.characteristics || {}), condition: value },
+                });
+              }}
               options={LaptopManager.getLaptopConditionListOptions()}
               size={"small"}
               allowClear
@@ -131,7 +127,12 @@ export default function CharacteristicsBlock({ laptop = {}, setLaptop }) {
               className={""}
               defaultChecked={laptop.characteristics?.isTransformer}
               disabled={!isEditing}
-              onChange={(e) => (laptop.characteristics.isTransformer = e.target.checked)}
+              onChange={(e) => {
+                setLaptop({
+                  ...laptop,
+                  characteristics: { ...(laptop.characteristics || {}), isTransformer: e.target.checked },
+                });
+              }}
             >
               Is transformer (2-in-1)
             </Checkbox>
@@ -142,8 +143,13 @@ export default function CharacteristicsBlock({ laptop = {}, setLaptop }) {
           {isEditing ? (
             <Input
               className={"w-2/3"}
-              onChange={(e) => (laptop.characteristics.processor = e.target.value)}
-              defaultValue={laptop.characteristics?.processor}
+              onChange={(e) => {
+                setLaptop({
+                  ...laptop,
+                  characteristics: { ...(laptop.characteristics || {}), processor: e.target.value },
+                });
+              }}
+              value={laptop.characteristics?.processor || ""}
               size={"small"}
             />
           ) : (
@@ -156,8 +162,13 @@ export default function CharacteristicsBlock({ laptop = {}, setLaptop }) {
             {isEditing ? (
               <Input
                 className={"w-full block"}
-                onChange={(e) => (laptop.characteristics.videocard = e.target.value)}
-                defaultValue={laptop.characteristics?.videocard}
+                onChange={(e) => {
+                  setLaptop({
+                    ...laptop,
+                    characteristics: { ...(laptop.characteristics || {}), videocard: e.target.value },
+                  });
+                }}
+                value={laptop.characteristics?.videocard || ""}
                 size={"small"}
               />
             ) : (
@@ -168,7 +179,12 @@ export default function CharacteristicsBlock({ laptop = {}, setLaptop }) {
               className={""}
               defaultChecked={laptop.characteristics?.discrete}
               disabled={!isEditing}
-              onChange={(e) => (laptop.characteristics.discrete = e.target.checked)}
+              onChange={(e) => {
+                setLaptop({
+                  ...laptop,
+                  characteristics: { ...(laptop.characteristics || {}), discrete: e.target.checked },
+                });
+              }}
             >
               Discrete
             </Checkbox>
@@ -176,7 +192,12 @@ export default function CharacteristicsBlock({ laptop = {}, setLaptop }) {
               className={""}
               defaultChecked={laptop.characteristics?.keyLight}
               disabled={!isEditing}
-              onChange={(e) => (laptop.characteristics.keyLight = e.target.checked)}
+              onChange={(e) => {
+                setLaptop({
+                  ...laptop,
+                  characteristics: { ...(laptop.characteristics || {}), keyLight: e.target.checked },
+                });
+              }}
             >
               Підсвітка клави
             </Checkbox>
@@ -188,8 +209,14 @@ export default function CharacteristicsBlock({ laptop = {}, setLaptop }) {
             <Input
               className={"w-2/3"}
               type={"number"}
-              onChange={(e) => (laptop.characteristics.ssd = parseFloat(e.target.value))}
-              defaultValue={laptop.characteristics?.ssd}
+              onChange={(e) => {
+                const value = e.target.value ? parseFloat(e.target.value) : undefined;
+                setLaptop({
+                  ...laptop,
+                  characteristics: { ...(laptop.characteristics || {}), ssd: value },
+                });
+              }}
+              value={laptop.characteristics?.ssd || ""}
               size={"small"}
             />
           ) : (
@@ -202,8 +229,14 @@ export default function CharacteristicsBlock({ laptop = {}, setLaptop }) {
             <Input
               className={"w-2/3"}
               type={"number"}
-              onChange={(e) => (laptop.characteristics.ram = parseFloat(e.target.value))}
-              defaultValue={laptop.characteristics?.ram}
+              onChange={(e) => {
+                const value = e.target.value ? parseFloat(e.target.value) : undefined;
+                setLaptop({
+                  ...laptop,
+                  characteristics: { ...(laptop.characteristics || {}), ram: value },
+                });
+              }}
+              value={laptop.characteristics?.ram || ""}
               size={"small"}
             />
           ) : (
@@ -216,8 +249,14 @@ export default function CharacteristicsBlock({ laptop = {}, setLaptop }) {
             <Input
               type={"number"}
               className={"w-2/3"}
-              onChange={(e) => (laptop.characteristics.battery = parseInt(e.target.value))}
-              defaultValue={laptop.characteristics?.battery}
+              onChange={(e) => {
+                const value = e.target.value ? parseInt(e.target.value) : undefined;
+                setLaptop({
+                  ...laptop,
+                  characteristics: { ...(laptop.characteristics || {}), battery: value },
+                });
+              }}
+              value={laptop.characteristics?.battery || ""}
               size={"small"}
             />
           ) : (
@@ -230,8 +269,14 @@ export default function CharacteristicsBlock({ laptop = {}, setLaptop }) {
             {isEditing ? (
               <Input
                 className={"w-full"}
-                onChange={(e) => (laptop.characteristics.screenSize = parseFloat(e.target.value))}
-                defaultValue={laptop.characteristics?.screenSize}
+                onChange={(e) => {
+                  const value = e.target.value ? parseFloat(e.target.value) : undefined;
+                  setLaptop({
+                    ...laptop,
+                    characteristics: { ...(laptop.characteristics || {}), screenSize: value },
+                  });
+                }}
+                value={laptop.characteristics?.screenSize || ""}
                 size={"small"}
               />
             ) : (
@@ -242,7 +287,12 @@ export default function CharacteristicsBlock({ laptop = {}, setLaptop }) {
               className={""}
               defaultChecked={laptop.characteristics?.touch}
               disabled={!isEditing}
-              onChange={(e) => (laptop.characteristics.touch = e.target.checked)}
+              onChange={(e) => {
+                setLaptop({
+                  ...laptop,
+                  characteristics: { ...(laptop.characteristics || {}), touch: e.target.checked },
+                });
+              }}
             >
               Touch
             </Checkbox>
@@ -252,8 +302,13 @@ export default function CharacteristicsBlock({ laptop = {}, setLaptop }) {
           <p className={"w-1/4"}>🖥️ Resolution: </p>
           <Select
             disabled={!isEditing}
-            defaultValue={laptop.characteristics?.resolution}
-            onChange={(value) => (laptop.characteristics.resolution = value)}
+            value={laptop.characteristics?.resolution}
+            onChange={(value) => {
+              setLaptop({
+                ...laptop,
+                characteristics: { ...(laptop.characteristics || {}), resolution: value },
+              });
+            }}
             options={LaptopManager.getResolutionListOptions()}
             className={"w-2/3"}
             size={"small"}
@@ -263,8 +318,13 @@ export default function CharacteristicsBlock({ laptop = {}, setLaptop }) {
           <p className={"w-1/4"}>🖥️ Panel Type: </p>
           <Select
             disabled={!isEditing}
-            defaultValue={laptop.characteristics?.panelType}
-            onChange={(value) => (laptop.characteristics.panelType = value)}
+            value={laptop.characteristics?.panelType}
+            onChange={(value) => {
+              setLaptop({
+                ...laptop,
+                characteristics: { ...(laptop.characteristics || {}), panelType: value },
+              });
+            }}
             options={LaptopManager.getPanelTypeListOptions()}
             className={"w-2/3"}
             size={"small"}
@@ -274,8 +334,13 @@ export default function CharacteristicsBlock({ laptop = {}, setLaptop }) {
           <p className={"w-1/4"}>🖥️ Refresh rate: </p>
           <Select
             disabled={!isEditing}
-            defaultValue={laptop.characteristics?.refreshRate}
-            onChange={(value) => (laptop.characteristics.refreshRate = value)}
+            value={laptop.characteristics?.refreshRate}
+            onChange={(value) => {
+              setLaptop({
+                ...laptop,
+                characteristics: { ...(laptop.characteristics || {}), refreshRate: value },
+              });
+            }}
             options={LaptopManager.getRefreshRateListOptions()}
             className={"w-2/3"}
             size={"small"}
@@ -286,8 +351,13 @@ export default function CharacteristicsBlock({ laptop = {}, setLaptop }) {
           <Select
             mode="multiple"
             disabled={!isEditing}
-            defaultValue={laptop.characteristics?.ports}
-            onChange={(value) => (laptop.characteristics.ports = value)}
+            value={laptop.characteristics?.ports}
+            onChange={(value) => {
+              setLaptop({
+                ...laptop,
+                characteristics: { ...(laptop.characteristics || {}), ports: value },
+              });
+            }}
             options={LaptopManager.getPortsListOptions()}
             className={"w-2/3"}
             size={"small"}
@@ -300,8 +370,10 @@ export default function CharacteristicsBlock({ laptop = {}, setLaptop }) {
               rows={4}
               textArea
               className={"w-2/3"}
-              onChange={(e) => (laptop.note = e.target.value)}
-              defaultValue={laptop.note}
+              onChange={(e) => {
+                setLaptop({ ...laptop, note: e.target.value });
+              }}
+              value={laptop.note || ""}
               size={"small"}
             />
           ) : (
