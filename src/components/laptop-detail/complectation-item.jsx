@@ -1,8 +1,8 @@
-import { Button, Typography, message } from "antd";
+import { Button, Typography } from "antd";
 import PropTypes from "prop-types";
 import StockManager from "../../helpers/stock-manager.js";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCopy, faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faMinus, faPlus } from "@fortawesome/free-solid-svg-icons";
 import StockService from "../../api/services/stock-service.js";
 import { useState } from "react";
 import AddStockModal from "./add-stock-modal.jsx";
@@ -17,28 +17,9 @@ export default function ComplectationItem({ stockType, stockList, setStockList, 
   function handleShowAddStockModal() {
     setShowAddStockModal(true);
   }
-  function handleCopy() {
-    const filteredItems = stockList.filter((item) => item.type === stockType);
-
-    if (filteredItems.length === 0) {
-      message.error("No stock items is added");
-      return;
-    }
-
-    const textToCopy = filteredItems.map((item) => `${item.code} - ${item.name} (${item.price} грн)`).join("\n");
-
-    navigator.clipboard
-      .writeText(textToCopy)
-      .then(() => {
-        message.success("Stock info copied!");
-      })
-      .catch(() => {
-        message.error("Failed to copy.");
-      });
-  }
 
   async function handleRemoveStockItem(stockItem) {
-    await StockService.update({ id: stockItem._id, state: StockManager.getStockStateMap().FREE });
+    await StockService.update({ id: stockItem._id, laptopId: null });
     setStockList(stockList.filter((item) => item._id !== stockItem._id));
   }
 
@@ -57,10 +38,6 @@ export default function ComplectationItem({ stockType, stockList, setStockList, 
         <div>
           <Button className={""} size={"small"} onClick={handleShowAddStockModal}>
             <FontAwesomeIcon icon={faPlus} />
-          </Button>
-
-          <Button className={""} size={"small"} onClick={handleCopy}>
-            <FontAwesomeIcon icon={faCopy} />
           </Button>
         </div>
       </div>

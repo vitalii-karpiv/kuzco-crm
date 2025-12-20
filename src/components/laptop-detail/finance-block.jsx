@@ -1,23 +1,11 @@
 import { Card, InputNumber, Typography } from "antd";
 import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import LaptopService from "../../api/services/laptop-service.js";
-import FinanceService from "../../api/services/finance-service.js";
-import ExpenseAmountView from "../expense-amount-view.jsx";
 
 export default function FinanceBlock({ laptop, setLaptop }) {
   const [editLimitPrice, setEditLimitPrice] = useState(false);
   const [editSellPrice, setEditSellPrice] = useState(false);
-  const [costPrice, setCostPrice] = useState(0);
-
-  useEffect(() => {
-    addCostPrice();
-  }, []);
-
-  async function addCostPrice() {
-    const price = await FinanceService.getCostPricePerLaptop(laptop.orderId);
-    setCostPrice(price);
-  }
 
   return (
     <Card bordered={false} hoverable={true} className={"w-2/4 mr-3"}>
@@ -26,8 +14,9 @@ export default function FinanceBlock({ laptop, setLaptop }) {
       </div>
 
       <Typography.Text className={"block p-2 rounded bg-slate-300"}>
-        <span>Собівартість: </span>
-        <ExpenseAmountView amount={costPrice} />
+        <span>
+          Собівартість: <Typography.Text code>{laptop.costPrice} грн</Typography.Text>
+        </span>
       </Typography.Text>
 
       <PriceInput
