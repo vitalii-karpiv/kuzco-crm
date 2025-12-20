@@ -495,6 +495,12 @@ export default function LaptopGroupDetail() {
       render: (state) => <LaptopStateTag state={state} />,
     },
     {
+      title: "Cost Price",
+      dataIndex: "costPrice",
+      key: "costPrice",
+      render: (costPrice) => <span>{costPrice ? `₴${costPrice.toLocaleString()}` : "-"}</span>,
+    },
+    {
       title: "Limit Price",
       dataIndex: "limitPrice",
       key: "limitPrice",
