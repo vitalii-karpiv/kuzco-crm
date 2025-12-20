@@ -185,32 +185,6 @@ export default function Laptops() {
         ),
       },
       {
-        title: "Marketplaces",
-        dataIndex: "marketplaces",
-        key: "marketplaces",
-        width: 120,
-        render: (marketplaces) => {
-          if (!Array.isArray(marketplaces) || marketplaces.length === 0) {
-            return <span className="text-xs text-gray-400">-</span>;
-          }
-
-          return (
-            <div className="flex flex-col gap-0.5">
-              {marketplaces.map((marketplace, index) => {
-                const colorClass = marketplace.published ? "bg-green-50" : "bg-rose-50";
-                const key = marketplace.id || marketplace.name || index;
-
-                return (
-                  <div key={key} className={`flex flex-col text-xs px-1 py-0.5 rounded ${colorClass}`}>
-                    {marketplace.name ?? "Unknown"}
-                  </div>
-                );
-              })}
-            </div>
-          );
-        },
-      },
-      {
         title: "Note",
         dataIndex: "note",
         key: "note",
@@ -222,10 +196,11 @@ export default function Laptops() {
         title: "Pricing",
         dataIndex: "limitPrice",
         key: "limitPrice",
-        width: 100,
+        width: 150,
         render: (limitPrice, record) => {
           return (
             <div className={"flex flex-col text-xs"}>
+              <div>Cost price: {record.costPrice ?? "-"}</div>
               <div>Limit: {limitPrice ?? "-"}</div>
               <div>Sell: {record.sellPrice ?? "-"}</div>
             </div>

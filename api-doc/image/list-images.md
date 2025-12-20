@@ -10,7 +10,7 @@ POST /image/list
 
 ## Authentication
 
-Required - User must be authenticated with a valid JWT token.
+Not required – this is a public endpoint.
 
 ## Request Body
 

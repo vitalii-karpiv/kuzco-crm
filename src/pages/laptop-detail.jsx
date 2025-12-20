@@ -1,4 +1,4 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import Loading from "../components/loading.jsx";
 import LaptopService from "../api/services/laptop-service.js";
@@ -26,6 +26,7 @@ import { useUserContext } from "../components/user-context.jsx";
 
 export default function LaptopDetail() {
   let { id } = useParams();
+  const navigate = useNavigate();
   const [laptop, setLaptop] = useState();
   const [stockList, setStockList] = useState();
   const [showUpdateCharacteristics, setShowUpdateCharacteristics] = useState(false);
@@ -37,6 +38,7 @@ export default function LaptopDetail() {
   const [stateLoading, setStateLoading] = useState(false);
   const [relatedSale, setRelatedSale] = useState(null);
   const [groupLoading, setGroupLoading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   useEffect(() => {
     loadLaptop();
@@ -129,6 +131,23 @@ export default function LaptopDetail() {
       message.error(errorMessage);
     } finally {
       setGroupLoading(false);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (!laptop?._id) {
+      return;
+    }
+    try {
+      setIsDeleting(true);
+      await LaptopService.delete(laptop._id);
+      message.success("Laptop deleted successfully!");
+      navigate("/laptops");
+    } catch (e) {
+      message.error("Laptop delete failed. Please try again.");
+      console.log(e);
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -259,14 +278,25 @@ export default function LaptopDetail() {
           <Button
             onClick={() => setSaleCreateOpen(true)}
             type="primary"
-            className={
-              "bg-teal-500 hover:bg-teal-600 border-teal-500 hover:border-teal-600 text-white font-medium px-3 py-1 h-8 rounded-md shadow-sm hover:shadow-md transition-all duration-200"
-            }
+            className={"mr-2"}
             size={"small"}
             disabled={LaptopManager.getFinalStates().includes(laptop.state)}
           >
-            <span className="flex items-center gap-1.5 text-sm">Create Sale</span>
+            Create Sale
           </Button>
+          <Popconfirm
+            title="Delete this laptop?"
+            okText="Delete"
+            okButtonProps={{ danger: true }}
+            cancelText="Cancel"
+            placement="left"
+            onConfirm={handleDelete}
+            disabled={isDeleting}
+          >
+            <Button danger size={"small"} loading={isDeleting}>
+              Delete
+            </Button>
+          </Popconfirm>
         </div>
       </header>
       <div className={"flex mb-3"}>
