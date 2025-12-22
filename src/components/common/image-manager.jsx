@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import PropTypes from "prop-types";
 import { Card, Typography, Upload, message, Image, Spin, Progress, Button, Tooltip, Popconfirm } from "antd";
-import { UploadOutlined, EyeOutlined, StarOutlined, DeleteOutlined } from "@ant-design/icons";
+import { UploadOutlined, EyeOutlined, StarOutlined, DeleteOutlined, DownloadOutlined } from "@ant-design/icons";
 import ImageService from "../../api/services/image-service.js";
 import LaptopService from "../../api/services/laptop-service.js";
 import LaptopGroupService from "../../api/services/laptop-group-service.js";
@@ -40,6 +40,7 @@ export default function ImageManager({
   const [uploadingFiles, setUploadingFiles] = useState([]);
   const [settingMainImage, setSettingMainImage] = useState(false);
   const [deletingImageId, setDeletingImageId] = useState(null);
+  const [downloading, setDownloading] = useState(false);
   const uploadInProgress = useRef(false);
   const lastUploadTime = useRef(0);
   const processedFiles = useRef(new Set());
@@ -259,6 +260,60 @@ export default function ImageManager({
     return false;
   };
 
+  const handleDownloadAll = async () => {
+    if (images.length === 0 || downloading) return;
+
+    const imagesWithUrls = images.filter((img) => getImageUrl(img));
+    if (imagesWithUrls.length === 0) {
+      message.warning("No images with valid URLs to download");
+      return;
+    }
+
+    try {
+      setDownloading(true);
+      message.info(`Downloading ${imagesWithUrls.length} image${imagesWithUrls.length > 1 ? "s" : ""}...`);
+
+      for (let i = 0; i < imagesWithUrls.length; i++) {
+        const image = imagesWithUrls[i];
+        const imageUrl = getImageUrl(image);
+
+        if (!imageUrl) continue;
+
+        try {
+          const response = await fetch(imageUrl);
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement("a");
+          link.href = url;
+
+          // Try to get a meaningful filename from the URL or use image ID
+          const urlPath = new URL(imageUrl).pathname;
+          const filename = urlPath.split("/").pop() || `image-${image.id || i + 1}`;
+          link.download = filename;
+
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          window.URL.revokeObjectURL(url);
+
+          // Small delay between downloads to avoid overwhelming the browser
+          if (i < imagesWithUrls.length - 1) {
+            await new Promise((resolve) => setTimeout(resolve, 200));
+          }
+        } catch (error) {
+          console.error(`Failed to download image ${i + 1}:`, error);
+        }
+      }
+
+      message.success(`Downloaded ${imagesWithUrls.length} image${imagesWithUrls.length > 1 ? "s" : ""}`);
+    } catch (error) {
+      console.error("Failed to download images:", error);
+      message.error("Failed to download some images");
+    } finally {
+      setDownloading(false);
+    }
+  };
+
   const uploadProps = {
     name: "image",
     multiple: true,
@@ -288,8 +343,24 @@ export default function ImageManager({
         <Typography.Title level={4} style={{ margin: 0 }}>
           {cardTitle}
         </Typography.Title>
-        <div className="text-sm text-gray-500">
-          {images.length} image{images.length !== 1 ? "s" : ""}
+        <div className="flex items-center gap-3">
+          {images.length > 0 && (
+            <Tooltip title="Download all images">
+              <Button
+                type="default"
+                size="small"
+                icon={<DownloadOutlined />}
+                onClick={handleDownloadAll}
+                disabled={downloading || loading}
+                loading={downloading}
+              >
+                Download All
+              </Button>
+            </Tooltip>
+          )}
+          <div className="text-sm text-gray-500">
+            {images.length} image{images.length !== 1 ? "s" : ""}
+          </div>
         </div>
       </div>
 
