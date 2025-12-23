@@ -50,6 +50,7 @@ export default function FilterBar({ filters, setFilters }) {
           </FilterWrapper>
         </div>
         <div className={"w-1/5"}>
+          <CheckboxFilterWrapper label={"In group"} setFilters={setFilters} filters={filters} filterName={"inGroup"} />
           <CheckboxFilterWrapper label={"Touch"} setFilters={setFilters} filters={filters} filterName={"touch"} />
           <CheckboxFilterWrapper
             label={"Videocard"}
