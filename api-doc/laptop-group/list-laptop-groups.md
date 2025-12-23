@@ -31,6 +31,7 @@ All fields are optional. Send only the filters you need.
   "discrete": true,
   "laptopId": "string",
   "idList": ["string"],
+  "publishedOnMarketplace": true,
   "sorters": {
     "groupName": 1
   }
@@ -41,6 +42,7 @@ All fields are optional. Send only the filters you need.
 
 - Text filters (`groupName`) use case-insensitive partial matching.
 - `laptopId` checks both `itemList` and `variants[].laptopId`.
+- `publishedOnMarketplace` filters groups that have at least one marketplace with `published: true`. Set to `true` to only return published groups, or omit to include all groups.
 - `sorters` mirrors Mongo sort syntax where `1` is ascending and `-1` descending.
 
 ## Response
@@ -60,6 +62,13 @@ All fields are optional. Send only the filters you need.
       "resolution": "1920x1080",
       "panelType": "IPS",
       "variants": [],
+      "marketplaces": [
+        {
+          "code": "instagram",
+          "published": false,
+          "description": "string"
+        }
+      ],
       "itemList": []
     }
   ],

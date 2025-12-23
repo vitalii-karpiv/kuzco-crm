@@ -33,4 +33,12 @@ export default class LaptopGroupService {
     const result = await $api.post("/laptopGroup/setState", dto);
     return result.data;
   }
+  static async generateMarketplaceDescription(dto) {
+    const result = await $api.post("/laptopGroup/marketplace/generateDescription", dto);
+    return result.data;
+  }
+  static async toggleMarketplacePublished(dto) {
+    const result = await $api.post("/laptopGroup/marketplace/togglePublished", dto);
+    return result.data;
+  }
 }
