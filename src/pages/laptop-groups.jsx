@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Image, message, Table } from "antd";
+import { Image, message, Table, Switch, Space, Typography } from "antd";
 import LaptopGroupService from "../api/services/laptop-group-service.js";
 import Loading from "../components/loading.jsx";
 import { Link } from "react-router-dom";
@@ -12,6 +12,7 @@ export default function LaptopGroups() {
   const [isLoading, setIsLoading] = useState(true);
   const [filters] = useState({});
   const [sorters] = useState({});
+  const [togglingMarketplace, setTogglingMarketplace] = useState({});
 
   useEffect(() => {
     loadLaptopGroups();
@@ -73,6 +74,34 @@ export default function LaptopGroups() {
     return panelType.toUpperCase();
   };
 
+  const getMarketplaceDisplayName = (code) => {
+    const nameMap = {
+      instagram: "Instagram",
+    };
+    return nameMap[code] || code;
+  };
+
+  async function handleToggleMarketplacePublished(groupId, marketplaceCode) {
+    const key = `${groupId}-${marketplaceCode}`;
+    setTogglingMarketplace((prev) => ({ ...prev, [key]: true }));
+    try {
+      const updated = await LaptopGroupService.toggleMarketplacePublished({
+        id: groupId,
+        code: marketplaceCode,
+      });
+      // Update the specific group in the list
+      setLaptopGroups((prev) => prev.map((group) => (group._id === groupId ? updated : group)));
+      message.success(
+        `Marketplace ${updated.marketplaces.find((m) => m.code === marketplaceCode)?.published ? "published" : "unpublished"}`,
+      );
+    } catch (error) {
+      console.error("Failed to toggle published status:", error);
+      message.error("Failed to toggle published status");
+    } finally {
+      setTogglingMarketplace((prev) => ({ ...prev, [key]: false }));
+    }
+  }
+
   const getColumns = () => {
     return [
       {
@@ -113,36 +142,40 @@ export default function LaptopGroups() {
         },
       },
       {
-        title: "Processor",
-        dataIndex: "processor",
-        key: "processor",
-        render: (processor) => {
-          return <div className={"flex flex-col text-xs"}>{processor ?? "-"}</div>;
-        },
-      },
-      {
-        title: "Videocard",
-        dataIndex: "videocard",
-        key: "videocard",
-        render: (videocard) => {
-          return <div className={"flex flex-col text-xs"}>{videocard ?? "-"}</div>;
-        },
-      },
-      {
-        title: "Display",
-        key: "display",
-        width: 250,
-        render: (record) => {
-          const screenSize = record.screenSize;
-          const resolution = getResolutionLabel(record.resolution);
-          const panelType = getPanelTypeLabel(record.panelType);
-          const refreshRate = getRefreshRateLabel(record.refreshRate);
-          const parts = [];
-          if (screenSize) parts.push(`${screenSize}"`);
-          if (resolution) parts.push(resolution);
-          if (panelType) parts.push(panelType);
-          if (refreshRate) parts.push(refreshRate);
-          return <div className={"text-xs"}>{parts.length > 0 ? parts.join(" ") : "-"}</div>;
+        title: "Marketplaces",
+        key: "marketplaces",
+        width: 200,
+        render: (_value, record) => {
+          const marketplaces = record.marketplaces || [];
+          if (marketplaces.length === 0) {
+            return (
+              <Typography.Text type="secondary" className="text-xs">
+                -
+              </Typography.Text>
+            );
+          }
+          return (
+            <Space direction="vertical" size="small" className="w-full">
+              {marketplaces.map((marketplace) => {
+                const key = `${record._id}-${marketplace.code}`;
+                const isToggling = togglingMarketplace[key];
+                return (
+                  <div key={marketplace.code} className="flex items-center">
+                    <Typography.Text className="text-xs" style={{ minWidth: "80px" }}>
+                      {getMarketplaceDisplayName(marketplace.code)}:
+                    </Typography.Text>
+                    <Switch
+                      checked={marketplace.published}
+                      onChange={() => handleToggleMarketplacePublished(record._id, marketplace.code)}
+                      loading={isToggling}
+                      disabled={isToggling}
+                      size="small"
+                    />
+                  </div>
+                );
+              })}
+            </Space>
+          );
         },
       },
       {
@@ -176,6 +209,45 @@ export default function LaptopGroups() {
     return <Loading />;
   }
 
+  const getExpandedRowRender = (record) => {
+    const screenSize = record.screenSize;
+    const resolution = getResolutionLabel(record.resolution);
+    const panelType = getPanelTypeLabel(record.panelType);
+    const refreshRate = getRefreshRateLabel(record.refreshRate);
+    const displayParts = [];
+    if (screenSize) displayParts.push(`${screenSize}"`);
+    if (resolution) displayParts.push(resolution);
+    if (panelType) displayParts.push(panelType);
+    if (refreshRate) displayParts.push(refreshRate);
+
+    return (
+      <div className="space-y-2">
+        <div className="flex gap-4">
+          <div>
+            <Typography.Text strong className="text-xs">
+              Processor:
+            </Typography.Text>
+            <Typography.Text className="text-xs ml-2">{record.processor ?? "-"}</Typography.Text>
+          </div>
+          <div>
+            <Typography.Text strong className="text-xs">
+              Videocard:
+            </Typography.Text>
+            <Typography.Text className="text-xs ml-2">{record.videocard ?? "-"}</Typography.Text>
+          </div>
+          <div>
+            <Typography.Text strong className="text-xs">
+              Display:
+            </Typography.Text>
+            <Typography.Text className="text-xs ml-2">
+              {displayParts.length > 0 ? displayParts.join(" ") : "-"}
+            </Typography.Text>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className={"w-full"}>
       <Table
@@ -187,6 +259,10 @@ export default function LaptopGroups() {
         scroll={{ y: 500 }}
         key={"_id"}
         loading={isLoading}
+        expandable={{
+          expandedRowRender: getExpandedRowRender,
+          rowExpandable: () => true,
+        }}
         footer={() => <div className={"text-xs"}>Total laptop groups: {laptopGroups.length}</div>}
       />
     </div>

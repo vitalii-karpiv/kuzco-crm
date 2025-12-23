@@ -10,7 +10,7 @@ GET /laptopGroup/:id
 
 ## Authentication
 
-Required – valid JWT.
+Not required – this is a public endpoint.
 
 ## Path Parameters
 
@@ -42,6 +42,13 @@ Required – valid JWT.
       "touch": false,
       "keyLight": true,
       "price": 28000
+    }
+  ],
+  "marketplaces": [
+    {
+      "code": "instagram",
+      "published": false,
+      "description": "string"
     }
   ],
   "itemList": ["string"],

@@ -26,6 +26,7 @@ import LaptopGroupStateTag from "../components/common/laptop-group-state-tag.jsx
 import { ArrowLeftOutlined, LinkOutlined } from "@ant-design/icons";
 import TextArea from "antd/es/input/TextArea";
 import ImageManager from "../components/common/image-manager.jsx";
+import MarketplaceBlock from "../components/laptop-group-detail/marketplace-block.jsx";
 
 export default function LaptopGroupDetail() {
   const { id } = useParams();
@@ -702,18 +703,7 @@ export default function LaptopGroupDetail() {
           cardClassName={"w-1/2 mr-1"}
           refreshKey={imageManagerRefreshKey}
         />
-        <Card
-          bordered={false}
-          hoverable={true}
-          className={"w-1/2 ml-1"}
-          title={
-            <Typography.Title level={4} style={{ margin: 0 }}>
-              Marketplace
-            </Typography.Title>
-          }
-        >
-          <Typography.Text type="secondary">Marketplace data will appear here.</Typography.Text>
-        </Card>
+        <MarketplaceBlock laptopGroup={laptopGroup} setLaptopGroup={setLaptopGroup} />
       </div>
 
       {/* Variants Block */}

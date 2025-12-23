@@ -40,6 +40,13 @@ Required – valid JWT.
       "itemList": ["string"]
     }
   ],
+  "marketplaces": [
+    {
+      "code": "instagram",
+      "published": false,
+      "description": "string"
+    }
+  ],
   "note": "string"
 }
 ```
@@ -52,6 +59,7 @@ Required – valid JWT.
 - Changing CPU/GPU, screen size, resolution, panel type, or `isTransformer` regenerates the `groupIdentifier`.
 - When variant `itemList` entries are supplied, those laptops get their `laptopGroupId` synced automatically.
 - Variants capture RAM/SSD/touch/battery-condition/condition/price snapshots for sets of laptops; their membership is automatically adjusted when laptops move between groups or variants.
+- `marketplaces` can be updated directly, but it's recommended to use the marketplace-specific endpoints (`generateDescription` and `togglePublished`) for managing marketplace configurations.
 
 ## Response
 
