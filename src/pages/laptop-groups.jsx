@@ -5,12 +5,13 @@ import Loading from "../components/loading.jsx";
 import { Link } from "react-router-dom";
 import LaptopManager from "../helpers/laptop-manager.js";
 import LaptopGroupStateTag from "../components/common/laptop-group-state-tag.jsx";
+import FilterBar from "../components/laptop-group/filter-bar.jsx";
 
 export default function LaptopGroups() {
   document.title = "Laptop Groups";
   const [laptopGroups, setLaptopGroups] = useState();
   const [isLoading, setIsLoading] = useState(true);
-  const [filters] = useState({});
+  const [filters, setFilters] = useState({});
   const [sorters] = useState({});
   const [togglingMarketplace, setTogglingMarketplace] = useState({});
 
@@ -250,6 +251,7 @@ export default function LaptopGroups() {
 
   return (
     <div className={"w-full"}>
+      <FilterBar filters={filters} setFilters={setFilters} />
       <Table
         className={"ml-3"}
         dataSource={laptopGroups.map((group) => ({ ...group, key: group._id }))}
